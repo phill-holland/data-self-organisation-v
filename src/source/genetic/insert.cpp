@@ -203,7 +203,13 @@ bool organisation::genetic::inserts::insert::validate(data &source)
     {
         if((it.delay < _min_insert_delay)||(it.delay > _max_insert_delay))
         { 
-            std::cout << "insert::validate(false): delay out of bounds\r\n"; 
+            std::cout << "insert::validate(false): delay out of bounds (" << it.delay << ")\r\n"; 
+            return false; 
+        }
+
+        if((it.words < _min_insert_words)||(it.words > _max_insert_words))
+        { 
+            std::cout << "insert::validate(false): words out of bounds (" << it.words << ")\r\n"; 
             return false; 
         }
 

@@ -185,15 +185,16 @@ int organisation::parallel::inserts::insert(int epoch)
                         sycl::int4 new_value = { -1, -1, -1, -1 };
                         int *coordinates[] = { &new_value.x(), &new_value.y(), &new_value.z() } ;
 
-                        int words = _insertsWords[i + offset];
+                        int words = _insertsWords[i + offset];                        
                         if(words > 3) words = 3;
                         if(words < 1) words = 1;
-                        while((words > 0)&&(_inputData[_inputIdx[client] + epoch_offset] != -1))
+                        int word_index = 0;
+                        while((word_index < words)&&(_inputData[_inputIdx[client] + epoch_offset] != -1))
                         {
                             int b = _inputIdx[client];
-                            new_value[words] = _inputData[b + epoch_offset];
+                            //new_value[words] = _inputData[b + epoch_offset];
+                            *coordinates[word_index++] = _inputData[b + epoch_offset];
                             _inputIdx[client]++;
-                            --words;
                         };
                         
                         //int b = _inputIdx[client];
