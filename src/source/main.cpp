@@ -35,7 +35,7 @@ organisation::parameters get_parameters(organisation::data &mappings)
     parameters.max_cache = parameters.max_values / 2;
     parameters.max_cache_dimension = 3;
     
-    parameters.population = parameters.clients() * 4;
+    parameters.population = parameters.clients() * 8;//4;
 
     parameters.output_stationary_only = true;
     
@@ -54,6 +54,9 @@ organisation::parameters get_parameters(organisation::data &mappings)
     std::string input1("daisy daisy give me your answer do");
     std::string expected1("I'm half crazy for the love of");
 
+    std::string input2("it won't be a stylish marriage");
+    std::string expected2("I can't afford a carriage");
+
     //std::string input1("daisy give");
     //std::string expected1("I'm half");
 
@@ -61,10 +64,10 @@ organisation::parameters get_parameters(organisation::data &mappings)
     //std::string expected2("love you");
 
     organisation::inputs::epoch epoch1(input1, expected1);
-    //organisation::inputs::epoch epoch2(input2, expected2);
+    organisation::inputs::epoch epoch2(input2, expected2);
     
     parameters.input.push_back(epoch1);
-    //parameters.input.push_back(epoch2);
+    parameters.input.push_back(epoch2);
     
     for(int i = 0; i < parameters.input.size(); ++i)
     {        

@@ -22,7 +22,7 @@ namespace organisation
             ::parallel::queue *queue;
 
             sycl::float4 *deviceNewPositions;
-            int *deviceNewValues;
+            sycl::int4 *deviceNewValues;
             int *deviceNewMovementPatternIdx;
             sycl::int4 *deviceNewClient;
 
@@ -31,6 +31,7 @@ namespace organisation
             int *deviceInsertsDelayClone;
             sycl::float4 *deviceInsertsStartingPosition;
             int *deviceInsertsMovementPatternIdx;
+            int *deviceInsertsWords;
 
             sycl::float4 *deviceMovements;
             int *deviceMovementsCounts;
@@ -45,6 +46,7 @@ namespace organisation
             int *hostInsertsDelay;
             sycl::float4 *hostInsertsStartingPosition;
             int *hostInsertsMovementPatternIdx;
+            int *hostInsertsWords;
 
             sycl::float4 *hostMovements;
             int *hostMovementsCounts;

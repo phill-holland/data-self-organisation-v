@@ -504,11 +504,34 @@ void organisation::parallel::program::next()
                     {
                         int key1 = GetCollidedKey(_positions[i], _nextPositions[i]);
                         int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
+                        sycl::float4 direction1 = _collisions[offset1];
+
+                        int coordinates1[] = { _values[i].y(), _values[i].z() };
+                        int wordIdx = 0;
+                        while((coordinates1[wordIdx] != -1)&&(wordIdx<2))
+                        {
+                            int tempOffset1 = (client * _max_collisions * _max_words) + (_max_collisions * coordinates1[wordIdx]) + key1;
+                            sycl::float4 tempDirection1 = _collisions[tempOffset1];
+
+                            sycl::float4 new_direction = { 
+                            direction1.y() * tempDirection1.z() - direction1.z() * tempDirection1.y(),
+                            direction1.z() * tempDirection1.x() - direction1.x() * tempDirection1.z(),
+                            direction1.x() * tempDirection1.y() - direction1.y() * tempDirection1.x(),
+                            0.0f };                    
+
+                            direction1 = tempDirection1;
+
+                            wordIdx++;
+                        };
+                        // ***
+
+                        //int key1 = GetCollidedKey(_positions[i], _nextPositions[i]);
+                        //int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
+                        //sycl::float4 direction1 = _collisions[offset1];
                  
                         int key2 = GetCollidedKey(_positions[collision.y()], _nextPositions[collision.y()]);
                         int offset2 = (client * _max_collisions * _max_words) + (_max_collisions * _values[collision.y()].x()) + key2;
-
-                        sycl::float4 direction1 = _collisions[offset1];
+                        
                         sycl::float4 direction2 = _collisions[offset2];
 
                         sycl::float4 new_direction = { 
@@ -521,10 +544,31 @@ void organisation::parallel::program::next()
                     }
                     else
                     {
+                        // technically, values[i] can have 3 values in them, x,y,z!
+                        // can insert three values at once too, technically (not implemented yet)
+                        int key1 = GetCollidedKey(_positions[i], _nextPositions[i]);
+                        int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
+
+                        int key2 = GetCollidedKey(_nextPositions[i], _positions[i]);
+                        int offset2 = (client * _max_collisions * _max_words) + (_max_collisions * _values[collision.y()].x()) + key2;
+
+                        sycl::float4 direction1 = _collisions[offset1];
+                        sycl::float4 direction2 = _collisions[offset2];
+
+                        sycl::float4 new_direction = { 
+                            direction1.y() * direction2.z() - direction1.z() * direction2.y(),
+                            direction1.z() * direction2.x() - direction1.x() * direction2.z(),
+                            direction1.x() * direction2.y() - direction1.y() * direction2.x(),
+                            0.0f };                    
+
+                        _nextDirections[i] = new_direction;                    
+
+                        /*
                         int key1 = GetCollidedKey(_positions[i], _nextPositions[i]);                        
                         int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
                         sycl::float4 direction1 = _collisions[offset1];
                         _nextDirections[i] = direction1;
+                        */
                     }
                 }
                 else
@@ -609,7 +653,7 @@ void organisation::parallel::program::insert(int epoch, int iteration)
                     if(idx < _valuesLength)
                     {
                         _positions[idx] = _srcPosition[i];
-                        _values[idx] = { _srcValues[i], -1, -1, -1 };
+                        _values[idx] = _srcValues[i];//{ _srcValues[i], -1, -1, -1 };
                         _lifetime[idx] = _iteration;
                         _movementPatternIdx[idx] = _srcMovementPatternIdx[i];
                         _client[idx] = _srcClient[i];

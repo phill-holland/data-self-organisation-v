@@ -29,6 +29,9 @@ namespace organisation
         const static int MIN_INSERT_DELAY = 0;
         const static int MAX_INSERT_DELAY = 5;
 
+        const static int MIN_INSERT_WORDS = 1;
+        const static int MAX_INSERT_WORDS  = 3;
+
         const static int HOST_BUFFER = 20;
 
         const static int ITERATIONS = 20;
@@ -53,6 +56,9 @@ namespace organisation
 
         int min_insert_delay;
         int max_insert_delay;
+
+        int min_insert_words;
+        int max_insert_words;
 
         int host_buffer;
 
@@ -97,6 +103,9 @@ namespace organisation
         
             min_insert_delay = MIN_INSERT_DELAY;
             max_insert_delay = MAX_INSERT_DELAY;
+
+            min_insert_words = MIN_INSERT_WORDS;
+            max_insert_words = MAX_INSERT_WORDS;
 
             host_buffer = HOST_BUFFER;
 

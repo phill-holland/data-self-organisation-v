@@ -23,13 +23,15 @@ namespace organisation
                 int delay;
                 point starting;
                 movements::movement movement;
-                
+                int words;
+
             public:
-                value(int _delay = 0, point _starting = point(0,0,0), movements::movement _movement = movements::movement())
+                value(int _delay = 0, point _starting = point(0,0,0), movements::movement _movement = movements::movement(), int _words = 1)
                 {
                     delay = _delay;
                     starting = _starting;
                     movement = _movement;
+                    words = _words;
                 }
 
                 void clear()
@@ -37,6 +39,7 @@ namespace organisation
                     delay = 0;
                     starting = point(0,0,0);
                     movement.clear();
+                    words = 1;
                 }
 
             public:
@@ -44,14 +47,16 @@ namespace organisation
                 {
                     return delay == src.delay &&
                            starting == src.starting &&
-                           movement == src.movement;
+                           movement == src.movement &&
+                           words == src.words;
                 }
 
                 bool operator!=(const value &src) const
                 {
                     return delay != src.delay ||
                            starting != src.starting ||
-                           movement != src.movement;
+                           movement != src.movement || 
+                           words != src.words;
                 }
             };
 
@@ -64,6 +69,7 @@ namespace organisation
                 int _min_insert_delay, _max_insert_delay;
                 int _min_movements, _max_movements;
                 int _min_movement_patterns, _max_movement_patterns;
+                int _min_insert_words, _max_insert_words;
 
             public:
                 std::vector<value> values;
@@ -83,6 +89,9 @@ namespace organisation
 
                     _min_movement_patterns = settings.min_movement_patterns;
                     _max_movement_patterns = settings.max_movement_patterns;
+
+                    _min_insert_words = settings.min_insert_words;
+                    _max_insert_words = settings.max_insert_words;
                 }
 
             public:
