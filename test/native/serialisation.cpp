@@ -12,7 +12,6 @@
 #include "genetic/collisions.h"
 #include "genetic/insert.h"
 
-/*
 TEST(BasicSerialisationDeserialisation, BasicAssertions)
 {
     GTEST_SKIP();
@@ -36,18 +35,16 @@ TEST(BasicSerialisationDeserialisation, BasicAssertions)
     
     organisation::genetic::inserts::insert insert(parameters);
 
-    organisation::genetic::inserts::value a(1, organisation::point(starting.x,starting.y,starting.z), 0);
-    organisation::genetic::inserts::value b(2, organisation::point(starting.x + 1,starting.y,starting.z), 1);
-    organisation::genetic::inserts::value c(3, organisation::point(starting.x + 2,starting.y,starting.z), 0);
+    organisation::genetic::movements::movement movement0(parameters.min_movements, parameters.max_movements);
+    organisation::genetic::movements::movement movement1(parameters.min_movements, parameters.max_movements);
+    movement0.directions = { { 1,0,0 }, { 0,0,1 } };
+    movement1.directions = { { 0,1,0 }, { -1,0,0 }, { 0,0,-1} };
+
+    organisation::genetic::inserts::value a(1, organisation::point(starting.x,starting.y,starting.z), movement0, 1);
+    organisation::genetic::inserts::value b(4, organisation::point(starting.x + 1,starting.y,starting.z), movement1, 2);
+    organisation::genetic::inserts::value c(7, organisation::point(starting.x + 2,starting.y,starting.z), movement0, 3);
 
     insert.values = { a, b, c };
-
-    organisation::genetic::movements::movement movement(parameters);
-    std::vector<organisation::vector> m1 = { { 1,0,0 }, { 0,0,1 } };
-    std::vector<organisation::vector> m2 = { { 0,1,0 }, { -1,0,0 }, { 0,0,-1} };
-
-    movement.set(0,m1);
-    movement.set(1,m2);    
 
     organisation::genetic::collisions collisions(parameters);
 
@@ -59,7 +56,6 @@ TEST(BasicSerialisationDeserialisation, BasicAssertions)
     
     p1.set(cache);
     p1.set(insert);
-    p1.set(movement);
     p1.set(collisions);
 
     std::string data = p1.serialise();
@@ -67,4 +63,3 @@ TEST(BasicSerialisationDeserialisation, BasicAssertions)
 
     EXPECT_TRUE(p1.equals(p2));
 }
-*/

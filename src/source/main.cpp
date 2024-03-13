@@ -33,9 +33,8 @@ organisation::parameters get_parameters(organisation::data &mappings)
     parameters.iterations = 30;
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values / 2;
-    parameters.max_cache_dimension = 3;
-    
-    parameters.population = parameters.clients() * 8;//4;
+        
+    parameters.population = parameters.clients() * 4;//8;//4;
 
     parameters.output_stationary_only = true;
     
@@ -49,6 +48,11 @@ organisation::parameters get_parameters(organisation::data &mappings)
     parameters.max_movement_patterns = 6;
     parameters.max_insert_delay = 6;
     parameters.scores.max_collisions = 6;
+
+    parameters.max_cache_dimension = 3;
+    
+    parameters.min_insert_words = 1;
+    parameters.max_insert_words = 3;
     // ***
 
     std::string input1("daisy daisy give me your answer do");
