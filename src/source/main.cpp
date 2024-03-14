@@ -44,10 +44,10 @@ organisation::parameters get_parameters(organisation::data &mappings)
     parameters.mappings = mappings;        
 
     // ***    
-    parameters.min_movement_patterns = 5;
-    parameters.max_movement_patterns = 6;
-    parameters.max_insert_delay = 6;
-    parameters.scores.max_collisions = 6;
+    parameters.min_movement_patterns = 3;
+    parameters.max_movement_patterns = 4;
+    parameters.max_insert_delay = 4;
+    parameters.scores.max_collisions = 2;
 
     parameters.max_cache_dimension = 3;
     
@@ -56,7 +56,7 @@ organisation::parameters get_parameters(organisation::data &mappings)
     // ***
 
     std::string input1("daisy daisy give me your answer do");
-    std::string expected1("I'm half crazy for the love of");
+    std::string expected1("I'm half crazy for the love of you");
 
     std::string input2("it won't be a stylish marriage");
     std::string expected2("I can't afford a carriage");
@@ -71,7 +71,7 @@ organisation::parameters get_parameters(organisation::data &mappings)
     organisation::inputs::epoch epoch2(input2, expected2);
     
     parameters.input.push_back(epoch1);
-    parameters.input.push_back(epoch2);
+    //parameters.input.push_back(epoch2);
     
     for(int i = 0; i < parameters.input.size(); ++i)
     {        
