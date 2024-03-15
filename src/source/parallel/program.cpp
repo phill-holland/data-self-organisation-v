@@ -347,6 +347,7 @@ void organisation::parallel::program::run(organisation::data &mappings)
             outputting(epoch, iterations);
             boundaries();
 
+/*
 std::cout << "positions(" << epoch << "): ";
 outputarb(devicePositions,totalValues);
 std::cout << "values: ";
@@ -354,6 +355,7 @@ outputarb(deviceValues,totalValues);
 std::cout << "col: ";
 outputarb(deviceNextCollisionKeys,totalValues);
 std::cout << "\r\n";
+*/
         };
 
         move(mappings);            
@@ -499,7 +501,7 @@ void organisation::parallel::program::next()
         auto _max_movement_patterns = settings.max_movement_patterns;
         auto _max_words = settings.mappings.maximum();
 
-sycl::stream out(8192, 1024, h);
+//sycl::stream out(8192, 1024, h);
 
         h.parallel_for(num_items, [=](auto i) 
         {  
@@ -517,7 +519,7 @@ sycl::stream out(8192, 1024, h);
                         int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
                         sycl::float4 direction1 = _collisions[offset1];
 
-out << "dir1 " << direction1.x() << "," << direction1.y() << "," << direction1.z() << "\n";
+//out << "dir1 " << direction1.x() << "," << direction1.y() << "," << direction1.z() << "\n";
                         int coordinates1[] = { _values[i].y(), _values[i].z() };
                         int wordIdx1 = 0;
                         while((coordinates1[wordIdx1] != -1)&&(wordIdx1<2))
@@ -527,7 +529,7 @@ out << "dir1 " << direction1.x() << "," << direction1.y() << "," << direction1.z
                                 int tempOffset1 = (client * _max_collisions * _max_words) + (_max_collisions * coordinates1[wordIdx1]) + key1;
                                 sycl::float4 tempDirection1 = _collisions[tempOffset1];
 
-out << "wordidx1 " << tempDirection1.x() << "," << tempDirection1.y() << "," << tempDirection1.z() << " word:" << coordinates1[wordIdx1] << "\n";
+//out << "wordidx1 " << tempDirection1.x() << "," << tempDirection1.y() << "," << tempDirection1.z() << " word:" << coordinates1[wordIdx1] << "\n";
 
                                 sycl::float4 new_direction = { 
                                 direction1.y() * tempDirection1.z() - direction1.z() * tempDirection1.y(),
@@ -544,7 +546,7 @@ out << "wordidx1 " << tempDirection1.x() << "," << tempDirection1.y() << "," << 
                         int key2 = GetCollidedKey(_positions[collision.y()], _nextPositions[collision.y()]);
                         int offset2 = (client * _max_collisions * _max_words) + (_max_collisions * _values[collision.y()].x()) + key2;
                         sycl::float4 direction2 = _collisions[offset2];
-out << "dir2 " << direction2.x() << "," << direction2.y() << "," << direction2.z() << "\n";
+//out << "dir2 " << direction2.x() << "," << direction2.y() << "," << direction2.z() << "\n";
                         int coordinates2[] = { _values[collision.y()].y(), _values[collision.y()].z() };
                         int wordIdx2 = 0;
                         while((coordinates2[wordIdx2] != -1)&&(wordIdx2<2))
@@ -554,7 +556,7 @@ out << "dir2 " << direction2.x() << "," << direction2.y() << "," << direction2.z
                                 int tempOffset1 = (client * _max_collisions * _max_words) + (_max_collisions * coordinates2[wordIdx2]) + key2;
                                 sycl::float4 tempDirection1 = _collisions[tempOffset1];
 
-out << "wordidx2 " << tempDirection1.x() << "," << tempDirection1.y() << "," << tempDirection1.z() << "\n";
+//out << "wordidx2 " << tempDirection1.x() << "," << tempDirection1.y() << "," << tempDirection1.z() << "\n";
 
                                 sycl::float4 new_direction = { 
                                 direction2.y() * tempDirection1.z() - direction2.z() * tempDirection1.y(),
@@ -623,7 +625,7 @@ out << "wordidx2 " << tempDirection1.x() << "," << tempDirection1.y() << "," << 
                         sycl::float4 direction1 = _collisions[offset1];
                         _nextDirections[i] = direction1;
 
-out << "WEEEEEE:" <<_values[i].x() << " " << direction1.x() << "," << direction1.y() << "," << direction1.z() << "\n";                        
+//out << "WEEEEEE:" <<_values[i].x() << " " << direction1.x() << "," << direction1.y() << "," << direction1.z() << "\n";                        
                         
                     }
                 }

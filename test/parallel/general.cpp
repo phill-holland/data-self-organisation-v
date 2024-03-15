@@ -1908,7 +1908,7 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
     organisation::point starting(width / 2, height / 2, depth / 2);
 
     std::string dictionary("daisy give me your answer do I'm half crazy for the love of you");
-    std::string input1("daisy daisy give me your answer do");// answer do");
+    std::string input1("daisy daisy give me your answer do");
     
     std::string expected1 = "I'mhalfcrazyfortheloveofyou";
     
@@ -1921,7 +1921,7 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(1,1,1);
     parameters.output_stationary_only = true;
-    parameters.iterations = 13;//12;
+    parameters.iterations = 13;
     parameters.max_insert_delay = 20;
     
     organisation::inputs::epoch epoch1(input1);
@@ -1971,7 +1971,6 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
 
     organisation::genetic::collisions collisions(parameters);
 
-//"daisy daisy give me your answer do"
     int value0 = mappings.map("daisy");
     int value1 = mappings.map("give");
 
@@ -1981,9 +1980,7 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
     
     collisions.set(v1.encode(), (value0 * parameters.max_collisions) + right.encode());
     collisions.set(v2.encode(), (value1 * parameters.max_collisions) + right.encode());
-    //collisions.set(v3.encode(), (value2 * parameters.max_collisions) + right.encode());
-
-    //collisions.set(v2.encode(), (value2 * parameters.max_collisions) + left.encode());
+    
     collisions.set(v3.encode(), (value2 * parameters.max_collisions) + left.encode());
     collisions.set(v3.encode(), (value3 * parameters.max_collisions) + left.encode());
     collisions.set(v1.encode(), (value4 * parameters.max_collisions) + left.encode());
@@ -2021,6 +2018,5 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
     }
 
     EXPECT_EQ(expected1, compare[0][0]);
-    //EXPECT_EQ(expected2, compare[1][0]);
 }
 
