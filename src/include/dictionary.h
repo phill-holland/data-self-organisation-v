@@ -16,7 +16,7 @@ namespace organisation
     public:
         dictionary();
 
-        std::vector<std::string> get() const { return words; }
+        std::vector<std::string> get() const;
         std::string random(int length = 0, std::vector<std::string> excluded= {}) const;
     };
 };

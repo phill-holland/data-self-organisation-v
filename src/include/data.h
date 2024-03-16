@@ -1,4 +1,5 @@
 #include "point.h"
+#include "input.h"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -44,6 +45,7 @@ namespace organisation
         std::vector<int> get(std::string source);
 
         std::vector<int> all();
+        std::vector<int> outputs(inputs::input &epochs);
 
         point generate(int dimensions);
         

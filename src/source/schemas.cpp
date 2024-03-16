@@ -32,11 +32,11 @@ bool organisation::schemas::clear()
     return true;
 }
 
-bool organisation::schemas::generate(organisation::data &source)
+bool organisation::schemas::generate(organisation::data &source, inputs::input &epochs)
 {
     for(int i = 0; i < length; ++i)
     {
-        data[i]->generate(source);
+        data[i]->generate(source, epochs);
     }
 
     return true;

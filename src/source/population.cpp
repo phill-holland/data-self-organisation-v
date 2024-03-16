@@ -67,7 +67,7 @@ void organisation::populations::population::clear()
 
 void organisation::populations::population::generate()
 {
-    schemas->generate(settings.mappings);
+    schemas->generate(settings.mappings, settings.input);
 }
 
 organisation::schema organisation::populations::population::go(int &count, int iterations)
@@ -221,7 +221,7 @@ bool organisation::populations::population::get(schema &destination, region r)
         if(s1 == NULL) return false;
 
         destination.copy(*s1);
-        destination.mutate(settings.mappings);            
+        destination.mutate(settings.mappings, settings.input);
     }
     else
     {

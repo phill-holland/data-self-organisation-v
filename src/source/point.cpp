@@ -42,6 +42,48 @@ void organisation::point::generate(std::vector<int> &data, int dimensions)
     }
 }
 
+void organisation::point::generate2(std::vector<int> &data, int dimensions)
+{
+    x = -1; y = -1; z = -1;
+
+    int _dimensions = dimensions;
+    if(_dimensions < 1) _dimensions = 1;
+    if(_dimensions > 3) _dimensions = 3;
+    
+    int index = (std::uniform_int_distribution<int>{0, (int)(data.size() - 1)})(generator);
+    int count = (std::uniform_int_distribution<int>{1, _dimensions})(generator);
+
+    int *coordinates[] = { &x, &y, &z };
+    int dim = 0;
+
+    while((index < data.size())&&(dim<count))
+    {
+        *coordinates[dim++] = data[index++];
+    }
+    
+/*
+    std::vector<int> results;
+    for(int j = 0; j < count; ++j)
+    {
+        int value = 0;
+        do
+        {
+            int idx = (std::uniform_int_distribution<int>{0, (int)(data.size() - 1)})(generator);
+            value = data[idx];      
+        }while(std::find(results.begin(),results.end(),value) != results.end());
+
+        results.push_back(value);
+    }
+
+    int *coordinates[] = { &x, &y, &z };
+
+    for(int j = 0; j < results.size(); ++j)
+    {
+        *coordinates[j] = results[j];
+    }
+    */
+}
+
 void organisation::point::mutate(std::vector<int> &data, int dimensions)
 {
     auto validate = [this](point &src, int dim)

@@ -31,7 +31,7 @@ TEST(BasicProgramGenerate, BasicAssertions)
      
     for(int i = 0; i < 100000; ++i)
     {
-        p1.generate(mappings);
+        p1.generate(mappings, parameters.input);
    
         EXPECT_FALSE(p1.empty());
         EXPECT_TRUE(p1.validate(mappings));
@@ -59,13 +59,13 @@ TEST(BasicProgramMutate, BasicAssertions)
     {
         organisation::program p2(parameters);
 
-        p1.generate(mappings);        
+        p1.generate(mappings, parameters.input);        
         
         p2.copy(p1);
         
         EXPECT_TRUE(p1.equals(p2));
 
-        if(p1.mutate(mappings))
+        if(p1.mutate(mappings, parameters.input))
         {
             EXPECT_FALSE(p1.equals(p2));
             EXPECT_TRUE(p1.validate(mappings));
@@ -94,8 +94,8 @@ TEST(BasicProgramCross, BasicAssertions)
         organisation::program p2(parameters);
         organisation::program p3(parameters);
 
-        p1.generate(mappings);        
-        p2.generate(mappings);
+        p1.generate(mappings, parameters.input);        
+        p2.generate(mappings, parameters.input);
 
         p3.cross(p1, p2);
         

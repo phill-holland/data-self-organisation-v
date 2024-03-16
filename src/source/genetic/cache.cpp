@@ -115,11 +115,12 @@ bool organisation::genetic::cache::validate(data &source)
     return true;
 }
 
-void organisation::genetic::cache::generate(data &source)
+void organisation::genetic::cache::generate(data &source, inputs::input &epochs)
 {
     clear();
                 
-    std::vector<int> raw = source.all();
+    //std::vector<int> raw = source.all();
+    std::vector<int> raw = source.outputs(epochs);
 
     int count = (std::uniform_int_distribution<int>{0, _max_cache})(generator);
  
@@ -131,7 +132,7 @@ void organisation::genetic::cache::generate(data &source)
         if(points.find(index) == points.end())
         {
             point value;
-            value.generate(raw,_max_cache_dimension);
+            value.generate2(raw,_max_cache_dimension);
 
             points[index] = position;
             values.push_back(std::tuple<point,point>(value,position));
@@ -140,12 +141,13 @@ void organisation::genetic::cache::generate(data &source)
     }    
 }
 
-bool organisation::genetic::cache::mutate(data &source)
+bool organisation::genetic::cache::mutate(data &source, inputs::input &epochs)
 {
     const int COUNTER = 15;
 
     if(values.empty()) return false;
-    std::vector<int> all = source.all();
+    //std::vector<int> all = source.all();
+    std::vector<int> all = source.outputs(epochs);
 
     int offset = (std::uniform_int_distribution<int>{0, (int)(values.size() - 1)})(generator);
 

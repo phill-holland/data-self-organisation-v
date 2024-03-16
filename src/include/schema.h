@@ -5,6 +5,7 @@
 #include "statistics.h"
 #include "compute.h"
 #include "parameters.h"
+#include "input.h"
 #include <string>
 #include <random>
 #include <vector>
@@ -36,7 +37,7 @@ namespace organisation
         bool initalised() { return init; }
         void reset();
         
-        void generate(data &source);
+        void generate(data &source, inputs::input &epochs);
     
         bool get(kdpoint &destination, int minimum, int maximum);
 
@@ -49,7 +50,7 @@ namespace organisation
 
     public:        
         void cross(schema *destination, schema *value);
-        void mutate(data &source);
+        void mutate(data &source, inputs::input &epochs);
         bool validate(data &source) { return prog.validate(source); }
 
     public:

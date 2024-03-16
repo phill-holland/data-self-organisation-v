@@ -3,6 +3,7 @@
 #include "data.h"
 #include "parameters.h"
 #include "point.h"
+#include "input.h"
 #include <vector>
 #include <random>
 #include <string>
@@ -29,7 +30,7 @@ namespace organisation
             {  
                 _max_collisions = settings.max_collisions;
                 _max_mappings = settings.mappings.maximum();
-                length = settings.max_collisions * _max_mappings;//settings.mappings.maximum();
+                length = settings.max_collisions * _max_mappings;
                 values.resize(length);
             }
 
@@ -48,8 +49,8 @@ namespace organisation
 
             bool empty() { return false; }
 
-            void generate(data &source);
-            bool mutate(data &source);
+            void generate(data &source, inputs::input &epochs);
+            bool mutate(data &source, inputs::input &epochs);
             void append(genetic *source, int src_start, int src_end);
             
             std::string serialise();

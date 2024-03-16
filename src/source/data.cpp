@@ -90,6 +90,26 @@ std::vector<int> organisation::data::all()
     return result;
 }
 
+std::vector<int> organisation::data::outputs(inputs::input &epochs)
+{
+    std::vector<int> result;
+
+    for(int i = 0; i < epochs.size(); ++i)
+    {
+        inputs::epoch temp;
+        if(epochs.get(temp, i))
+        {
+            auto strings = organisation::split(temp.expected);
+            for(auto &it: strings)
+            {
+                result.push_back(map(it));
+            }   
+        }
+    }    
+
+    return result;
+}
+
 organisation::point organisation::data::generate(int dimensions)
 {
     point result(-1,-1,-1);

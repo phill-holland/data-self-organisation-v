@@ -17,10 +17,10 @@ void organisation::schema::clear()
     scores.clear();
 }
 
-void organisation::schema::generate(data &source)
+void organisation::schema::generate(data &source, inputs::input &epochs)
 {
     prog.clear();
-    prog.generate(source);
+    prog.generate(source, epochs);
 }
 
 bool organisation::schema::get(kdpoint &destination, int minimum, int maximum)
@@ -121,9 +121,9 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
     }
 }
 
-void organisation::schema::mutate(data &source)
+void organisation::schema::mutate(data &source, inputs::input &epochs)
 {
-	prog.mutate(source);
+	prog.mutate(source, epochs);
 }
 
 void organisation::schema::cross(schema *destination, schema *value)

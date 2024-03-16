@@ -5,7 +5,7 @@
 
 std::mt19937_64 organisation::genetic::collisions::generator(std::random_device{}());
 
-void organisation::genetic::collisions::generate(data &source)
+void organisation::genetic::collisions::generate(data &source, inputs::input &epochs)
 {
     for(int i = 0; i < size(); ++i)
     {
@@ -14,7 +14,7 @@ void organisation::genetic::collisions::generate(data &source)
     }
 }
 
-bool organisation::genetic::collisions::mutate(data &source)
+bool organisation::genetic::collisions::mutate(data &source, inputs::input &epochs)
 {
     const int COUNTER = 15;
 

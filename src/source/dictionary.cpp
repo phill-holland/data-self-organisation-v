@@ -26,6 +26,11 @@ organisation::dictionary::dictionary()
               "but", "you'll", "look", "sweet", "upon", "seat", "bicycle", "built", "two", "." };*/
 }
 
+std::vector<std::string> organisation::dictionary::get() const 
+{ 
+    return words; 
+}
+
 std::string organisation::dictionary::random(int length, std::vector<std::string> excluded) const
 {
     int total = length;

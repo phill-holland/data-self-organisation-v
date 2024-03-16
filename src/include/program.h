@@ -6,6 +6,7 @@
 #include "genetic/insert.h"
 #include "vector.h"
 #include "parameters.h"
+#include "input.h"
 #include <string>
 #include <random>
 #include <vector>
@@ -65,8 +66,8 @@ namespace organisation
 
         bool empty();
 
-        void generate(data &source);  
-        bool mutate(data &source);
+        void generate(data &source, inputs::input &epochs);  
+        bool mutate(data &source, inputs::input &epochs);
 
         std::string run(std::string input, data &source, int max = MAX);
 

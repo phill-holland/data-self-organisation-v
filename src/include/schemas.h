@@ -1,6 +1,7 @@
 #include "schema.h"
 #include "data.h"
 #include "parameters.h"
+#include "input.h"
 #include <random>
 #include <atomic>
 #include <vector>
@@ -41,7 +42,7 @@ namespace organisation
             return true;
         }
 
-        bool generate(organisation::data &source);
+        bool generate(organisation::data &source, inputs::input &epochs);
 
     protected:
         void makeNull();

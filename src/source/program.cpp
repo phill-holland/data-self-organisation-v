@@ -56,7 +56,7 @@ bool organisation::program::empty()
     return false;
 }
 
-void organisation::program::generate(data &source)
+void organisation::program::generate(data &source, inputs::input &epochs)
 {
     clear();
 
@@ -69,12 +69,12 @@ void organisation::program::generate(data &source)
 
     const int components = sizeof(genes) / sizeof(templates::genetic*);
     for(int i = 0; i < components; ++i)
-    {
-        genes[i]->generate(source);
+{
+        genes[i]->generate(source, epochs);
     }    
 }
 
-bool organisation::program::mutate(data &source)
+bool organisation::program::mutate(data &source, inputs::input &epochs)
 {    
     templates::genetic *genes[] = 
     { 
@@ -87,7 +87,7 @@ bool organisation::program::mutate(data &source)
 
     const int idx = (std::uniform_int_distribution<int>{0, components - 1})(generator);
 
-    return genes[idx]->mutate(source);    
+    return genes[idx]->mutate(source, epochs);    
 }
 
 std::string organisation::program::run(std::string input, data &source, int max)

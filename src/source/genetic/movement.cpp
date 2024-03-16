@@ -53,7 +53,7 @@ bool organisation::genetic::movements::movement::validate(data &source)
     return true;
 }
 
-void organisation::genetic::movements::movement::generate(data &source)
+void organisation::genetic::movements::movement::generate(data &source, inputs::input &epochs)
 {
     int n = (std::uniform_int_distribution<int>{_min_movements, _max_movements})(generator);
 
@@ -68,7 +68,7 @@ void organisation::genetic::movements::movement::generate(data &source)
     }
 }
 
-bool organisation::genetic::movements::movement::mutate(data &source)
+bool organisation::genetic::movements::movement::mutate(data &source, inputs::input &epochs)
 {
     if(directions.empty()) return false;
 

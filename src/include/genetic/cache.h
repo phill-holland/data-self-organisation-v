@@ -2,6 +2,7 @@
 #include "genetic/templates/serialiser.h"
 #include "point.h"
 #include "parameters.h"
+#include "input.h"
 #include <vector>
 #include <unordered_map>
 #include <random>
@@ -60,8 +61,8 @@ namespace organisation
             bool validate(data &source);
 
         public:
-            void generate(data &source);
-            bool mutate(data &source);
+            void generate(data &source, inputs::input &epochs);
+            bool mutate(data &source, inputs::input &epochs);
             void append(genetic *source, int src_start, int src_end);
 
         public:

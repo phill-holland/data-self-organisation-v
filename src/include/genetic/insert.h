@@ -116,8 +116,8 @@ namespace organisation
                 
                 bool get(std::tuple<int,vector> &result, int idx);
 
-                void generate(data &source);
-                bool mutate(data &source);
+                void generate(data &source, inputs::input &epochs);
+                bool mutate(data &source, inputs::input &epochs);
                 void append(genetic *source, int src_start, int src_end);
 
                 std::string serialise();
