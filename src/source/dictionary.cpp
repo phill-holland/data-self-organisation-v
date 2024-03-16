@@ -1,4 +1,5 @@
 #include "dictionary.h"
+#include "general.h"
 #include <algorithm>
 
 std::mt19937_64 organisation::dictionary::generator(std::random_device{}());
@@ -16,7 +17,7 @@ of a bicycle built for two .
 organisation::dictionary::dictionary()
 {
     //words = { "daisy", "give", "I'm", "half", "answer", "love", "you" };
-    words = { "daisy", "give", "me", "your", "answer", "do", "I'm", "half", "crazy", "for", "the", "love", "of", "you" };
+    //words = { "daisy", "give", "me", "your", "answer", "do", "I'm", "half", "crazy", "for", "the", "love", "of", "you" };
 
 /*
     words = { "daisy", "give", "me", "your", "answer", "do", "I'm", "half", "crazy", "for", "the", "love", "of",
@@ -53,4 +54,28 @@ std::string organisation::dictionary::random(int length, std::vector<std::string
     }
 
     return result;
+}
+
+void organisation::dictionary::push_back(inputs::input &epochs)
+{
+    for(int i = 0; i < epochs.size(); ++i)
+    {
+        inputs::epoch temp;
+        if(epochs.get(temp, i))
+        {
+            auto values = organisation::split(temp.input);
+            for(auto &it: values)
+            {
+                if(std::find(words.begin(), words.end(), it) == words.end())
+                    words.push_back(it);
+            }   
+
+            auto expected = organisation::split(temp.expected);
+            for(auto &it: expected)
+            {
+                if(std::find(words.begin(), words.end(), it) == words.end())
+                    words.push_back(it);
+            }   
+        }
+    }    
 }

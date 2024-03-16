@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include "input.h"
 
 #ifndef _ORGANISATION_DICTIONARY
 #define _ORGANISATION_DICTIONARY
@@ -18,6 +19,7 @@ namespace organisation
 
         std::vector<std::string> get() const;
         std::string random(int length = 0, std::vector<std::string> excluded= {}) const;
+        void push_back(inputs::input &epochs);
     };
 };
 

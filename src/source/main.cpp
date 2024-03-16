@@ -19,13 +19,13 @@
 
 using namespace std;
 
-const organisation::dictionary dictionary;
+//const organisation::dictionary dictionary;
 
 const int width = 6, height = 6, depth = 6; //6,6,6
 const int device_idx = 0;
 const int generations = 500;
 
-organisation::parameters get_parameters(organisation::data &mappings)
+organisation::parameters get_parameters()//organisation::data &mappings)
 {
     organisation::parameters parameters(width, height, depth);
 
@@ -34,19 +34,19 @@ organisation::parameters get_parameters(organisation::data &mappings)
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
-    parameters.population = parameters.clients() * 4;//4;//8;//4;
+    parameters.population = parameters.clients() * 4;//4;//4;//8;//4;
 
     parameters.output_stationary_only = true;
     
     parameters.width = width;
     parameters.height = height;
     parameters.depth = depth;
-    parameters.mappings = mappings;        
+    //parameters.mappings = mappings;        
 
     // ***    
-    parameters.min_movement_patterns = 4;
-    parameters.max_movement_patterns = 4;
-    parameters.max_insert_delay = 4;
+    parameters.min_movement_patterns = 7;
+    parameters.max_movement_patterns = 7;
+    parameters.max_insert_delay = 7;
     parameters.scores.max_collisions = 2;//0;//2;
 
     parameters.max_cache_dimension = 3;
@@ -57,13 +57,13 @@ organisation::parameters get_parameters(organisation::data &mappings)
     parameters.max_movements = 5;
     // ***
 
-
     std::string input1("daisy daisy give me your answer do");
     std::string expected1("I'm half crazy for the love of you");
-/*
+
     std::string input2("it won't be a stylish marriage");
     std::string expected2("I can't afford a carriage");
-*/
+
+
 /*
     std::string input1("daisy give");
     std::string expected1("I'm half");
@@ -71,12 +71,19 @@ organisation::parameters get_parameters(organisation::data &mappings)
     std::string input2("daisy answer");
     std::string expected2("love you");
 */
+
     organisation::inputs::epoch epoch1(input1, expected1);
-    //organisation::inputs::epoch epoch2(input2, expected2);
+    organisation::inputs::epoch epoch2(input2, expected2);
     
     parameters.input.push_back(epoch1);
-  //  parameters.input.push_back(epoch2);
+    parameters.input.push_back(epoch2);
     
+    organisation::dictionary words;
+    words.push_back(parameters.input);
+    auto strings = words.get();
+    organisation::data mappings(strings);
+    parameters.mappings = mappings;        
+
     for(int i = 0; i < parameters.input.size(); ++i)
     {        
         organisation::inputs::epoch temp;
@@ -110,10 +117,10 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
 
 int main(int argc, char *argv[])
 {  
-    auto strings = dictionary.get();
-    organisation::data mappings(strings);
+    //auto strings = dictionary.get();
+    //organisation::data mappings(strings);
     
-    organisation::parameters parameters = get_parameters(mappings);
+    organisation::parameters parameters = get_parameters();//mappings);
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);
