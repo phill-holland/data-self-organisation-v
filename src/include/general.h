@@ -10,7 +10,7 @@ namespace organisation
 {
     std::vector<std::string> split(std::string source);
         
-    float compare_bow(std::string a, std::string b);
+    float compare_bow(std::string a, std::string b, int max_len = 0);
 };
 
 #endif

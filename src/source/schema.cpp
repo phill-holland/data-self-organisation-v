@@ -105,7 +105,7 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
         if(it->value.size() <= 0) penalty = true;
         else if(i > 1)
         {
-            if(compare_bow(it->value, first) > 0.6f) 
+            if(compare_bow(it->value, first, 4) > 0.6f) 
                 penalty = true;
             //if(it->value == first) penalty = true;
             //if(first.find(it->value)!=std::string::npos) penalty = true;

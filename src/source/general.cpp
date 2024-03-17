@@ -26,7 +26,7 @@ inline std::vector<std::string> organisation::split(std::string source)
     return result;    
 }
 
-float organisation::compare_bow(std::string a, std::string b)
+float organisation::compare_bow(std::string a, std::string b, int max_len)
 {
     std::unordered_map<std::string, int> mappings;
 
@@ -35,6 +35,12 @@ float organisation::compare_bow(std::string a, std::string b)
 
     if(a1.size() == 0) return 0.0f;
     if(b1.size() == 0) return 0.0f;
+
+    if(max_len > 0)
+    {
+        if(a1.size() > max_len) a1.resize(max_len);
+        if(b1.size() > max_len) b1.resize(max_len);
+    }
 
     std::vector<int> a2;
     std::vector<int> b2;
