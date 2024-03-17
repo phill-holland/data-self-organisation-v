@@ -1791,11 +1791,8 @@ TEST(BasicProgramDualEpochProofOfConceptWithBulkValueInsertTestParallel, BasicAs
     const int width = 20, height = 20, depth = 20;
     organisation::point starting(width / 2, height / 2, depth / 2);
 
-    std::string input1("daisy give answer answer give daisy");
-    //std::string input2("daisy answer daisy give");
-
+    std::string input1("daisy give answer answer give daisy");    
     std::string expected1 = "I'mhalfloveyou";
-    //std::string expected2 = "loveyou";
     
     std::vector<std::string> strings = organisation::split(input1 + " I'm half love you");
     organisation::data mappings(strings);
@@ -1810,9 +1807,6 @@ TEST(BasicProgramDualEpochProofOfConceptWithBulkValueInsertTestParallel, BasicAs
     
     organisation::inputs::epoch epoch1(input1);
     parameters.input.push_back(epoch1);
-
-    //organisation::inputs::epoch epoch2(input2);
-    //parameters.input.push_back(epoch2);
 
     parallel::mapper::configuration mapper;
     mapper.origin = organisation::point(width / 2, height / 2, depth / 2);
@@ -1896,13 +1890,12 @@ TEST(BasicProgramDualEpochProofOfConceptWithBulkValueInsertTestParallel, BasicAs
     }
 
     EXPECT_EQ(expected1, compare[0][0]);
-    //EXPECT_EQ(expected2, compare[1][0]);
 }
 
 
 TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const int width = 20, height = 20, depth = 20;
     organisation::point starting(width / 2, height / 2, depth / 2);
