@@ -221,6 +221,14 @@ float organisation::scores::score::get(int index)
 	return scores[index];
 }
 
+void organisation::scores::score::penalty(float multiple)
+{
+	for(auto &it: scores)
+	{
+		it.second *= multiple;
+	}
+}
+
 void organisation::scores::score::copy(const score &source)
 {
 	clear();

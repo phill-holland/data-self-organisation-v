@@ -92,13 +92,16 @@ float organisation::schema::sum()
 
 void organisation::schema::compute(std::vector<organisation::compute> values, scores::settings settings)
 {
-    int i = 0;
+    
     bool penalty = false;
+    
+    /*
+    int i = 0;
     std::string first = "";
     if(values.size() > 0) first = values[0].value;
 
     for(std::vector<organisation::compute>::iterator it = values.begin(); it != values.end(); ++it)
-    {
+    {        
         scores[i].compute(*it, settings);
         ++i;
 
@@ -107,9 +110,29 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
         {
             if(compare_bow(it->value, first, 4) > 0.6f) 
                 penalty = true;
-            //if(it->value == first) penalty = true;
-            //if(first.find(it->value)!=std::string::npos) penalty = true;
-            //else if(it->value.find(first)!=std::string::npos) penalty = true;
+        }        
+    }
+    */
+
+
+    for(int i = 0; i < values.size(); ++i)
+    {
+        scores[i].compute(values[i], settings);
+
+        if(values[i].value.size() <= 0) penalty = true;
+        else
+        {
+            for(int j = 0; j < values.size(); ++j)
+            {
+                if(i != j)
+                {
+                    if(compare_bow(values[i].value, values[j].value, 4) > 0.6f) 
+                    {
+                        penalty = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -118,7 +141,8 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
         int i = 0;
         for(std::vector<organisation::compute>::iterator it = values.begin(); it != values.end(); ++it)
         {
-            scores[i].clear();
+            scores[i].penalty(0.2f);
+            //scores[i].clear();
             ++i;
         }
     }

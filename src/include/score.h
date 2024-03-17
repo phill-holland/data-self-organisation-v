@@ -47,6 +47,8 @@ namespace organisation
 
             size_t size() { return scores.size(); }
 
+            void penalty(float multiple);
+            
         public:
             void copy(const score &source);
             
