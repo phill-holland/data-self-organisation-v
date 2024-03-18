@@ -346,6 +346,7 @@ void organisation::parallel::program::run(organisation::data &mappings)
             corrections();
             outputting(epoch, iterations);
             boundaries();
+            stops(iterations);
 
 /*
 std::cout << "positions(" << epoch << "): ";
@@ -743,6 +744,42 @@ void organisation::parallel::program::insert(int epoch, int iteration)
         if(totalValues > settings.max_values * settings.clients())
             totalValues = settings.max_values * settings.clients();
     }
+}
+
+void organisation::parallel::program::stops(int iteration)
+{
+    if(totalValues == 0) return;
+
+    sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
+    sycl::range num_items{(size_t)totalValues};
+
+        qt.submit([&](auto &h) 
+    {
+        auto _positions = devicePositions;   
+        auto _lifetimes = deviceLifetime;
+        auto _client = deviceClient;
+        auto _movementPatternIdx = deviceMovementPatternIdx;
+        auto _loops = inserter->deviceInsertsLoops;
+
+        auto _max_inserts = settings.max_inserts;
+        auto _iteration = iteration;
+
+        h.parallel_for(num_items, [=](auto i) 
+        {  
+            if(_positions[i].w() == 0)
+            {
+                int client = _client[i].w();
+                int offset = (client * _max_inserts);
+                int a = _movementPatternIdx[offset + i];
+                int l = _loops[offset + a];
+
+                if((_iteration - _lifetimes[i]) > l)
+                {
+                    _positions[i].w() = -2;
+                }
+            }
+        });
+    }).wait();
 }
 
 void organisation::parallel::program::boundaries()

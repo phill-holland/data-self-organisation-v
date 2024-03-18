@@ -127,6 +127,7 @@ namespace organisation
             void positions();
             void next();
             void insert(int epoch, int iteration);
+            void stops(int iteration);
             void boundaries();
             void corrections(bool debug = false);
             void outputting(int epoch, int iteration);
