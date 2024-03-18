@@ -44,9 +44,9 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     //parameters.mappings = mappings;        
 
     // ***    
-    parameters.min_movement_patterns = 7;
-    parameters.max_movement_patterns = 7;
-    parameters.max_insert_delay = 7;
+    parameters.min_movement_patterns = 2;//7;
+    parameters.max_movement_patterns = 2;//7;
+    parameters.max_insert_delay = 5; //7
     parameters.scores.max_collisions = 2;//0;//2;
 
     parameters.max_cache_dimension = 3;
@@ -69,7 +69,8 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     std::string input1("daisy give");
     std::string expected1("I'm half");
 
-    std::string input2("daisy answer");
+    //std::string input2("daisy answer");
+    std::string input2("banana answer");
     std::string expected2("love you");
 
     std::string input3("bicycle two");

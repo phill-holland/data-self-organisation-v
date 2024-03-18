@@ -24,14 +24,16 @@ namespace organisation
                 point starting;
                 movements::movement movement;
                 int words;
+                int loops;
 
             public:
-                value(int _delay = 0, point _starting = point(0,0,0), movements::movement _movement = movements::movement(), int _words = 1)
+                value(int _delay = 0, point _starting = point(0,0,0), movements::movement _movement = movements::movement(), int _words = 1, int _loops = 1)
                 {
                     delay = _delay;
                     starting = _starting;
                     movement = _movement;
                     words = _words;
+                    loops = _loops;
                 }
 
                 void clear()
@@ -40,6 +42,7 @@ namespace organisation
                     starting = point(0,0,0);
                     movement.clear();
                     words = 1;
+                    loops = 1;
                 }
 
             public:
@@ -48,7 +51,8 @@ namespace organisation
                     return delay == src.delay &&
                            starting == src.starting &&
                            movement == src.movement &&
-                           words == src.words;
+                           words == src.words && 
+                           loops == src.loops;
                 }
 
                 bool operator!=(const value &src) const
@@ -56,7 +60,9 @@ namespace organisation
                     return delay != src.delay ||
                            starting != src.starting ||
                            movement != src.movement || 
-                           words != src.words;
+                           words != src.words || 
+                           loops != src.loops;
+
                 }
             };
 
@@ -70,6 +76,7 @@ namespace organisation
                 int _min_movements, _max_movements;
                 int _min_movement_patterns, _max_movement_patterns;
                 int _min_insert_words, _max_insert_words;
+                int _iterations;
 
             public:
                 std::vector<value> values;
@@ -92,6 +99,8 @@ namespace organisation
 
                     _min_insert_words = settings.min_insert_words;
                     _max_insert_words = settings.max_insert_words;
+
+                    _iterations = settings.iterations;
                 }
 
             public:

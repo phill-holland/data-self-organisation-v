@@ -39,6 +39,7 @@ void organisation::genetic::inserts::insert::generate(data &source, inputs::inpu
         temp.delay = (std::uniform_int_distribution<int>{_min_insert_delay, _max_insert_delay})(generator);
         temp.words = (std::uniform_int_distribution<int>{_min_insert_words, _max_insert_words})(generator);
         temp.starting.generate(_width,_height,_depth);
+        temp.loops = (std::uniform_int_distribution<int>{1, _iterations})(generator);
         
         movements::movement movement(_min_movements, _max_movements);
         movement.generate(source, epochs);
@@ -98,7 +99,7 @@ bool organisation::genetic::inserts::insert::mutate(data &source, inputs::input 
     do
     {
         offset = (std::uniform_int_distribution<int>{0, (int)(values.size() - 1)})(generator);        
-        int mode = (std::uniform_int_distribution<int>{0, 3})(generator);
+        int mode = (std::uniform_int_distribution<int>{0, 4})(generator);
 
         val = values[offset];
 
@@ -117,6 +118,10 @@ bool organisation::genetic::inserts::insert::mutate(data &source, inputs::input 
         else if(mode == 3)
         {
             val.words = (std::uniform_int_distribution<int>{_min_insert_words, _max_insert_words})(generator);
+        }
+        else if(mode == 4)
+        {
+            val.loops = (std::uniform_int_distribution<int>{1, _iterations})(generator);
         }
             
         old = values[offset];        
@@ -140,7 +145,7 @@ void organisation::genetic::inserts::insert::append(genetic *source, int src_sta
     {
         int previous = std::get<0>(first);
         const value src = s->values[previous];
-        value dest(src.delay, src.starting, movements::movement(_min_movements,_max_movements), src.words);
+        value dest(src.delay, src.starting, movements::movement(_min_movements,_max_movements), src.words, src.loops);
 
         for(int i = 0; i < length; ++i)
         {
@@ -156,7 +161,7 @@ void organisation::genetic::inserts::insert::append(genetic *source, int src_sta
                     values.push_back(dest);
 
                     const value src = s->values[pattern];
-                    dest = value(src.delay, src.starting, movements::movement(_min_movements,_max_movements), src.words);
+                    dest = value(src.delay, src.starting, movements::movement(_min_movements,_max_movements), src.words, src.loops);
 
                     previous = pattern;
                 }
@@ -177,8 +182,9 @@ std::string organisation::genetic::inserts::insert::serialise()
     {
         result += "I " + std::to_string(it.delay);
         result += " " + std::to_string(it.words);
+        result += " " + std::to_string(it.loops);
         result += " " + it.starting.serialise();
-        result += " " + it.movement.serialise();
+        result += " " + it.movement.serialise();        
         result += "\n";
     }
 
@@ -211,13 +217,17 @@ void organisation::genetic::inserts::insert::deserialise(std::string source)
         }
         else if(index == 3)
         {
-            value.starting.deserialise(str);
+            value.loops = std::atoi(str.c_str());
         }
         else if(index == 4)
         {
+            value.starting.deserialise(str);
+        }
+        else if(index == 5)
+        {
             value.movement.deserialise(str);
             values.push_back(value);            
-        }
+        }        
 
         ++index;
     };
@@ -246,6 +256,12 @@ bool organisation::genetic::inserts::insert::validate(data &source)
         if((it.words < _min_insert_words)||(it.words > _max_insert_words))
         { 
             std::cout << "insert::validate(false): words out of bounds (" << it.words << ")\r\n"; 
+            return false; 
+        }
+
+        if((it.loops < 1)||(it.words > _iterations))
+        { 
+            std::cout << "insert::validate(false): loops out of bounds (" << it.loops << ")\r\n"; 
             return false; 
         }
 

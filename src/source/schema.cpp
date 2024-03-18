@@ -114,12 +114,12 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
     }
     */
 
-
+   bool clear = false;
     for(int i = 0; i < values.size(); ++i)
     {
         scores[i].compute(values[i], settings);
 
-        if(values[i].value.size() <= 0) penalty = true;
+        if(values[i].value.size() <= 0) clear = true;//penalty = true;
         else
         {
             for(int j = 0; j < values.size(); ++j)
@@ -146,6 +146,18 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
             ++i;
         }
     }
+
+    if(clear)
+    {
+        int i = 0;
+        for(std::vector<organisation::compute>::iterator it = values.begin(); it != values.end(); ++it)
+        {
+            //scores[i].penalty(0.2f);
+            scores[i].clear();
+            ++i;
+        }
+    }
+
 }
 
 void organisation::schema::mutate(data &source, inputs::input &epochs)
