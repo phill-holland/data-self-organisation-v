@@ -56,6 +56,9 @@ void organisation::parallel::program::reset(::parallel::device &dev,
     deviceNextDirections = sycl::malloc_device<sycl::float4>(settings.max_values * settings.clients(), qt);
     if(deviceNextDirections == NULL) return;
 
+    deviceMovementModifier = sycl::malloc_device<sycl::float4>(settings.max_values * settings.clients(), qt);
+    if(deviceMovementModifier == NULL) return;
+
     deviceMovementIdx = sycl::malloc_device<int>(settings.max_values * settings.clients(), qt);
     if(deviceMovementIdx == NULL) return;
 
@@ -208,6 +211,7 @@ void organisation::parallel::program::clear()
     events.push_back(qt.memset(deviceNextHalfPositions, 0, sizeof(sycl::float4) * settings.max_values * settings.clients()));
     events.push_back(qt.memset(deviceValues, 0, sizeof(sycl::int4) * settings.max_values * settings.clients()));
     events.push_back(qt.memset(deviceNextDirections, 0, sizeof(sycl::float4) * settings.max_values * settings.clients()));
+    events.push_back(qt.memset(deviceMovementModifier, -1, sizeof(sycl::float4) * settings.max_values * settings.clients()));
     events.push_back(qt.memset(deviceMovementIdx, 0, sizeof(int) * settings.max_values * settings.clients()));
     events.push_back(qt.memset(deviceMovementPatternIdx, 0, sizeof(int) * settings.max_values * settings.clients()));
     events.push_back(qt.memset(deviceLifetime, 0, sizeof(int) * settings.max_values * settings.clients()));
@@ -245,6 +249,7 @@ void organisation::parallel::program::restart()
     events1.push_back(qt.memset(deviceNextHalfPositions, 0, sizeof(sycl::float4) * settings.max_values * settings.clients()));
     events1.push_back(qt.memset(deviceValues, 0, sizeof(sycl::int4) * settings.max_values * settings.clients()));
     events1.push_back(qt.memset(deviceNextDirections, 0, sizeof(sycl::float4) * settings.max_values * settings.clients()));
+    events1.push_back(qt.memset(deviceMovementModifier, -1, sizeof(sycl::float4) * settings.max_values * settings.clients()));
     events1.push_back(qt.memset(deviceMovementIdx, 0, sizeof(int) * settings.max_values * settings.clients()));    
     events1.push_back(qt.memset(deviceLifetime, 0, sizeof(int) * settings.max_values * settings.clients()));
     events1.push_back(qt.memset(deviceClient, 0, sizeof(sycl::int4) * settings.max_values * settings.clients()));
@@ -346,7 +351,7 @@ void organisation::parallel::program::run(organisation::data &mappings)
             corrections();
             outputting(epoch, iterations);
             boundaries();
-            stops(iterations);
+            //stops(iterations);
 
 /*
 std::cout << "positions(" << epoch << "): ";
@@ -488,6 +493,7 @@ void organisation::parallel::program::next()
         auto _values = deviceValues;
         auto _positions = devicePositions;   
         auto _nextPositions = deviceNextPositions; 
+        auto _movementModifier = deviceMovementModifier;
         auto _client = deviceClient;
         auto _movementIdx = deviceMovementIdx;
         auto _movementPatternIdx = deviceMovementPatternIdx;
@@ -577,7 +583,9 @@ void organisation::parallel::program::next()
                             direction1.x() * direction2.y() - direction1.y() * direction2.x(),
                             0.0f };                    
 
-                        _nextDirections[i] = new_direction;                    
+                        _nextDirections[i] = new_direction;    
+                        // ***
+                        _movementModifier[i] = new_direction;                
                         // ****
 
                         //int key1 = GetCollidedKey(_positions[i], _nextPositions[i]);
@@ -625,6 +633,9 @@ void organisation::parallel::program::next()
                         int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
                         sycl::float4 direction1 = _collisions[offset1];
                         _nextDirections[i] = direction1;
+                        // ***
+                        _movementModifier[i] = direction1;  
+                        // ***
 
 //out << "WEEEEEE:" <<_values[i].x() << " " << direction1.x() << "," << direction1.y() << "," << direction1.z() << "\n";                        
                         
@@ -637,6 +648,17 @@ void organisation::parallel::program::next()
                     int movement_pattern_idx = _movementPatternIdx[i];
 
                     sycl::float4 direction = _movements[a + offset + (movement_pattern_idx * _max_movements)];
+                    // ***
+                    if(_movementModifier[i].w() != -1)
+                    {
+                        sycl::float4 modifier = _movementModifier[i];
+                        direction = { 
+                            direction.y() * modifier.z() - direction.z() * modifier.y(),
+                            direction.z() * modifier.x() - direction.x() * modifier.z(),
+                            direction.x() * modifier.y() - direction.y() * modifier.x(),
+                            0.0f };                       
+                    }
+                    // ***
                     _nextDirections[i] = direction;            
 
                     _movementIdx[i]++;      
@@ -1322,6 +1344,7 @@ void organisation::parallel::program::makeNull()
     deviceNextHalfPositions = NULL;
     deviceValues = NULL;
     deviceNextDirections = NULL;
+    deviceMovementModifier = NULL;
     
     deviceMovementIdx = NULL;
     deviceMovementPatternIdx = NULL;
@@ -1431,6 +1454,7 @@ void organisation::parallel::program::cleanup()
         if(deviceMovementIdx != NULL) sycl::free(deviceMovementIdx, q);
         if(deviceValues != NULL) sycl::free(deviceValues, q);
 
+        if(deviceMovementModifier != NULL) sycl::free(deviceMovementModifier, q);
         if(deviceNextDirections != NULL) sycl::free(deviceNextDirections, q);
         if(deviceNextHalfPositions != NULL) sycl::free(deviceNextHalfPositions, q);
         if(deviceNextPositions != NULL) sycl::free(deviceNextPositions, q);

@@ -32,6 +32,7 @@ namespace organisation
             sycl::float4 *deviceNextHalfPositions;
             sycl::int4 *deviceValues;
             sycl::float4 *deviceNextDirections;
+            sycl::float4 *deviceMovementModifier;
 
             int *deviceMovementIdx;
             int *deviceMovementPatternIdx;   

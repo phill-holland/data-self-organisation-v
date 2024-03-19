@@ -11,6 +11,8 @@ void organisation::parallel::collisions::reset(::parallel::device &dev,
     this->settings = settings;
     this->length = settings.max_collisions * settings.mappings.maximum() * settings.clients();
 
+    //settings.max_collision_movements * settings.max_collisions * settings.mappings.maximum() * settings.clients();
+
     sycl::queue &qt = ::parallel::queue(dev).get();
 
     deviceCollisions = sycl::malloc_device<sycl::float4>(length, qt);
