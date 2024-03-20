@@ -202,6 +202,7 @@ float organisation::scores::score::sum()
 		result += b.second;
     }
     
+// THIS IS WRONG, if scores not populated 
     return result / ((float)scores.size());
 }
 

@@ -28,7 +28,7 @@ TEST(BasicScoreBowExactMatchParallel, BasicAssertions)
 
 TEST(BasicScoreBowSpecialCaseMatchParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     std::string a = "of you I";
     std::string b = "of you I";

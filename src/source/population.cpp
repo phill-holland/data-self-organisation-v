@@ -143,6 +143,9 @@ organisation::populations::results organisation::populations::population::execut
         
     std::unordered_map<int, std::vector<compute>> output_mappings;
 
+// need to validate what happens when an epoch outputs nothing!!
+// add a test that only outputs result for one epoch!
+// sum is wrong for these conditions!
     for(int epoch = 0; epoch < outputs.size(); ++epoch)
     {
         organisation::inputs::epoch e;

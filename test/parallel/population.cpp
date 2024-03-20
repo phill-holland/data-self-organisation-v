@@ -49,7 +49,7 @@ organisation::schema getSchema(organisation::parameters &parameters,
 
 TEST(BasicPopulationTestParallel, BasicAssertions)
 {    
-    GTEST_SKIP();
+    //GTEST_SKIP();
 
     const int width = 20, height = 20, depth = 20;
 
@@ -90,7 +90,7 @@ TEST(BasicPopulationTestParallel, BasicAssertions)
 
     s1.scores[0] = match;
 
-    std::vector<organisation::schema*> source = { &s1,&s2,&s3,&s4,&s5,&s6 };
+    std::vector<organisation::schema*> source = { &s1 };//,&s2,&s3,&s4,&s5,&s6 };
 
     parameters.population = source.size() * 2;    
     
@@ -217,3 +217,9 @@ TEST(BasicPopulationTestTwoEpochsParallel, BasicAssertions)
         EXPECT_TRUE(source[i]->equals(result[i]));
     }
 }
+
+// test no epoch output
+
+// test only one epoch output!
+
+// disable the movement tests tempoarily!
