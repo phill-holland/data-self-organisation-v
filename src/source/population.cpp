@@ -143,10 +143,24 @@ organisation::populations::results organisation::populations::population::execut
         
     std::unordered_map<int, std::vector<compute>> output_mappings;
 
+for(int epoch = 0; epoch < settings.input.size(); ++epoch)
+{
+    organisation::inputs::epoch e;
+    if(settings.input.get(e,epoch))
+    {
+        for(int client = 0; client < settings.clients(); ++client)
+        {
+            output_mappings[client] = std::vector<compute>(settings.input.size());
+            output_mappings[client][epoch].expected = e.expected;
+        }
+    }
+}
+
 // need to validate what happens when an epoch outputs nothing!!
 // add a test that only outputs result for one epoch!
 // sum is wrong for these conditions!
     for(int epoch = 0; epoch < outputs.size(); ++epoch)
+    //for(int epoch = 0; epoch < settings.input.size(); ++epoch)
     {
         organisation::inputs::epoch e;
         if(settings.input.get(e,epoch))
@@ -173,9 +187,11 @@ organisation::populations::results organisation::populations::population::execut
     results result;
 
     for(auto &it: output_mappings)
+    //for(int client = 0; client < settings.clients(); ++client)
     {
+        
         if((it.first >= 0)&&(it.first < settings.clients()))
-        {
+        {            
             buffer[it.first]->compute(it.second, settings.scores);
 
             float score = buffer[it.first]->sum();
@@ -187,6 +203,21 @@ organisation::populations::results organisation::populations::population::execut
             
             result.average += score;
         }
+        
+       /*
+        auto epochs = output_mappings[client];
+        // check epochs == settings.input.size()
+        buffer[client]->compute(epochs, settings.scores);
+
+        float score = buffer[client]->sum();
+        if(score > result.best)
+        {
+            result.best = score;
+            result.index = client;
+        }
+        
+        result.average += score;
+       */
     }
     
     std::cout << "result.index [" << result.index << "] " << result.best << "\r\n";

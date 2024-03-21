@@ -67,10 +67,10 @@ organisation::schema getSchema2(organisation::parameters &parameters)
 
     organisation::genetic::cache cache(parameters);
     
-    cache.set(organisation::point(parameters.mappings.map("I'm"),-1,-1), organisation::point(11,10,9));
-    cache.set(organisation::point(parameters.mappings.map("half"),-1,-1), organisation::point(8,10,11));
-    cache.set(organisation::point(parameters.mappings.map("love"),-1,-1), organisation::point(10,11,11));
-    cache.set(organisation::point(parameters.mappings.map("you"),-1,-1), organisation::point(9,9,9));
+    cache.set(organisation::point(parameters.mappings.map("I'm"),-1,-1), organisation::point(10,10,9));//11,10,9));
+    cache.set(organisation::point(parameters.mappings.map("half"),-1,-1), organisation::point(9,10,11));//8,10,11));
+    //cache.set(organisation::point(parameters.mappings.map("love"),-1,-1), organisation::point(10,11,11));
+    //cache.set(organisation::point(parameters.mappings.map("you"),-1,-1), organisation::point(9,9,9));
 
     organisation::vector left(-1,0,0);
     organisation::vector right(1,0,0);
@@ -288,8 +288,8 @@ TEST(BasicPopulationTestTwoEpochsOneNoOutputParallel, BasicAssertions)
     std::string input1("daisy give");
     std::string input2("daisy answer");
 
-    std::string expected1 = "I'mhalf";
-    std::string expected2 = "loveyou";
+    std::string expected1 = "I'm half";
+    std::string expected2 = "love you";
 
     //std::string input("daisy");
 
@@ -315,7 +315,9 @@ TEST(BasicPopulationTestTwoEpochsOneNoOutputParallel, BasicAssertions)
     
     parameters.dim_clients = organisation::point(1,1,1);
     parameters.iterations = 10;
+    parameters.scores.max_collisions = 2;
     parameters.mappings = mappings;
+    parameters.output_stationary_only = true;
 //    parameters.worst = false;
 
     organisation::inputs::epoch epoch1(input1, expected1);

@@ -657,6 +657,7 @@ out << "WEEEEEE:" <<_values[i].x() << " " << direction1.x() << "," << direction1
 
 out << "hello:" <<_values[i].x() << " a:" << a << "pat:" << movement_pattern_idx << " " << direction.x() << "," << direction.y() << "," << direction.z() << " mod:" << _movementModifier[i].w() << "\n";
                     // ***
+                    
                     if(_movementModifier[i].w() >= 1.0f)
                     {                        
                         sycl::float4 modifier = _movementModifier[i];
@@ -668,6 +669,7 @@ out << "hello:" <<_values[i].x() << " a:" << a << "pat:" << movement_pattern_idx
 
                             out << "here " << modifier.x() << "," << modifier.y() << "," << modifier.z() << " " << direction.x() << "," << direction.y() << "," << direction.z() << "\n";
                     }
+                    
                     // ***
                     _nextDirections[i] = direction;            
 
