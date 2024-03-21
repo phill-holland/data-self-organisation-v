@@ -129,7 +129,7 @@ bool organisation::scores::score::compute(organisation::compute value, settings 
 		if(!set(((float)collisions) / ((float)MAX_COLLISIONS), score_len)) valid = false;
 
 //****
-		if(collisions == 0) return true;
+		//if(collisions == 0) return true;
 //****
 	}
  	

@@ -364,6 +364,8 @@ std::cout << "values: ";
 outputarb(deviceValues,totalValues);
 std::cout << "col: ";
 outputarb(deviceNextCollisionKeys,totalValues);
+std::cout << "outputs: ";
+outputarb(deviceOutputValues,totalOutputValues);
 std::cout << "\r\n";
 
         };
