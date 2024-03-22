@@ -47,7 +47,7 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     parameters.min_movement_patterns = 2;//7;
     parameters.max_movement_patterns = 2;//7;
     parameters.max_insert_delay = 5; //7
-    parameters.scores.max_collisions = 2;//0;//2;
+    parameters.scores.max_collisions = 0;//2;//0;//2;
 
     parameters.max_cache_dimension = 3;
     
@@ -76,13 +76,18 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     std::string input3("bicycle two");
     std::string expected3("made for");
 
+    std::string input4("bucket face");
+    std::string expected4("fancy marriage");
+
     organisation::inputs::epoch epoch1(input1, expected1);
     organisation::inputs::epoch epoch2(input2, expected2);
     organisation::inputs::epoch epoch3(input3, expected3);
+    organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
     parameters.input.push_back(epoch3);
+    parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
     words.push_back(parameters.input);

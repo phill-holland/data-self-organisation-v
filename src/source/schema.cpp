@@ -120,7 +120,7 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
         scores[i].compute(values[i], settings);
 
         if(values[i].value.size() <= 0) clear = true;//penalty = true;
-        /*else
+        else
         {
             for(int j = 0; j < values.size(); ++j)
             {
@@ -133,7 +133,7 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
                     }
                 }
             }
-        }*/
+        }
     }
 
     if(penalty)
