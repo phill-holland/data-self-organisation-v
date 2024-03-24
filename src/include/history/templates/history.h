@@ -19,7 +19,7 @@ namespace organisation
                 virtual void clear() = 0;
                 virtual size_t size() = 0;
 
-                virtual bool get(value &source, int index) = 0;
+                virtual bool get(value &destination, int index) = 0;
                 virtual void push_back(value &source) = 0;
             };
         };

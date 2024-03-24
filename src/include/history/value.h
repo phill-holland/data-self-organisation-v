@@ -10,9 +10,11 @@ namespace organisation
         class value
         {
         public:
-            point position;
-            point client;
+            point position;            
             point data;
+
+            int sequence;
+            int client;
             int epoch;
 
         public:
@@ -20,7 +22,23 @@ namespace organisation
             {
                 position = _position;
                 data = _data;
+                sequence = 0;
+                client = 0;
+                epoch = 0;
             }
+
+            void clear()
+            {
+                position = point(0,0,0);
+                data = point(0,0,0);
+                
+                sequence = 0;
+                client = 0;
+                epoch = 0;
+            }
+
+            std::string serialise();
+            void deserialise(std::string source);
         };
     };
 };
