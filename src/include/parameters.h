@@ -2,6 +2,7 @@
 #include "input.h"
 #include "point.h"
 #include "score.h"
+#include "history/templates/history.h"
 
 #ifndef _ORGANISATION_PARAMETERS
 #define _ORGANISATION_PARAMETERS
@@ -82,6 +83,8 @@ namespace organisation
 
         scores::settings scores;        
 
+        history::templates::history *history;
+
     public:
         parameters(int _width = WIDTH, int _height = HEIGHT, int _depth = DEPTH) 
         {
@@ -119,6 +122,8 @@ namespace organisation
             starting.x = width / 2;
             starting.y = height / 2;
             starting.z = depth / 2;
+
+            history = NULL;
         }            
 
         int length()

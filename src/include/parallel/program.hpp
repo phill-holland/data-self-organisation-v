@@ -34,6 +34,12 @@ namespace organisation
             sycl::float4 *deviceNextDirections;
             sycl::float4 *deviceMovementModifier;
 
+            // ***
+            sycl::float4 *hostPositions;
+            sycl::int4 *hostValues;
+            sycl::int4 *hostClient;
+            // ***
+
             int *deviceMovementIdx;
             int *deviceMovementPatternIdx;   
             int *deviceLifetime;         
@@ -132,6 +138,8 @@ namespace organisation
             void boundaries();
             void corrections(bool debug = false);
             void outputting(int epoch, int iteration);
+            void history(int epoch, int iteration);
+
             void restart();            
 
         public:

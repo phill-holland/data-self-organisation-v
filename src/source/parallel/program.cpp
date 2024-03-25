@@ -176,6 +176,20 @@ void organisation::parallel::program::reset(::parallel::device &dev,
 
     // ***
 
+    if(settings.history != NULL)
+    {
+        hostPositions = sycl::malloc_device<sycl::float4>(settings.max_values * settings.clients(), qt);
+        if(hostPositions == NULL) return;
+    
+        hostValues = sycl::malloc_device<sycl::int4>(settings.max_values * settings.clients(), qt);
+        if(hostValues == NULL) return;
+
+        hostClient = sycl::malloc_device<sycl::int4>(settings.max_values * settings.clients(), qt);
+        if(hostClient == NULL) return;
+    }
+
+    // ***
+
     ::parallel::parameters global(settings.width * settings.dim_clients.x, settings.height * settings.dim_clients.y, settings.depth * settings.dim_clients.z);
     global.length = settings.max_values * settings.clients();
     ::parallel::parameters client(settings.width, settings.height, settings.depth);
@@ -310,6 +324,8 @@ void organisation::parallel::program::run(organisation::data &mappings)
 
     outputs.clear();
 
+    if(settings.history != NULL) settings.history->clear();
+
     for(int epoch = 0; epoch < settings.epochs(); ++epoch)
     {     
         restart();           
@@ -351,6 +367,7 @@ void organisation::parallel::program::run(organisation::data &mappings)
             corrections();
             outputting(epoch, iterations);
             boundaries();
+            history(epoch, iterations);
             //stops(iterations);
 
 /*
@@ -1047,6 +1064,35 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
     totalOutputValues = hostOutputTotalValues[0];
 }
 
+void organisation::parallel::program::history(int epoch, int iteration)
+{
+    if(settings.history != NULL)
+    {
+        sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
+        
+        std::vector<sycl::event> events;
+        
+        events.push_back(qt.memcpy(hostPositions, devicePositions, sizeof(sycl::float4) * totalValues));
+        events.push_back(qt.memcpy(hostValues, deviceValues, sizeof(int) * totalValues));
+        events.push_back(qt.memcpy(hostClient, deviceClient, sizeof(sycl::int4) * totalValues));
+
+        sycl::event::wait(events);
+
+        for(int i = 0; i < totalValues; ++i)
+        {
+            history::value temp;
+
+            temp.position = point((int)hostPositions[i].x(), (int)hostPositions[i].y(), (int)hostPositions[i].z());
+            temp.data = point(hostValues[i].x(), hostValues[i].y(), hostValues[i].z());
+            temp.sequence = iteration;
+            temp.client = hostClient[i].w();
+            temp.epoch = epoch;
+
+            settings.history->push_back(temp);
+        }
+    }
+}
+
 std::vector<organisation::parallel::value> organisation::parallel::program::get()
 {
     std::vector<value> result;
@@ -1402,6 +1448,10 @@ void organisation::parallel::program::makeNull()
     deviceOldUpdateCounter = NULL;
     hostOldUpdateCounter = NULL;
 
+    hostPositions = NULL;
+    hostValues = NULL;
+    hostClient = NULL;
+
     impacter = NULL;
     collision = NULL;
     inserter = NULL;
@@ -1416,7 +1466,12 @@ void organisation::parallel::program::cleanup()
         if(inserter != NULL) delete inserter;
         if(collision != NULL) delete collision;
         if(impacter != NULL) delete impacter;
-// ***
+
+        // ***
+        if(hostClient != NULL) sycl::free(hostClient, q);
+        if(hostValues != NULL) sycl::free(hostValues, q);
+        if(hostPositions != NULL) sycl::free(hostPositions, q);
+        // ***
 
         if(hostOldUpdateCounter != NULL) sycl::free(hostOldUpdateCounter, q);
         if(deviceOldUpdateCounter != NULL) sycl::free(deviceOldUpdateCounter, q);
