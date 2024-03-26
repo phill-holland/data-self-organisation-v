@@ -7,6 +7,7 @@ std::string organisation::history::value::serialise()
 {
     std::string result("H ");
 
+    result += std::to_string((stationary == true) ? 1 : 0) + " ";
     result += position.serialise() + " ";
     result += data.serialise() + " ";
     result += std::to_string(sequence) + " ";
@@ -32,23 +33,27 @@ void organisation::history::value::deserialise(std::string source)
             if(str.compare("H")!=0) return;    
             value.clear();
         }
-        else if(index == 1)
+        else if(index == 1)        
+        {
+            value.stationary = std::atoi(str.c_str()) == 1 ? true : false;
+        }
+        else if(index == 2)
         {
             value.position.deserialise(str);            
         }        
-        else if(index == 2)
+        else if(index == 3)
         {
             value.data.deserialise(str);
         }
-        else if(index == 3)        
+        else if(index == 4)
         {
             value.sequence = std::atoi(str.c_str());         
         }
-        else if(index == 4)        
+        else if(index == 5)        
         {
             value.client = std::atoi(str.c_str());
         }
-        else if(index == 5)
+        else if(index == 6)
         {
             value.epoch = std::atoi(str.c_str());
             *this = value;

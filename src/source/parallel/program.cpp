@@ -178,13 +178,13 @@ void organisation::parallel::program::reset(::parallel::device &dev,
 
     if(settings.history != NULL)
     {
-        hostPositions = sycl::malloc_device<sycl::float4>(settings.max_values * settings.clients(), qt);
+        hostPositions = sycl::malloc_host<sycl::float4>(settings.max_values * settings.clients(), qt);
         if(hostPositions == NULL) return;
     
-        hostValues = sycl::malloc_device<sycl::int4>(settings.max_values * settings.clients(), qt);
+        hostValues = sycl::malloc_host<sycl::int4>(settings.max_values * settings.clients(), qt);
         if(hostValues == NULL) return;
 
-        hostClient = sycl::malloc_device<sycl::int4>(settings.max_values * settings.clients(), qt);
+        hostClient = sycl::malloc_host<sycl::int4>(settings.max_values * settings.clients(), qt);
         if(hostClient == NULL) return;
     }
 
@@ -275,6 +275,13 @@ void organisation::parallel::program::restart()
 
     sycl::range num_items{(size_t)settings.max_values * settings.clients()};
 
+//std::cout << "cache pos ";
+    //outputarb(deviceCachePositions, settings.max_values * settings.clients());
+    //std::cout << "cache values ";
+    //outputarb(deviceCacheValues, settings.max_values * settings.clients());
+    //std::cout << "cache client ";
+    //outputarb(deviceCacheClients, settings.max_values * settings.clients());
+
     qt.submit([&](auto &h) 
     {     
         auto _positions = devicePositions; 
@@ -315,6 +322,14 @@ void organisation::parallel::program::restart()
   
     if(totalValues > settings.max_values * settings.clients())
             totalValues = settings.max_values * settings.clients();
+
+            //std::cout << "pos ";
+    //outputarb(devicePositions, totalValues);
+    //std::cout << "values ";
+    //outputarb(deviceValues, totalValues);
+    //std::cout << "cache client ";
+    //outputarb(deviceCacheClients, settings.max_values * settings.clients());
+
 }
 
 void organisation::parallel::program::run(organisation::data &mappings)
@@ -1068,27 +1083,31 @@ void organisation::parallel::program::history(int epoch, int iteration)
 {
     if(settings.history != NULL)
     {
-        sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
-        
-        std::vector<sycl::event> events;
-        
-        events.push_back(qt.memcpy(hostPositions, devicePositions, sizeof(sycl::float4) * totalValues));
-        events.push_back(qt.memcpy(hostValues, deviceValues, sizeof(int) * totalValues));
-        events.push_back(qt.memcpy(hostClient, deviceClient, sizeof(sycl::int4) * totalValues));
-
-        sycl::event::wait(events);
-
-        for(int i = 0; i < totalValues; ++i)
+        if(totalValues > 0)
         {
-            history::value temp;
+            sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
+            
+            std::vector<sycl::event> events;
 
-            temp.position = point((int)hostPositions[i].x(), (int)hostPositions[i].y(), (int)hostPositions[i].z());
-            temp.data = point(hostValues[i].x(), hostValues[i].y(), hostValues[i].z());
-            temp.sequence = iteration;
-            temp.client = hostClient[i].w();
-            temp.epoch = epoch;
+            events.push_back(qt.memcpy(hostPositions, devicePositions, sizeof(sycl::float4) * totalValues));
+            events.push_back(qt.memcpy(hostValues, deviceValues, sizeof(sycl::int4) * totalValues));
+            events.push_back(qt.memcpy(hostClient, deviceClient, sizeof(sycl::int4) * totalValues));
 
-            settings.history->push_back(temp);
+            sycl::event::wait(events);
+
+            for(int i = 0; i < totalValues; ++i)
+            {
+                history::value temp;
+
+                temp.position = point((int)hostPositions[i].x(), (int)hostPositions[i].y(), (int)hostPositions[i].z());
+                temp.data = point(hostValues[i].x(), hostValues[i].y(), hostValues[i].z());
+                temp.sequence = iteration;
+                temp.client = hostClient[i].w();
+                temp.epoch = epoch;
+                temp.stationary = hostPositions[i].w() == -2;
+
+                settings.history->push_back(temp);
+            }
         }
     }
 }
@@ -1262,7 +1281,6 @@ void organisation::parallel::program::debug()
     outputarb(deviceCacheValues, settings.max_values * settings.clients());
     std::cout << "cache client ";
     outputarb(deviceCacheClients, settings.max_values * settings.clients());
-
 }
 
 void organisation::parallel::program::outputarb(int *source, int length)

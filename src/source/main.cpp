@@ -13,6 +13,8 @@
 
 #include "templates/programs.h"
 
+#include "history/stream.h"
+
 #include "parallel/device.hpp"
 #include "parallel/queue.hpp"
 #include "parallel/program.hpp"
@@ -86,7 +88,7 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
-    parameters.input.push_back(epoch3);
+    //parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
@@ -126,8 +128,70 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
     return true;
 }
 
+/*
+bool single(organisation::templates::programs *program, organisation::parameters &parameters)
+{
+    organisation::history::stream stream;
+
+    parameters.dim_clients = organisation::point(1,1,1);
+    parameters.history = &stream;
+
+    organisation::schema s1(parameters);
+
+    if(!s1.prog.load("data/run.txt")) return false;
+        
+    std::vector<organisation::schema*> source = { &s1 };
+    
+    program->copy(source.data(), source.size());
+    program->set(parameters.mappings, parameters.input);
+    program->run(parameters.mappings);
+
+    if(!stream.save("data/trace.txt")) return false;
+
+    std::vector<organisation::outputs::output> results = program->get(parameters.mappings);
+
+    return true;    
+}
+*/
+bool single()
+{
+    organisation::parameters parameters = get_parameters();
+    organisation::history::stream stream;
+
+    parameters.dim_clients = organisation::point(1,1,1);
+    parameters.history = &stream;
+
+	::parallel::device device(device_idx);
+	::parallel::queue queue(device);
+
+    parallel::mapper::configuration mapper;
+
+    organisation::schema result(parameters);   
+    organisation::parallel::program program(device, &queue, mapper, parameters);
+
+    if(!program.initalised()) return false;
+    
+    organisation::schema s1(parameters);
+
+    if(!s1.prog.load("data/two_epochs.txt")) return false;
+        
+    std::vector<organisation::schema*> source = { &s1 };
+    
+    program.copy(source.data(), source.size());
+    program.set(parameters.mappings, parameters.input);
+    program.run(parameters.mappings);
+
+    if(!stream.save("data/trace.txt")) return false;
+
+   std::vector<organisation::outputs::output> results = program.get(parameters.mappings);
+
+    return true;    
+}
+
 int main(int argc, char *argv[])
 {  
+    single();
+    return 0;
     //auto strings = dictionary.get();
     //organisation::data mappings(strings);
     
@@ -144,6 +208,7 @@ int main(int argc, char *argv[])
     if(program.initalised())
     {
         run(&program, parameters, result);
+        //single(&program, parameters);
     }
        
     return 0;

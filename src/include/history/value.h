@@ -17,6 +17,8 @@ namespace organisation
             int client;
             int epoch;
 
+            bool stationary;
+
         public:
             value(point _position = point(0,0,0), point _data = point(0,0,0))
             {
@@ -25,6 +27,7 @@ namespace organisation
                 sequence = 0;
                 client = 0;
                 epoch = 0;
+                stationary = false;
             }
 
             void clear()
@@ -35,6 +38,8 @@ namespace organisation
                 sequence = 0;
                 client = 0;
                 epoch = 0;
+
+                stationary = false;
             }
 
             std::string serialise();

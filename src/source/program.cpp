@@ -522,31 +522,31 @@ void organisation::program::save(std::string filename)
     output.close();
 }
 
-void organisation::program::load(std::string filename)
+bool organisation::program::load(std::string filename)
 {
     std::ifstream source(filename);
-    if(source.is_open())
+    if(!source.is_open()) return false;
+    
+    caches.clear();
+    collisions.clear();        
+    insert.clear();
+
+    for(std::string value; getline(source, value); )
     {
-        caches.clear();
-        collisions.clear();        
-        insert.clear();
-
-        for(std::string value; getline(source, value); )
+        std::stringstream stream(value);
+        std::string type;
+            
+        if(stream >> type)
         {
-            std::stringstream stream(value);
-		    std::string type;
-	            
-            if(stream >> type)
-            {
-                if(type == "D") caches.deserialise(value);                
-                else if(type == "C") collisions.deserialise(value);
-                else if(type == "I") insert.deserialise(value);
-            }
+            if(type == "D") caches.deserialise(value);                
+            else if(type == "C") collisions.deserialise(value);
+            else if(type == "I") insert.deserialise(value);
         }
-
     }
 
     source.close();
+
+    return true;
 }
     
 void organisation::program::makeNull()
