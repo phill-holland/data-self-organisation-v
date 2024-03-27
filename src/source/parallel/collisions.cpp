@@ -99,8 +99,6 @@ void organisation::parallel::collisions::into(::organisation::schema **destinati
 
     int src_client_index = 0;
     int dest_client_index = 0;
-
-    memset(hostCollisions, 0, sizeof(sycl::float4) * client_offset * settings.host_buffer);
     
     sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
     sycl::range num_items{(size_t)settings.clients()};
@@ -125,7 +123,7 @@ void organisation::parallel::collisions::into(::organisation::schema **destinati
         }        
 
         src_client_index += settings.host_buffer;
-    }while((src_client_index * client_offset) < length);
+    } while((src_client_index * client_offset) < length);
 }
 
 void organisation::parallel::collisions::outputarb(int *source, int length)

@@ -346,7 +346,6 @@ void organisation::parallel::inserts::copy(::organisation::schema **source, int 
             events.push_back(qt.memcpy(&deviceMovements[dest_index * settings.max_movements * settings.max_movement_patterns], hostMovements, sizeof(sycl::float4) * settings.max_movements * settings.max_movement_patterns * index));
             events.push_back(qt.memcpy(&deviceMovementsCounts[dest_index * settings.max_movement_patterns], hostMovementsCounts, sizeof(int) * settings.max_movement_patterns * index));
 
-
             sycl::event::wait(events);
 
             memset(hostInsertsDelay, -1, sizeof(int) * settings.max_inserts * settings.host_buffer);
@@ -378,6 +377,64 @@ void organisation::parallel::inserts::copy(::organisation::schema **source, int 
     }   
 
     qt.memcpy(deviceInsertsDelayClone, deviceInsertsDelay, sizeof(int) * settings.max_inserts * settings.clients()).wait();
+}
+
+void organisation::parallel::inserts::into(::organisation::schema **destination, int destination_size)
+{
+    int src_client_index = 0;
+    int dest_client_index = 0;
+    
+    sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
+    sycl::range num_items{(size_t)settings.clients()};
+
+    do
+    {
+        std::vector<sycl::event> events;
+
+        events.push_back(qt.memcpy(hostInsertsDelay, &deviceInsertsDelay[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
+        events.push_back(qt.memcpy(hostInsertsLoops, &deviceInsertsLoops[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
+        events.push_back(qt.memcpy(hostInsertsStartingPosition, &deviceInsertsStartingPosition[src_client_index * settings.max_inserts], sizeof(sycl::float4) * settings.max_inserts * settings.host_buffer));
+        events.push_back(qt.memcpy(hostInsertsMovementPatternIdx, &deviceInsertsMovementPatternIdx[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
+        events.push_back(qt.memcpy(hostInsertsWords, &deviceInsertsWords[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
+        events.push_back(qt.memcpy(hostMovements, &deviceMovements[src_client_index * settings.max_movements * settings.max_movement_patterns], sizeof(sycl::float4) * settings.max_movements * settings.max_movement_patterns * settings.host_buffer));
+        events.push_back(qt.memcpy(hostMovementsCounts, &deviceMovementsCounts[src_client_index * settings.max_movement_patterns], sizeof(int) * settings.max_movement_patterns * settings.host_buffer));
+
+        sycl::event::wait(events);
+
+        for(int i = 0; i < settings.host_buffer; ++i)
+        {
+            organisation::program *prog = &destination[dest_client_index]->prog;
+
+            for(int j = 0; j < settings.max_inserts; ++j)
+            {
+                organisation::genetic::inserts::value value;
+
+                value.delay = hostInsertsDelay[i + (j * settings.max_inserts)];
+                value.loops = hostInsertsLoops[i + (j * settings.max_inserts)];
+                sycl::float4 starting = hostInsertsStartingPosition[i + (j * settings.max_inserts)];
+                value.starting = organisation::point((int)starting.x(), (int)starting.y(), (int)starting.z());
+                value.words = hostInsertsWords[i + (j * settings.max_inserts)];
+
+                int count = hostMovementsCounts[i + (j * settings.max_movement_patterns)];
+                if(count > settings.max_movements) count = settings.max_movements;
+                for(int d = 0; d < count; ++d)
+                {
+                    int offset = (i * settings.max_movements) + d;
+                    sycl::float4 movement = hostMovements[(j * settings.max_movements * settings.max_movement_patterns) + offset];
+                    vector direction = vector((int)movement.x(), (int)movement.y(), (int)movement.z());
+
+                    value.movement.directions.push_back(direction);
+                }
+                
+               prog->insert.values.push_back(value);
+            }
+
+            ++dest_client_index;
+            if(dest_client_index >= destination_size) return;
+        }        
+
+        src_client_index += settings.host_buffer;
+    } while((src_client_index * settings.max_inserts) < settings.max_inserts * settings.clients());
 }
 
 void organisation::parallel::inserts::outputarb(int *source, int length)

@@ -1251,6 +1251,48 @@ void organisation::parallel::program::copy(::organisation::schema **source, int 
     inserter->copy(source, source_size);
 }
 
+void organisation::parallel::program::into(::organisation::schema **destination, int destination_size)
+{
+    int src_client_index = 0;
+    int dest_client_index = 0;
+    
+    sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
+    sycl::range num_items{(size_t)settings.clients()};
+
+    do
+    {
+        std::vector<sycl::event> events;
+
+        events.push_back(qt.memcpy(hostCachePositions, &deviceCachePositions[src_client_index * settings.max_values], sizeof(sycl::float4) * settings.max_values * settings.host_buffer));
+        events.push_back(qt.memcpy(hostCacheValues, &deviceCacheValues[src_client_index * settings.max_values], sizeof(sycl::int4) * settings.max_values * settings.host_buffer));
+        //events.push_back(qt.memcpy(hostCacheClients, &deviceCacheClients[src_client_index * settings.max_values], sizeof(sycl::int4) * settings.max_values * settings.host_buffer));
+        
+        sycl::event::wait(events);
+
+        for(int i = 0; i < settings.host_buffer; ++i)
+        {
+            organisation::program *prog = &destination[dest_client_index]->prog;
+
+            for(int j = 0; j < settings.max_values; ++j)
+            {
+                sycl::float4 position = hostCachePositions[j + (i * settings.max_values)];
+                sycl::int4 value = hostCacheValues[j + (i * settings.max_values)];
+
+                if(value.x() != -1)
+                    prog->caches.set(point((int)position.x(),(int)position.y(),(int)position.z()),point(value.x(),value.y(),value.z()));
+            }
+
+            ++dest_client_index;
+            if(dest_client_index >= destination_size) break;
+        }        
+
+        src_client_index += settings.host_buffer;
+    } while((src_client_index * settings.max_values) < settings.max_values * settings.clients());
+
+    collision->into(destination, destination_size);
+    inserter->into(destination, destination_size);
+}
+
 void organisation::parallel::program::debug()
 {
     std::cout << "movementsIdx ";
