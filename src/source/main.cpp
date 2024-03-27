@@ -190,8 +190,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    //single();
+    //return 0;
     //auto strings = dictionary.get();
     //organisation::data mappings(strings);
     

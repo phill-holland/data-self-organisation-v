@@ -219,7 +219,7 @@ for(int epoch = 0; epoch < settings.input.size(); ++epoch)
         result.average += score;
        */
     }
-    
+   buffer[result.index]->prog.save("data/monkey.txt"); 
     std::cout << "result.index [" << result.index << "] " << result.best << "\r\n";
     for(auto &it:output_mappings[result.index])
     {
