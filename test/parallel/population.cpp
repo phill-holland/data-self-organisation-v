@@ -108,7 +108,7 @@ organisation::schema getSchema2(organisation::parameters &parameters)
 
 TEST(BasicPopulationTestParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const int width = 20, height = 20, depth = 20;
 

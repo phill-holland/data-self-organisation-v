@@ -407,26 +407,43 @@ void organisation::parallel::inserts::into(::organisation::schema **destination,
 
             for(int j = 0; j < settings.max_inserts; ++j)
             {
+                
+
+//hostInsertsDelay[pattern + (index * settings.max_inserts)] = it.delay;
+                int offset = j + (i * settings.max_inserts);
+                int movementPatternIdx = hostInsertsMovementPatternIdx[offset];
+                int count = hostMovementsCounts[j + (i * settings.max_movement_patterns)];
+                if(count > settings.max_movements) count = settings.max_movements;
+
+                if((movementPatternIdx == -1)||(count == 0)) break;
+                //if((movementPatternIdx > -1)&&(count > 0))
+                //{
                 organisation::genetic::inserts::value value;
 
-                value.delay = hostInsertsDelay[i + (j * settings.max_inserts)];
-                value.loops = hostInsertsLoops[i + (j * settings.max_inserts)];
-                sycl::float4 starting = hostInsertsStartingPosition[i + (j * settings.max_inserts)];
+                value.delay = hostInsertsDelay[offset];
+                value.loops = hostInsertsLoops[offset];
+                sycl::float4 starting = hostInsertsStartingPosition[offset];
                 value.starting = organisation::point((int)starting.x(), (int)starting.y(), (int)starting.z());
-                value.words = hostInsertsWords[i + (j * settings.max_inserts)];
+                value.words = hostInsertsWords[offset];
 
-                int count = hostMovementsCounts[i + (j * settings.max_movement_patterns)];
-                if(count > settings.max_movements) count = settings.max_movements;
+//hostMovementsCounts[(index * settings.max_movement_patterns) + pattern] += 1;
+                //int count = hostMovementsCounts[j + (i * settings.max_movement_patterns)];
+                
                 for(int d = 0; d < count; ++d)
                 {
-                    int offset = (i * settings.max_movements) + d;
-                    sycl::float4 movement = hostMovements[(j * settings.max_movements * settings.max_movement_patterns) + offset];
+
+//                  int offset = (pattern * settings.max_movements) + m_count;
+//                    hostMovements[(index * settings.max_movements * settings.max_movement_patterns) + offset] = { (float)direction.x, (float)direction.y, (float)direction.z, 0.0f };
+                    int offset = (j * settings.max_movements) + d;
+                    sycl::float4 movement = hostMovements[(i * settings.max_movements * settings.max_movement_patterns) + offset];
                     vector direction = vector((int)movement.x(), (int)movement.y(), (int)movement.z());
 
                     value.movement.directions.push_back(direction);
                 }
                 
-               prog->insert.values.push_back(value);
+                
+                prog->insert.values.push_back(value);
+                //}
             }
 
             ++dest_client_index;

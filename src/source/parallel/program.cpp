@@ -1279,7 +1279,7 @@ void organisation::parallel::program::into(::organisation::schema **destination,
                 sycl::int4 value = hostCacheValues[j + (i * settings.max_values)];
 
                 if(value.x() != -1)
-                    prog->caches.set(point((int)position.x(),(int)position.y(),(int)position.z()),point(value.x(),value.y(),value.z()));
+                    prog->caches.set(point(value.x(),value.y(),value.z()),point((int)position.x(),(int)position.y(),(int)position.z()));
             }
 
             ++dest_client_index;

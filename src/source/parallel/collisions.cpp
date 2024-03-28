@@ -105,8 +105,10 @@ void organisation::parallel::collisions::into(::organisation::schema **destinati
 
     do
     {
-        qt.memcpy(hostCollisions, &deviceCollisions[src_client_index * client_offset], sizeof(sycl::float4) * client_offset * settings.host_buffer);
+        qt.memcpy(hostCollisions, &deviceCollisions[src_client_index * client_offset], sizeof(sycl::float4) * client_offset * settings.host_buffer).wait();
 
+//std::cout << "devCol:";
+//outputarb(deviceCollisions, client_offset * settings.host_buffer);
         for(int i = 0; i < settings.host_buffer; ++i)
         {
             organisation::program *prog = &destination[dest_client_index]->prog;
@@ -149,6 +151,45 @@ void organisation::parallel::collisions::outputarb(int *source, int length)
 	}
 	result += std::string("\r\n");
 	
+    std::cout << result;
+
+	delete[] temp;
+}
+
+void organisation::parallel::collisions::outputarb(sycl::float4 *source, int length)
+{
+    sycl::float4 *temp = new sycl::float4[length];
+    if (temp == NULL) return;
+
+    sycl::queue q = ::parallel::queue(*dev).get();
+
+    q.memcpy(temp, source, sizeof(sycl::float4) * length).wait();
+
+    std::string result("");
+	for (int i = 0; i < length; ++i)
+	{
+        int ix = (int)(temp[i].x() * 100.0f);
+        int iy = (int)(temp[i].y() * 100.0f);
+        int iz = (int)(temp[i].z() * 100.0f);
+
+        if ((ix != 0) || (iy != 0) || (iz != 0))
+        {
+			result += std::string("[");
+			result += std::to_string(i);
+			result += std::string("]");
+			result += std::to_string(temp[i].x());
+			result += std::string(",");
+			result += std::to_string(temp[i].y());
+			result += std::string(",");
+			result += std::to_string(temp[i].z());
+			result += std::string(",");
+            result += std::to_string(temp[i].w());
+			result += std::string(",");
+		}
+	}
+	result += std::string("\r\n");
+	
+    
     std::cout << result;
 
 	delete[] temp;

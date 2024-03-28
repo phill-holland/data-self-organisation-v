@@ -2013,6 +2013,95 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
     EXPECT_EQ(expected1, compare[0][0]);
 }
 
+TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
+{    
+    //GTEST_SKIP();
+
+    const organisation::point clients(10,10,10);
+    const int width = 20, height = 20, depth = 20;
+
+    std::string values1("daisy give me your answer do .");
+    std::string input1("daisy");
+    std::vector<std::string> expected = 
+    { 
+        "daisy", "give", "me", "your", "answer", "do"
+    };
+    
+    std::vector<std::string> strings = organisation::split(values1);
+    organisation::data mappings(strings);
+
+	::parallel::device device(0);
+	::parallel::queue queue(device);
+
+    organisation::parameters parameters(width, height, depth);
+    parameters.mappings = mappings;
+    parameters.dim_clients = clients;    
+    parameters.iterations = 9;
+    parameters.host_buffer = 100; 
+    parameters.max_inserts = 30;   
+
+    organisation::inputs::epoch epoch1(input1);
+    parameters.input.push_back(epoch1);
+
+    parallel::mapper::configuration mapper;    
+    organisation::parallel::program program(device, &queue, mapper, parameters);
+        
+    EXPECT_TRUE(program.initalised());
+        
+    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
+    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
+    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
+    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
+    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
+    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
+
+    std::vector<organisation::schema*> schemas = { &s1,&s2,&s3,&s4,&s5,&s6 };
+    std::vector<organisation::schema*> source;
+
+    int length = clients.x * clients.y * clients.z;
+    int total = schemas.size();
+
+    for(int i = 0; i < length; ++i)
+    {
+        source.push_back(schemas[i % total]);
+    }
+    
+    program.copy(source.data(), source.size());
+    program.set(mappings, parameters.input);
+
+    std::vector<organisation::schema> destinations;    
+
+    //destination.resize(length);
+    //destination_ptr.resize(length);
+
+    for(int i = 0; i < length; ++i)
+    {
+        organisation::schema schema(parameters);
+        destinations.push_back(schema);//organisation::schema(parameters);
+        //destination_ptr[i] = &destination[i];
+        //destination.push_back(d1);
+        //destination_ptr.push_back(&destination[i]);//.back());
+    }
+
+    std::vector<organisation::schema*> destination;
+
+    for(int i = 0; i < length; ++i)
+    {
+        destination.push_back(&destinations[i]);
+    }
+
+    program.into(destination.data(), destination.size());
+//std::cout << "goog gog\n";
+
+    for(int i = 0; i < length; ++i)
+    {
+        EXPECT_TRUE(source[i]->equals(*destination[i]));
+        //if(!(source[i]->equals(*destination[i])))
+            //std::cout << "moo " << i << "\n";
+    }
+
+}
+
 /*
 TEST(BasicProgramMovementWithCollisionSaveAndLoadAndRunParallel, BasicAssertions)
 {    
