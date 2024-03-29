@@ -27,6 +27,7 @@ namespace organisation
             virtual std::vector<organisation::statistics::statistic> statistics() = 0;
 
             virtual void copy(::organisation::schema **source, int source_size) = 0;
+            virtual void into(::organisation::schema **destination, int destination_size) = 0;
         };
     };
 };

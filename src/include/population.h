@@ -78,6 +78,10 @@ namespace organisation
         protected:
             results execute(organisation::schema **buffer);
             
+            void validate(organisation::schema **buffer);
+            void save(organisation::schema **buffer);
+            void load(organisation::schema **buffer);
+            
         protected:
             void makeNull();
             void cleanup();

@@ -242,6 +242,52 @@ for(int epoch = 0; epoch < settings.input.size(); ++epoch)
     return result;
 }
 
+void organisation::populations::population::validate(organisation::schema **buffer)
+{
+     std::vector<organisation::schema> destinations;    
+    
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        organisation::schema s(settings);
+        destinations.push_back(s);
+    }
+
+    std::vector<organisation::schema*> destination;
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        destination.push_back(&destinations[i]);
+    }
+
+    programs->into(buffer, settings.clients());
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        if(!buffer[i]->equals(*destination[i]))
+            std::cout << "invalid (" << i << ")\r\n";
+    }
+}
+
+void organisation::populations::population::save(organisation::schema **buffer)
+{
+    std::string directory("output/schemas/");
+    for(int i = 0; i < settings.clients(); ++i)
+    {        
+        std::string filename = directory + std::to_string(i) + std::string(".txt");
+        buffer[i]->prog.save(filename);
+    }
+}
+
+void organisation::populations::population::load(organisation::schema **buffer)
+{
+    std::string directory("output/schemas/");
+    for(int i = 0; i < settings.clients(); ++i)
+    {        
+        std::string filename = directory + std::to_string(i) + std::string(".txt");
+        buffer[i]->prog.load(filename);
+    }
+}
+
 bool organisation::populations::population::get(schema &destination, region r)
 {
     const float mutate_rate_in_percent = 20.0f;
