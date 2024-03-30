@@ -208,7 +208,6 @@ int main(int argc, char *argv[])
     if(program.initalised())
     {
         run(&program, parameters, result);
-        //single(&program, parameters);
     }
        
     return 0;

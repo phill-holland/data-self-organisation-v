@@ -42,6 +42,9 @@ namespace organisation
 
         const static bool OUTPUT_STATIONARY_ONLY = false;
 
+        const static bool SAVE_POPULATION = false;
+        const static bool LOAD_POPULATION = false;
+
     public:
         int max_values;
         int min_movements;
@@ -69,6 +72,9 @@ namespace organisation
         bool worst;
 
         bool output_stationary_only;
+
+        bool save_population;
+        bool load_population;
         
     public:
         int width, height, depth;
@@ -118,6 +124,9 @@ namespace organisation
             worst = WORST;
 
             output_stationary_only = OUTPUT_STATIONARY_ONLY;
+
+            save_population = SAVE_POPULATION;
+            load_population = LOAD_POPULATION;
                 
             starting.x = width / 2;
             starting.y = height / 2;

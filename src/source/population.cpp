@@ -83,7 +83,9 @@ organisation::schema organisation::populations::population::go(int &count, int i
     region rset = { 0, (settings.population / 2) - 1 };
     region rget = { (settings.population / 2), settings.population - 1 };
 
-    fill(intermediateA, rset);
+    if(settings.load_population) load(intermediateA);
+    else fill(intermediateA, rset);
+    
     pull(intermediateC, rset);
     
     do
@@ -104,7 +106,11 @@ organisation::schema organisation::populations::population::go(int &count, int i
             highest = result.best;
         }
 
-        if(result.best >= 0.9999f) finished = true;    
+        if(result.best >= 0.9999f) 
+        {
+            if(settings.save_population) save(run);
+            finished = true;    
+        }
         
         std::cout << "Generation (" << count << ") Best=" << result.best;
         std::cout << " Highest=" << highest;
@@ -270,7 +276,7 @@ void organisation::populations::population::validate(organisation::schema **buff
 
 void organisation::populations::population::save(organisation::schema **buffer)
 {
-    std::string directory("output/schemas/");
+    std::string directory("data/schemas/");
     for(int i = 0; i < settings.clients(); ++i)
     {        
         std::string filename = directory + std::to_string(i) + std::string(".txt");
@@ -280,7 +286,7 @@ void organisation::populations::population::save(organisation::schema **buffer)
 
 void organisation::populations::population::load(organisation::schema **buffer)
 {
-    std::string directory("output/schemas/");
+    std::string directory("data/schemas/");
     for(int i = 0; i < settings.clients(); ++i)
     {        
         std::string filename = directory + std::to_string(i) + std::string(".txt");
