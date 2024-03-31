@@ -158,6 +158,10 @@ void organisation::genetic::inserts::insert::append(genetic *source, int src_sta
 
                 if(pattern != previous) 
                 {
+                    // ***
+                    if(values.size() + 1 >= _max_movement_patterns) return;
+                    // ***
+
                     values.push_back(dest);
 
                     const value src = s->values[pattern];
@@ -170,7 +174,11 @@ void organisation::genetic::inserts::insert::append(genetic *source, int src_sta
             }          
         }
 
-        if(dest.movement.size() > 0) values.push_back(dest);
+        if(dest.movement.size() > 0) 
+        {
+            if(values.size() + 1 >= _max_movement_patterns) return;
+            values.push_back(dest);
+        }
     }   
 }
 

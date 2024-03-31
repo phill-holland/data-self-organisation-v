@@ -57,6 +57,9 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     parameters.max_insert_words = 3;
 
     parameters.max_movements = 5;
+
+    parameters.save_population = true;
+    //parameters.load_population = true;
     // ***
 
 /*

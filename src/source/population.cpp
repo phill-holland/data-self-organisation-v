@@ -108,7 +108,11 @@ organisation::schema organisation::populations::population::go(int &count, int i
 
         if(result.best >= 0.9999f) 
         {
-            if(settings.save_population) save(run);
+            if(settings.save_population) 
+            {
+                validate(run);
+                save(run);
+            }
             finished = true;    
         }
         
@@ -265,7 +269,7 @@ void organisation::populations::population::validate(organisation::schema **buff
         destination.push_back(&destinations[i]);
     }
 
-    programs->into(buffer, settings.clients());
+    programs->into(destination.data(), settings.clients());
 
     for(int i = 0; i < settings.clients(); ++i)
     {
