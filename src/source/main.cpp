@@ -124,7 +124,7 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
 
     if(actual <= generations) 
     {
-        std::string filename("output/run.txt");
+        std::string filename("data/run.txt");
         result.prog.save(filename);
     }
     
@@ -176,7 +176,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/two_epochs.txt")) return false;
+    if(!s1.prog.load("data/runM.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -193,8 +193,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    //single();
-    //return 0;
+    single();
+    return 0;
     //auto strings = dictionary.get();
     //organisation::data mappings(strings);
     

@@ -391,7 +391,7 @@ void organisation::parallel::inserts::into(::organisation::schema **destination,
     {
         std::vector<sycl::event> events;
 
-        events.push_back(qt.memcpy(hostInsertsDelay, &deviceInsertsDelay[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
+        events.push_back(qt.memcpy(hostInsertsDelay, &deviceInsertsDelayClone[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
         events.push_back(qt.memcpy(hostInsertsLoops, &deviceInsertsLoops[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));
         events.push_back(qt.memcpy(hostInsertsStartingPosition, &deviceInsertsStartingPosition[src_client_index * settings.max_inserts], sizeof(sycl::float4) * settings.max_inserts * settings.host_buffer));
         events.push_back(qt.memcpy(hostInsertsMovementPatternIdx, &deviceInsertsMovementPatternIdx[src_client_index * settings.max_inserts], sizeof(int) * settings.max_inserts * settings.host_buffer));

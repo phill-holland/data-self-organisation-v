@@ -65,11 +65,16 @@ namespace organisation
             int *deviceOutputIndex;
             sycl::int4 *deviceOutputClient;
 
+            // ***
+            sycl::float4 *deviceOutputPosition;
+            // ***
+
             int *deviceOutputTotalValues;
             
             sycl::int4 *hostOutputValues;
             int *hostOutputIndex;
             sycl::int4 *hostOutputClient;
+            sycl::float4 *hostOutputPosition;
 
             int *hostOutputTotalValues;
 
@@ -129,7 +134,7 @@ namespace organisation
             std::vector<organisation::statistics::statistic> statistics();
 
         protected:     
-            void move(organisation::data &mappings);       
+            void move(organisation::data &mappings, int epoch);       
             void update();
             void positions();
             void next();
