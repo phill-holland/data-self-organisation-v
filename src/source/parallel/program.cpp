@@ -124,6 +124,9 @@ void organisation::parallel::program::reset(::parallel::device &dev,
     deviceOutputClient = sycl::malloc_device<sycl::int4>(settings.max_values * settings.clients(), qt);
     if(deviceOutputClient == NULL) return;
 
+    deviceOutputPosition = sycl::malloc_device<sycl::float4>(settings.max_values * settings.clients(), qt);
+    if(deviceOutputPosition == NULL) return;
+
     deviceOutputTotalValues = sycl::malloc_device<int>(1, qt);
     if(deviceOutputTotalValues == NULL) return;
 
@@ -136,6 +139,9 @@ void organisation::parallel::program::reset(::parallel::device &dev,
     
     hostOutputClient = sycl::malloc_host<sycl::int4>(settings.max_values * settings.clients(), qt);
     if(hostOutputClient == NULL) return;
+
+    hostOutputPosition = sycl::malloc_host<sycl::float4>(settings.max_values * settings.clients(), qt);
+    if(hostOutputPosition == NULL) return;
 
     hostOutputTotalValues = sycl::malloc_host<int>(1, qt);
     if(hostOutputTotalValues == NULL) return;
@@ -186,6 +192,13 @@ void organisation::parallel::program::reset(::parallel::device &dev,
 
         hostClient = sycl::malloc_host<sycl::int4>(settings.max_values * settings.clients(), qt);
         if(hostClient == NULL) return;
+
+        hostNextDirections = sycl::malloc_host<sycl::float4>(settings.max_values * settings.clients(), qt);
+        if(hostNextDirections == NULL) return;
+
+        //hostNextCollisionKeys = sycl::malloc_host<sycl::int2>(settings.max_values * settings.clients(), qt);
+        //if(hostNextCollisionKeys == NULL) return;
+
     }
 
     // ***
@@ -348,6 +361,7 @@ void organisation::parallel::program::run(organisation::data &mappings)
         int iterations = 0;
         while(iterations++ < settings.iterations)
         {        
+std::cout << "iter:" << iterations << " totaloutputs:" << totalOutputValues << "\r\n";        
             insert(epoch, iterations);
 
             qt.memcpy(deviceOldPositions, devicePositions, sizeof(sycl::float4) * totalValues).wait();                            
@@ -388,6 +402,8 @@ void organisation::parallel::program::run(organisation::data &mappings)
 /*
 std::cout << "positions(" << epoch << "): ";
 outputarb(devicePositions,totalValues);
+std::cout << "nextPos: ";
+outputarb(deviceNextPositions,totalValues);
 std::cout << "nextDir: ";
 outputarb(deviceNextDirections,totalValues);
 std::cout << "client: ";
@@ -398,14 +414,24 @@ std::cout << "col: ";
 outputarb(deviceNextCollisionKeys,totalValues);
 std::cout << "outputs: ";
 outputarb(deviceOutputValues,totalOutputValues);
+std::cout << "patternIdx: ";
+outputarb(deviceMovementPatternIdx, totalValues);
+std::cout << "movementIdx: ";
+outputarb(deviceMovementIdx,totalValues);
+std::cout << "counts: ";
+outputarb(inserter->deviceMovementsCounts, settings.max_movement_patterns * settings.clients());
+std::cout << "modifier: ";
+outputarb(deviceMovementModifier, totalValues);
 std::cout << "\r\n";
 */
         };
 
-        move(mappings);            
+        move(mappings, epoch);            
         
         qt.memset(deviceTotalValues, 0, sizeof(int)).wait();        
     }    
+
+    if(settings.history != NULL) settings.history->save("data/trace.txt");
 }
 
 void organisation::parallel::program::set(organisation::data &mappings, inputs::input &source)
@@ -418,22 +444,47 @@ std::vector<organisation::outputs::output> organisation::parallel::program::get(
     return outputs;    
 }
 
-void organisation::parallel::program::move(organisation::data &mappings)
+void organisation::parallel::program::move(organisation::data &mappings, int epoch)
 {    
     if(totalOutputValues > 0)
     {
         sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
 
         int output_length = totalOutputValues;
-        if(output_length > (settings.max_values * settings.clients())) output_length = (settings.max_values * settings.clients());
+        if(output_length > (settings.max_values * settings.clients())) 
+            output_length = (settings.max_values * settings.clients());
 
         std::vector<sycl::event> events;
 
         events.push_back(qt.memcpy(hostOutputValues, deviceOutputValues, sizeof(sycl::int4) * output_length));
         events.push_back(qt.memcpy(hostOutputIndex, deviceOutputIndex, sizeof(int) * output_length));
         events.push_back(qt.memcpy(hostOutputClient, deviceOutputClient, sizeof(sycl::int4) * output_length));
+        events.push_back(qt.memcpy(hostOutputPosition, deviceOutputPosition, sizeof(sycl::float4) * output_length));
 
         sycl::event::wait(events);
+
+// ***
+std::string filename ="data/outputs" + std::to_string(epoch) + ".txt";
+    std::fstream output(filename, std::fstream::out | std::fstream::binary);
+    for(int i = 0; i < output_length; ++i)
+    {
+        std::string v1 = "V " + std::to_string(hostOutputValues[i].x());
+        v1 += "," + std::to_string(hostOutputValues[i].y());
+        v1 += "," + std::to_string(hostOutputValues[i].z());
+        v1 += " I " + std::to_string(hostOutputIndex[i]);
+        v1 += " C(" + std::to_string(hostOutputClient[i].x());
+        v1 += "," + std::to_string(hostOutputClient[i].y());
+        v1 += "," + std::to_string(hostOutputClient[i].z());
+        v1 += "," + std::to_string(hostOutputClient[i].w());
+        v1 += ")->ColPos(" + std::to_string(hostOutputPosition[i].x());
+        v1 += "," + std::to_string(hostOutputPosition[i].y());
+        v1 += "," + std::to_string(hostOutputPosition[i].z());
+        v1 += "," + std::to_string(hostOutputPosition[i].w());
+        v1 += ")\n";
+        output.write(v1.c_str(),v1.size());
+    }
+    output.close();
+// ***
 
         outputs::output out;
 
@@ -546,7 +597,7 @@ void organisation::parallel::program::next()
         auto _max_movement_patterns = settings.max_movement_patterns;
         auto _max_words = settings.mappings.maximum();
 
-//sycl::stream out(8192, 1024, h);
+        //sycl::stream out(8192, 1024, h);
 
         h.parallel_for(num_items, [=](auto i) 
         {  
@@ -621,6 +672,10 @@ void organisation::parallel::program::next()
                             direction1.x() * direction2.y() - direction1.y() * direction2.x(),
                             0.0f };                    
 
+                        new_direction.x() = sycl::clamp(new_direction.x(),-1.0f,1.0f);
+                        new_direction.y() = sycl::clamp(new_direction.y(),-1.0f,1.0f);
+                        new_direction.z() = sycl::clamp(new_direction.z(),-1.0f,1.0f);
+
                         _nextDirections[i] = new_direction;    
                         // ***
                         _movementModifier[i] = { new_direction.x(), new_direction.y(), new_direction.z(), 1.0f };
@@ -689,7 +744,7 @@ void organisation::parallel::program::next()
 
 //out << "hello:" <<_values[i].x() << " a:" << a << "pat:" << movement_pattern_idx << " " << direction.x() << "," << direction.y() << "," << direction.z() << " mod:" << _movementModifier[i].w() << "\n";
                     // ***
-                    
+                    /*
                     if(_movementModifier[i].w() >= 1.0f)
                     {                        
                         sycl::float4 modifier = _movementModifier[i];
@@ -701,14 +756,15 @@ void organisation::parallel::program::next()
 
                             //out << "here " << modifier.x() << "," << modifier.y() << "," << modifier.z() << " " << direction.x() << "," << direction.y() << "," << direction.z() << "\n";
                     }
-                    
+                    */
                     // ***
                     _nextDirections[i] = direction;            
 
                     _movementIdx[i]++;      
                     int temp = _movementIdx[i];          
                     
-                    if((temp >= _max_movements)||(temp >= _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
+//out << "GCOL: " << ((int)i) << " " << temp << " " << _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx] << "\n";
+                    if((temp > _max_movements)||(temp > _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
                         _movementIdx[i] = 0;            
                 }
             }
@@ -750,11 +806,13 @@ void organisation::parallel::program::insert(int epoch, int iteration)
             auto _values = deviceValues;
             auto _lifetime = deviceLifetime;
             auto _movementPatternIdx = deviceMovementPatternIdx;
+            auto _movementIdx = deviceMovementIdx;
+            auto _movementModifier = deviceMovementModifier;
             auto _client = deviceClient;
             
             auto _srcPosition = inserter->deviceNewPositions;
             auto _srcValues = inserter->deviceNewValues;
-            auto _srcMovementPatternIdx = inserter->deviceNewMovementPatternIdx;
+            auto _srcMovementPatternIdx = inserter->deviceNewMovementPatternIdx;            
             auto _srcClient = inserter->deviceNewClient;
             
             auto _insertKeys = deviceNextCollisionKeys;
@@ -765,6 +823,11 @@ void organisation::parallel::program::insert(int epoch, int iteration)
             auto _iteration = iteration;
 
             auto _totalValues = deviceTotalValues;
+
+            auto _movements = inserter->deviceMovements;
+            auto _nextDirections = deviceNextDirections;
+            auto _max_movements = settings.max_movements;
+            auto _max_movement_patterns = settings.max_movement_patterns;
 
             h.parallel_for(num_items, [=](auto i) 
             {  
@@ -777,11 +840,22 @@ void organisation::parallel::program::insert(int epoch, int iteration)
                     int idx = ar.fetch_add(1);               
                     if(idx < _valuesLength)
                     {
+                        int movement_pattern_idx = _srcMovementPatternIdx[i];
+
                         _positions[idx] = _srcPosition[i];
                         _values[idx] = _srcValues[i];//{ _srcValues[i], -1, -1, -1 };
                         _lifetime[idx] = _iteration;
-                        _movementPatternIdx[idx] = _srcMovementPatternIdx[i];
+                        _movementPatternIdx[idx] = movement_pattern_idx;//_srcMovementPatternIdx[i];
+                        _movementIdx[idx] = 0;
+                        _movementModifier[idx] = { 0.0f, 0.0f, 0.0f, 0.0f };
                         _client[idx] = _srcClient[i];
+
+                        //int a = _movementIdx[i];
+                        int offset = _max_movements * _max_movement_patterns * _srcClient[i].w();                
+                        sycl::float4 direction = _movements[offset + (movement_pattern_idx * _max_movements)];
+
+                        _nextDirections[idx] = direction;            
+                        // next position!!!!!!
                     }
                 }
             });
@@ -1001,6 +1075,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
         auto _outputValues = deviceOutputValues;
         auto _outputIndex = deviceOutputIndex;
         auto _outputClient = deviceOutputClient;
+        auto _outputPosition = deviceOutputPosition;
         auto _outputTotalValues = deviceOutputTotalValues;
 
         auto _outputLength = settings.max_values * settings.clients();
@@ -1021,6 +1096,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
                 bool output = false, collision = false;
                 sycl::int4 value = { -1, -1, -1, -1 };
+                sycl::float4 pos = { 0, 0, 0, 0 };
 
                 if((((int)_positions[i].x()) == ((int)_oldPositions[i].x()))
                     &&(((int)_positions[i].y()) == ((int)_oldPositions[i].y()))
@@ -1032,6 +1108,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                         if((_positions[currentCollision.y()].w() == -2)||(!_outputStationaryOnly))
                         {   
                             value = _values[currentCollision.y()];
+                            pos = _positions[currentCollision.y()];
                             output = true;
                         }
 
@@ -1046,6 +1123,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                     if((_positions[nextCollision.y()].w() == -2)||(!_outputStationaryOnly))
                     {   
                         value = _values[nextCollision.y()];
+                        pos = _positions[nextCollision.y()];
                         output = true;
                     }
 
@@ -1068,7 +1146,8 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                     {                    
                         _outputValues[idx] = value;
                         _outputIndex[idx] = _iteration;
-                        _outputClient[idx] = _client[i];                        
+                        _outputClient[idx] = _client[i];   
+                        _outputPosition[idx] = pos;                     
                     }
                 }  
             }
@@ -1092,6 +1171,8 @@ void organisation::parallel::program::history(int epoch, int iteration)
             events.push_back(qt.memcpy(hostPositions, devicePositions, sizeof(sycl::float4) * totalValues));
             events.push_back(qt.memcpy(hostValues, deviceValues, sizeof(sycl::int4) * totalValues));
             events.push_back(qt.memcpy(hostClient, deviceClient, sizeof(sycl::int4) * totalValues));
+            events.push_back(qt.memcpy(hostNextDirections, deviceNextDirections, sizeof(sycl::float4) * totalValues));
+            //events.push_back(qt.memcpy(hostNextCollisionKeys, deviceNextCollisionKeys, sizeof(sycl::int2) * totalValues));
 
             sycl::event::wait(events);
 
@@ -1101,6 +1182,8 @@ void organisation::parallel::program::history(int epoch, int iteration)
 
                 temp.position = point((int)hostPositions[i].x(), (int)hostPositions[i].y(), (int)hostPositions[i].z());
                 temp.data = point(hostValues[i].x(), hostValues[i].y(), hostValues[i].z());
+                temp.next = point(hostNextDirections[i].x(), hostNextDirections[i].y(), hostNextDirections[i].z());
+                //temp.collision = point(hostNextCollisionKeys[i].x(), hostNextCollisionKeys[i].y());
                 temp.sequence = iteration;
                 temp.client = hostClient[i].w();
                 temp.epoch = epoch;
@@ -1488,11 +1571,13 @@ void organisation::parallel::program::makeNull()
     deviceOutputValues = NULL;
     deviceOutputIndex = NULL;
     deviceOutputClient = NULL;
+    deviceOutputPosition = NULL;
     deviceOutputTotalValues = NULL;
 
     hostOutputValues = NULL;
     hostOutputIndex = NULL;
     hostOutputClient = NULL;
+    hostOutputPosition = NULL;
     hostOutputTotalValues = NULL;
 
     deviceTotalValues = NULL;
@@ -1511,6 +1596,8 @@ void organisation::parallel::program::makeNull()
     hostPositions = NULL;
     hostValues = NULL;
     hostClient = NULL;
+    hostNextDirections = NULL;
+    //hostNextCollisionKeys = NULL;
 
     impacter = NULL;
     collision = NULL;
@@ -1528,6 +1615,8 @@ void organisation::parallel::program::cleanup()
         if(impacter != NULL) delete impacter;
 
         // ***
+        //if(hostNextCollisionKeys != NULL) sycl::free(hostNextCollisionKeys, q);
+        if(hostNextDirections != NULL) sycl::free(hostNextDirections, q);
         if(hostClient != NULL) sycl::free(hostClient, q);
         if(hostValues != NULL) sycl::free(hostValues, q);
         if(hostPositions != NULL) sycl::free(hostPositions, q);
@@ -1548,11 +1637,13 @@ void organisation::parallel::program::cleanup()
         if(deviceTotalValues != NULL) sycl::free(deviceTotalValues, q);
 
 // ***
+        if(deviceOutputPosition != NULL) sycl::free(deviceOutputPosition, q);
         if(deviceOutputValues != NULL) sycl::free(deviceOutputValues, q);
         if(deviceOutputIndex != NULL) sycl::free(deviceOutputIndex, q);
         if(deviceOutputClient != NULL) sycl::free(deviceOutputClient, q);
         if(deviceOutputTotalValues != NULL) sycl::free(deviceOutputTotalValues, q);
 
+        if(hostOutputPosition != NULL) sycl::free(hostOutputPosition, q);
         if(hostOutputValues != NULL) sycl::free(hostOutputValues, q);
         if(hostOutputIndex != NULL) sycl::free(hostOutputIndex, q);
         if(hostOutputClient != NULL) sycl::free(hostOutputClient, q);

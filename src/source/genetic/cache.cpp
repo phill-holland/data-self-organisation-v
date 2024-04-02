@@ -205,8 +205,11 @@ void organisation::genetic::cache::append(genetic *source, int src_start, int sr
         int index = ((_width * _height) * p1.z) + ((p1.y * _width) + p1.x);
         if(points.find(index) == points.end())
         {
-            values.push_back(temp);
-            points[index] = p1;            
+            if(size() < _max_cache)
+            {
+                values.push_back(temp);
+                points[index] = p1;            
+            }
         }
     }
 }

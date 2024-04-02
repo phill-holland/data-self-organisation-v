@@ -21,13 +21,11 @@
 
 using namespace std;
 
-//const organisation::dictionary dictionary;
-
 const int width = 6, height = 6, depth = 6; //6,6,6
 const int device_idx = 0;
 const int generations = 500;
 
-organisation::parameters get_parameters()//organisation::data &mappings)
+organisation::parameters get_parameters()
 {
     organisation::parameters parameters(width, height, depth);
 
@@ -49,7 +47,7 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     parameters.min_movement_patterns = 2;//7;
     parameters.max_movement_patterns = 2;//7;
     parameters.max_insert_delay = 5; //7
-    parameters.scores.max_collisions = 0;//2;//0;//2;
+    parameters.scores.max_collisions = 2;//0;//2;//0;//2;
 
     parameters.max_cache_dimension = 3;
     
@@ -57,6 +55,9 @@ organisation::parameters get_parameters()//organisation::data &mappings)
     parameters.max_insert_words = 3;
 
     parameters.max_movements = 5;
+
+    parameters.save_population = true;
+    //parameters.load_population = true;
     // ***
 
 /*
@@ -111,7 +112,7 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
 {         	
     organisation::populations::population p(program, parameters);
     if(!p.initalised()) return false;
-
+    
     int actual = 0;
 
     p.clear();
@@ -121,38 +122,13 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
 
     if(actual <= generations) 
     {
-        std::string filename("output/run.txt");
+        std::string filename("data/run.txt");
         result.prog.save(filename);
     }
     
     return true;
 }
 
-/*
-bool single(organisation::templates::programs *program, organisation::parameters &parameters)
-{
-    organisation::history::stream stream;
-
-    parameters.dim_clients = organisation::point(1,1,1);
-    parameters.history = &stream;
-
-    organisation::schema s1(parameters);
-
-    if(!s1.prog.load("data/run.txt")) return false;
-        
-    std::vector<organisation::schema*> source = { &s1 };
-    
-    program->copy(source.data(), source.size());
-    program->set(parameters.mappings, parameters.input);
-    program->run(parameters.mappings);
-
-    if(!stream.save("data/trace.txt")) return false;
-
-    std::vector<organisation::outputs::output> results = program->get(parameters.mappings);
-
-    return true;    
-}
-*/
 bool single()
 {
     organisation::parameters parameters = get_parameters();
@@ -173,7 +149,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/two_epochs.txt")) return false;
+    if(!s1.prog.load("data/run.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -181,21 +157,33 @@ bool single()
     program.set(parameters.mappings, parameters.input);
     program.run(parameters.mappings);
 
-    if(!stream.save("data/trace.txt")) return false;
+    std::vector<organisation::outputs::output> results = program.get(parameters.mappings);
 
-   std::vector<organisation::outputs::output> results = program.get(parameters.mappings);
+    int epoch = 0;
+    for(auto &it: results)
+    {
+        std::string result;
+        for(auto &jt: it.values)
+        {
+            result += jt.value + " ";
+        }
+
+        std::cout << "output" << std::to_string(epoch++) << ": " << result << "\r\n";
+    }
 
     return true;    
 }
 
 int main(int argc, char *argv[])
 {  
-    //single();
-    //return 0;
-    //auto strings = dictionary.get();
-    //organisation::data mappings(strings);
+    single();
+    return 0;
     
-    organisation::parameters parameters = get_parameters();//mappings);
+    organisation::parameters parameters = get_parameters();
+
+    organisation::history::stream stream;
+    parameters.history = &stream;
+
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);

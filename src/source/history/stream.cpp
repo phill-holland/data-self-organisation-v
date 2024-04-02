@@ -17,8 +17,11 @@ bool organisation::history::stream::save(std::string filename)
     {
         for(auto &it: data)
         {
-            std::string data = it.serialise();
-            output.write(data.c_str(), data.size());
+            if(!it.stationary)
+            {
+                std::string data = it.serialise();
+                output.write(data.c_str(), data.size());
+            }
         }
     }
 

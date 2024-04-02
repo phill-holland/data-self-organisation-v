@@ -21,6 +21,8 @@ namespace organisation
 
                 virtual bool get(value &destination, int index) = 0;
                 virtual void push_back(value &source) = 0;
+
+                virtual bool save(std::string filename) = 0;
             };
         };
     };

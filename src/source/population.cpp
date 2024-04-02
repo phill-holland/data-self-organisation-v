@@ -99,7 +99,10 @@ organisation::schema organisation::populations::population::go(int &count, int i
         r3.wait();
 
         organisation::populations::results result = r3.get();
-
+// ***
+validate(run);
+//validate2(run);
+// ***
         if(result.best > highest)
         {
             res.copy(*run[result.index]);
@@ -108,7 +111,11 @@ organisation::schema organisation::populations::population::go(int &count, int i
 
         if(result.best >= 0.9999f) 
         {
-            if(settings.save_population) save(run);
+            if(settings.save_population) 
+            {
+                validate(run);
+                save(run);
+            }
             finished = true;    
         }
         
@@ -265,13 +272,63 @@ void organisation::populations::population::validate(organisation::schema **buff
         destination.push_back(&destinations[i]);
     }
 
-    programs->into(buffer, settings.clients());
+    programs->into(destination.data(), settings.clients());
 
     for(int i = 0; i < settings.clients(); ++i)
     {
-        if(!buffer[i]->equals(*destination[i]))
+        //if(!buffer[i]->equals(*destination[i]))
+        if(!buffer[i]->prog.equals(destination[i]->prog))
+        {
+            buffer[i]->prog.save("data/invalid1.txt");
+            destination[i]->prog.save("data/invalid2.txt");
             std::cout << "invalid (" << i << ")\r\n";
+        }
     }
+}
+
+void organisation::populations::population::validate2(organisation::schema **buffer)
+{
+     std::vector<organisation::schema> destinations;    
+    
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        organisation::schema s(settings);
+        destinations.push_back(s);
+    }
+
+    std::vector<organisation::schema*> destination;
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        destination.push_back(&destinations[i]);
+    }
+
+    save(buffer);
+    load(destination.data());
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        if(!buffer[i]->prog.equals(destination[i]->prog))
+        {
+            buffer[i]->prog.save("data/invalid3.txt");
+            destination[i]->prog.save("data/invalid4.txt");
+            std::cout << "invalid (" << i << ")\r\n";
+        }
+    }
+/*
+    programs->into(destination.data(), settings.clients());
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        //if(!buffer[i]->equals(*destination[i]))
+        if(!buffer[i]->prog.equals(destination[i]->prog))
+        {
+            buffer[i]->prog.save("data/invalid1.txt");
+            destination[i]->prog.save("data/invalid2.txt");
+            std::cout << "invalid (" << i << ")\r\n";
+        }
+    }
+    */
 }
 
 void organisation::populations::population::save(organisation::schema **buffer)

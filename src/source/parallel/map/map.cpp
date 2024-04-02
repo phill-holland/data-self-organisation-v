@@ -96,7 +96,9 @@ void BuildMap(int *coarse, int *medium, int *bucket_indices,
     // ***
     
     if (index >= bucket_lengths[bucket]) 
+    {
         return;
+    }
     
     bucket_positions[bucket][index] = {temp.x(), temp.y(), temp.z(), (float)value};
     bucket_clients[bucket][index] = {client.x(), client.y(), client.z(), idx};

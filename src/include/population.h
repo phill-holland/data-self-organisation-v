@@ -79,6 +79,8 @@ namespace organisation
             results execute(organisation::schema **buffer);
             
             void validate(organisation::schema **buffer);
+            void validate2(organisation::schema **buffer);
+            
             void save(organisation::schema **buffer);
             void load(organisation::schema **buffer);
             
