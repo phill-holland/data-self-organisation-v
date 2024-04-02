@@ -89,7 +89,7 @@ organisation::parameters get_parameters()
     
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
-    //parameters.input.push_back(epoch3);
+    parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
