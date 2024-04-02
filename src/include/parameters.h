@@ -45,6 +45,8 @@ namespace organisation
         const static bool SAVE_POPULATION = false;
         const static bool LOAD_POPULATION = false;
 
+        const static bool SAVE_OUTPUTS = false;
+
     public:
         int max_values;
         int min_movements;
@@ -75,6 +77,8 @@ namespace organisation
 
         bool save_population;
         bool load_population;
+
+        bool save_outputs;
         
     public:
         int width, height, depth;
@@ -127,6 +131,8 @@ namespace organisation
 
             save_population = SAVE_POPULATION;
             load_population = LOAD_POPULATION;
+
+            save_outputs = SAVE_OUTPUTS;
                 
             starting.x = width / 2;
             starting.y = height / 2;

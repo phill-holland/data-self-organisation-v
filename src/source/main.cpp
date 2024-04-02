@@ -56,7 +56,7 @@ organisation::parameters get_parameters()
 
     parameters.max_movements = 5;
 
-    parameters.save_population = true;
+    //parameters.save_population = true;
     //parameters.load_population = true;
     // ***
 
@@ -136,6 +136,7 @@ bool single()
 
     parameters.dim_clients = organisation::point(1,1,1);
     parameters.history = &stream;
+    parameters.save_outputs = true;
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);
@@ -181,9 +182,8 @@ int main(int argc, char *argv[])
     
     organisation::parameters parameters = get_parameters();
 
-    organisation::history::stream stream;
-    parameters.history = &stream;
-
+    //organisation::history::stream stream;
+    //parameters.history = &stream;
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);

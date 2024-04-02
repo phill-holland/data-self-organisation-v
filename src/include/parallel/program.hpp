@@ -39,8 +39,6 @@ namespace organisation
             sycl::int4 *hostValues;
             sycl::int4 *hostClient;
             sycl::float4 *hostNextDirections;
-            //sycl::int2 *hostNextCollisionKeys;
-
             // ***
 
             int *deviceMovementIdx;

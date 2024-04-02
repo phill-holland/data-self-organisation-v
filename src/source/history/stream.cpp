@@ -29,32 +29,3 @@ bool organisation::history::stream::save(std::string filename)
 
     return true;
 }
-
-bool organisation::history::stream::load(std::string filename)
-{
-    clear();
-    
-    std::ifstream source(filename);
-    if(source.is_open())
-    {
-        for(std::string line; getline(source, line); )
-        {
-            std::stringstream stream(line);
-		    std::string type;
-	            
-            if(stream >> type)
-            {                
-                value temp;
-                if(type == "H") 
-                {
-                    temp.deserialise(line);                
-                    data.push_back(temp);
-                }
-            }
-        }
-    }
-
-    source.close();
-
-    return true;
-}

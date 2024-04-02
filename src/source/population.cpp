@@ -100,7 +100,7 @@ organisation::schema organisation::populations::population::go(int &count, int i
 
         organisation::populations::results result = r3.get();
 // ***
-validate(run);
+//validate(run);
 //validate2(run);
 // ***
         if(result.best > highest)
@@ -169,11 +169,7 @@ for(int epoch = 0; epoch < settings.input.size(); ++epoch)
     }
 }
 
-// need to validate what happens when an epoch outputs nothing!!
-// add a test that only outputs result for one epoch!
-// sum is wrong for these conditions!
     for(int epoch = 0; epoch < outputs.size(); ++epoch)
-    //for(int epoch = 0; epoch < settings.input.size(); ++epoch)
     {
         organisation::inputs::epoch e;
         if(settings.input.get(e,epoch))
@@ -199,8 +195,7 @@ for(int epoch = 0; epoch < settings.input.size(); ++epoch)
     
     results result;
 
-    for(auto &it: output_mappings)
-    //for(int client = 0; client < settings.clients(); ++client)
+    for(auto &it: output_mappings)    
     {
         
         if((it.first >= 0)&&(it.first < settings.clients()))
@@ -215,24 +210,9 @@ for(int epoch = 0; epoch < settings.input.size(); ++epoch)
             }
             
             result.average += score;
-        }
-        
-       /*
-        auto epochs = output_mappings[client];
-        // check epochs == settings.input.size()
-        buffer[client]->compute(epochs, settings.scores);
-
-        float score = buffer[client]->sum();
-        if(score > result.best)
-        {
-            result.best = score;
-            result.index = client;
-        }
-        
-        result.average += score;
-       */
+        }               
     }
-   //buffer[result.index]->prog.save("data/monkey.txt"); 
+   
     std::cout << "result.index [" << result.index << "] " << result.best << "\r\n";
     for(auto &it:output_mappings[result.index])
     {
@@ -276,7 +256,6 @@ void organisation::populations::population::validate(organisation::schema **buff
 
     for(int i = 0; i < settings.clients(); ++i)
     {
-        //if(!buffer[i]->equals(*destination[i]))
         if(!buffer[i]->prog.equals(destination[i]->prog))
         {
             buffer[i]->prog.save("data/invalid1.txt");
@@ -315,20 +294,6 @@ void organisation::populations::population::validate2(organisation::schema **buf
             std::cout << "invalid (" << i << ")\r\n";
         }
     }
-/*
-    programs->into(destination.data(), settings.clients());
-
-    for(int i = 0; i < settings.clients(); ++i)
-    {
-        //if(!buffer[i]->equals(*destination[i]))
-        if(!buffer[i]->prog.equals(destination[i]->prog))
-        {
-            buffer[i]->prog.save("data/invalid1.txt");
-            destination[i]->prog.save("data/invalid2.txt");
-            std::cout << "invalid (" << i << ")\r\n";
-        }
-    }
-    */
 }
 
 void organisation::populations::population::save(organisation::schema **buffer)

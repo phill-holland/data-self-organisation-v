@@ -13,7 +13,6 @@ namespace organisation
             point position;            
             point data;
             point next;
-            //point collision;
 
             int sequence;
             int client;
@@ -37,7 +36,6 @@ namespace organisation
                 position = point(0,0,0);
                 data = point(0,0,0);
                 next = point(0,0,0);
-                //collision = point(0,0,0);
                 
                 sequence = 0;
                 client = 0;
@@ -47,7 +45,6 @@ namespace organisation
             }
 
             std::string serialise();
-            void deserialise(std::string source);
         };
     };
 };
