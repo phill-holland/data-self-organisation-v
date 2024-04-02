@@ -399,8 +399,8 @@ std::cout << "iter:" << iterations << " totaloutputs:" << totalOutputValues << "
             history(epoch, iterations);
             //stops(iterations);
 
-/*
-std::cout << "positions(" << epoch << "): ";
+
+/*std::cout << "positions(" << epoch << "): ";
 outputarb(devicePositions,totalValues);
 std::cout << "nextPos: ";
 outputarb(deviceNextPositions,totalValues);
