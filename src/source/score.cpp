@@ -128,9 +128,7 @@ bool organisation::scores::score::compute(organisation::compute value, settings 
 		if(collisions > MAX_COLLISIONS) collisions = MAX_COLLISIONS;
 		if(!set(((float)collisions) / ((float)MAX_COLLISIONS), score_len)) valid = false;
 
-//****
-		if(collisions == 0) return true;
-//****
+		if((params.optimise_for_collisions==true)&&(collisions == 0)) return true;
 	}
  	
 	const int alphabet_len = alphabet.size();		
@@ -202,6 +200,7 @@ float organisation::scores::score::sum()
 		result += b.second;
     }
     
+// THIS IS WRONG, if scores not populated 
     return result / ((float)scores.size());
 }
 
@@ -219,6 +218,14 @@ float organisation::scores::score::get(int index)
 	if((index < 0)||(index >= scores.size())) return 0.0f;
 
 	return scores[index];
+}
+
+void organisation::scores::score::penalty(float multiple)
+{
+	for(auto &it: scores)
+	{
+		it.second *= multiple;
+	}
 }
 
 void organisation::scores::score::copy(const score &source)

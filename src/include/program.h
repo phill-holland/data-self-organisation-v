@@ -90,7 +90,7 @@ namespace organisation
 
     public:
         void save(std::string filename);
-        void load(std::string filename);
+        bool load(std::string filename);
         
     protected:
         void makeNull();

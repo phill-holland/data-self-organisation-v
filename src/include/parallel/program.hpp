@@ -32,6 +32,14 @@ namespace organisation
             sycl::float4 *deviceNextHalfPositions;
             sycl::int4 *deviceValues;
             sycl::float4 *deviceNextDirections;
+            sycl::float4 *deviceMovementModifier;
+
+            // ***
+            sycl::float4 *hostPositions;
+            sycl::int4 *hostValues;
+            sycl::int4 *hostClient;
+            sycl::float4 *hostNextDirections;
+            // ***
 
             int *deviceMovementIdx;
             int *deviceMovementPatternIdx;   
@@ -58,11 +66,16 @@ namespace organisation
             int *deviceOutputIndex;
             sycl::int4 *deviceOutputClient;
 
+            // ***
+            sycl::float4 *deviceOutputPosition;
+            // ***
+
             int *deviceOutputTotalValues;
             
             sycl::int4 *hostOutputValues;
             int *hostOutputIndex;
             sycl::int4 *hostOutputClient;
+            sycl::float4 *hostOutputPosition;
 
             int *hostOutputTotalValues;
 
@@ -122,14 +135,17 @@ namespace organisation
             std::vector<organisation::statistics::statistic> statistics();
 
         protected:     
-            void move(organisation::data &mappings);       
+            void move(organisation::data &mappings, int epoch);       
             void update();
             void positions();
             void next();
             void insert(int epoch, int iteration);
+            void stops(int iteration);
             void boundaries();
             void corrections(bool debug = false);
             void outputting(int epoch, int iteration);
+            void history(int epoch, int iteration);
+
             void restart();            
 
         public:
@@ -137,6 +153,7 @@ namespace organisation
 
         public:
             void copy(::organisation::schema **source, int source_size);
+            void into(::organisation::schema **destination, int destination_size);
             
         protected:
             void debug();

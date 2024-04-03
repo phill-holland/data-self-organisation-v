@@ -37,8 +37,6 @@ void organisation::parallel::collisions::clear()
 
 void organisation::parallel::collisions::copy(::organisation::schema **source, int source_size)
 {
-
-
     memset(hostCollisions, 0, sizeof(sycl::float4) * settings.max_collisions * settings.mappings.maximum() * settings.host_buffer);
     
     sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
@@ -95,6 +93,41 @@ void organisation::parallel::collisions::copy(::organisation::schema **source, i
     }        
 }
 
+void organisation::parallel::collisions::into(::organisation::schema **destination, int destination_size)
+{
+    int client_offset = settings.max_collisions * settings.mappings.maximum();
+
+    int src_client_index = 0;
+    int dest_client_index = 0;
+    
+    sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
+    sycl::range num_items{(size_t)settings.clients()};
+
+    do
+    {
+        qt.memcpy(hostCollisions, &deviceCollisions[src_client_index * client_offset], sizeof(sycl::float4) * client_offset * settings.host_buffer).wait();
+
+//std::cout << "devCol:";
+//outputarb(deviceCollisions, client_offset * settings.host_buffer);
+        for(int i = 0; i < settings.host_buffer; ++i)
+        {
+            organisation::program *prog = &destination[dest_client_index]->prog;
+
+            for(int j = 0; j < client_offset; ++j)
+            {
+                sycl::float4 direction = hostCollisions[(i * client_offset) + j];
+                vector temp((int)direction.x(), (int)direction.y(), (int)direction.z());
+                prog->collisions.set(temp.encode(), j);
+            }
+
+            ++dest_client_index;
+            if(dest_client_index >= destination_size) return;
+        }        
+
+        src_client_index += settings.host_buffer;
+    } while((src_client_index * client_offset) < length);
+}
+
 void organisation::parallel::collisions::outputarb(int *source, int length)
 {
 	int *temp = new int[length];
@@ -118,6 +151,45 @@ void organisation::parallel::collisions::outputarb(int *source, int length)
 	}
 	result += std::string("\r\n");
 	
+    std::cout << result;
+
+	delete[] temp;
+}
+
+void organisation::parallel::collisions::outputarb(sycl::float4 *source, int length)
+{
+    sycl::float4 *temp = new sycl::float4[length];
+    if (temp == NULL) return;
+
+    sycl::queue q = ::parallel::queue(*dev).get();
+
+    q.memcpy(temp, source, sizeof(sycl::float4) * length).wait();
+
+    std::string result("");
+	for (int i = 0; i < length; ++i)
+	{
+        int ix = (int)(temp[i].x() * 100.0f);
+        int iy = (int)(temp[i].y() * 100.0f);
+        int iz = (int)(temp[i].z() * 100.0f);
+
+        if ((ix != 0) || (iy != 0) || (iz != 0))
+        {
+			result += std::string("[");
+			result += std::to_string(i);
+			result += std::string("]");
+			result += std::to_string(temp[i].x());
+			result += std::string(",");
+			result += std::to_string(temp[i].y());
+			result += std::string(",");
+			result += std::to_string(temp[i].z());
+			result += std::string(",");
+            result += std::to_string(temp[i].w());
+			result += std::string(",");
+		}
+	}
+	result += std::string("\r\n");
+	
+    
     std::cout << result;
 
 	delete[] temp;

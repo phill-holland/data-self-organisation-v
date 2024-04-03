@@ -2,6 +2,7 @@
 #include "input.h"
 #include "point.h"
 #include "score.h"
+#include "history/templates/history.h"
 
 #ifndef _ORGANISATION_PARAMETERS
 #define _ORGANISATION_PARAMETERS
@@ -41,6 +42,11 @@ namespace organisation
 
         const static bool OUTPUT_STATIONARY_ONLY = false;
 
+        const static bool SAVE_POPULATION = false;
+        const static bool LOAD_POPULATION = false;
+
+        const static bool SAVE_OUTPUTS = false;
+
     public:
         int max_values;
         int min_movements;
@@ -68,6 +74,11 @@ namespace organisation
         bool worst;
 
         bool output_stationary_only;
+
+        bool save_population;
+        bool load_population;
+
+        bool save_outputs;
         
     public:
         int width, height, depth;
@@ -81,6 +92,8 @@ namespace organisation
         point starting;
 
         scores::settings scores;        
+
+        history::templates::history *history;
 
     public:
         parameters(int _width = WIDTH, int _height = HEIGHT, int _depth = DEPTH) 
@@ -115,10 +128,17 @@ namespace organisation
             worst = WORST;
 
             output_stationary_only = OUTPUT_STATIONARY_ONLY;
+
+            save_population = SAVE_POPULATION;
+            load_population = LOAD_POPULATION;
+
+            save_outputs = SAVE_OUTPUTS;
                 
             starting.x = width / 2;
             starting.y = height / 2;
             starting.z = depth / 2;
+
+            history = NULL;
         }            
 
         int length()

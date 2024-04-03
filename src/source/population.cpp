@@ -83,7 +83,9 @@ organisation::schema organisation::populations::population::go(int &count, int i
     region rset = { 0, (settings.population / 2) - 1 };
     region rget = { (settings.population / 2), settings.population - 1 };
 
-    fill(intermediateA, rset);
+    if(settings.load_population) load(intermediateA);
+    else fill(intermediateA, rset);
+    
     pull(intermediateC, rset);
     
     do
@@ -97,14 +99,25 @@ organisation::schema organisation::populations::population::go(int &count, int i
         r3.wait();
 
         organisation::populations::results result = r3.get();
-
+// ***
+//validate(run);
+//validate2(run);
+// ***
         if(result.best > highest)
         {
             res.copy(*run[result.index]);
             highest = result.best;
         }
 
-        if(result.best >= 0.9999f) finished = true;    
+        if(result.best >= 0.9999f) 
+        {
+            if(settings.save_population) 
+            {
+                validate(run);
+                save(run);
+            }
+            finished = true;    
+        }
         
         std::cout << "Generation (" << count << ") Best=" << result.best;
         std::cout << " Highest=" << highest;
@@ -143,6 +156,19 @@ organisation::populations::results organisation::populations::population::execut
         
     std::unordered_map<int, std::vector<compute>> output_mappings;
 
+for(int epoch = 0; epoch < settings.input.size(); ++epoch)
+{
+    organisation::inputs::epoch e;
+    if(settings.input.get(e,epoch))
+    {
+        for(int client = 0; client < settings.clients(); ++client)
+        {
+            output_mappings[client] = std::vector<compute>(settings.input.size());
+            output_mappings[client][epoch].expected = e.expected;
+        }
+    }
+}
+
     for(int epoch = 0; epoch < outputs.size(); ++epoch)
     {
         organisation::inputs::epoch e;
@@ -169,10 +195,11 @@ organisation::populations::results organisation::populations::population::execut
     
     results result;
 
-    for(auto &it: output_mappings)
+    for(auto &it: output_mappings)    
     {
+        
         if((it.first >= 0)&&(it.first < settings.clients()))
-        {
+        {            
             buffer[it.first]->compute(it.second, settings.scores);
 
             float score = buffer[it.first]->sum();
@@ -183,9 +210,9 @@ organisation::populations::results organisation::populations::population::execut
             }
             
             result.average += score;
-        }
+        }               
     }
-    
+   
     std::cout << "result.index [" << result.index << "] " << result.best << "\r\n";
     for(auto &it:output_mappings[result.index])
     {
@@ -206,6 +233,87 @@ organisation::populations::results organisation::populations::population::execut
     std::cout << "execute " << time_span.count() << "\r\n";    
 
     return result;
+}
+
+void organisation::populations::population::validate(organisation::schema **buffer)
+{
+     std::vector<organisation::schema> destinations;    
+    
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        organisation::schema s(settings);
+        destinations.push_back(s);
+    }
+
+    std::vector<organisation::schema*> destination;
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        destination.push_back(&destinations[i]);
+    }
+
+    programs->into(destination.data(), settings.clients());
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        if(!buffer[i]->prog.equals(destination[i]->prog))
+        {
+            buffer[i]->prog.save("data/invalid1.txt");
+            destination[i]->prog.save("data/invalid2.txt");
+            std::cout << "invalid (" << i << ")\r\n";
+        }
+    }
+}
+
+void organisation::populations::population::validate2(organisation::schema **buffer)
+{
+     std::vector<organisation::schema> destinations;    
+    
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        organisation::schema s(settings);
+        destinations.push_back(s);
+    }
+
+    std::vector<organisation::schema*> destination;
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        destination.push_back(&destinations[i]);
+    }
+
+    save(buffer);
+    load(destination.data());
+
+    for(int i = 0; i < settings.clients(); ++i)
+    {
+        if(!buffer[i]->prog.equals(destination[i]->prog))
+        {
+            buffer[i]->prog.save("data/invalid3.txt");
+            destination[i]->prog.save("data/invalid4.txt");
+            std::cout << "invalid (" << i << ")\r\n";
+        }
+    }
+}
+
+void organisation::populations::population::save(organisation::schema **buffer)
+{
+    std::string directory("data/schemas/");
+    for(int i = 0; i < settings.clients(); ++i)
+    {        
+        std::string filename = directory + std::to_string(i) + std::string(".txt");
+        buffer[i]->prog.save(filename);
+    }
+}
+
+void organisation::populations::population::load(organisation::schema **buffer)
+{
+    std::string directory("data/schemas/");
+    for(int i = 0; i < settings.clients(); ++i)
+    {        
+        std::string filename = directory + std::to_string(i) + std::string(".txt");
+        buffer[i]->prog.load(filename);
+    }
 }
 
 bool organisation::populations::population::get(schema &destination, region r)

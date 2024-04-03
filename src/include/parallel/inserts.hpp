@@ -23,12 +23,13 @@ namespace organisation
 
             sycl::float4 *deviceNewPositions;
             sycl::int4 *deviceNewValues;
-            int *deviceNewMovementPatternIdx;
+            int *deviceNewMovementPatternIdx;            
             sycl::int4 *deviceNewClient;
 
             int *deviceInputData;
             int *deviceInsertsDelay;
             int *deviceInsertsDelayClone;
+            int *deviceInsertsLoops;
             sycl::float4 *deviceInsertsStartingPosition;
             int *deviceInsertsMovementPatternIdx;
             int *deviceInsertsWords;
@@ -44,6 +45,7 @@ namespace organisation
             int *hostInputData;
 
             int *hostInsertsDelay;
+            int *hostInsertsLoops;
             sycl::float4 *hostInsertsStartingPosition;
             int *hostInsertsMovementPatternIdx;
             int *hostInsertsWords;
@@ -82,6 +84,7 @@ namespace organisation
 
         public:
             void copy(::organisation::schema **source, int source_size);
+            void into(::organisation::schema **destination, int destination_size);
 
         protected:
             void outputarb(int *source, int length);

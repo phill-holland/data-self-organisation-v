@@ -32,8 +32,8 @@ namespace organisation
 
         public:
             collisions(::parallel::device &dev, 
-                    ::parallel::queue *q,
-                    parameters &settings) 
+                       ::parallel::queue *q,
+                       parameters &settings) 
             { 
                 makeNull(); 
                 reset(dev, q, settings); 
@@ -49,9 +49,11 @@ namespace organisation
 
         public:
             void copy(::organisation::schema **source, int source_size);
+            void into(::organisation::schema **destination, int destination_size);
 
         protected:
             void outputarb(int *source, int length);
+            void outputarb(sycl::float4 *source, int length);
 
         protected:
             void makeNull();

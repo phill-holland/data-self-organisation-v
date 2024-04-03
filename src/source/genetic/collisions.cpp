@@ -9,7 +9,11 @@ void organisation::genetic::collisions::generate(data &source, inputs::input &ep
 {
     for(int i = 0; i < size(); ++i)
     {
-        int value = (std::uniform_int_distribution<int>{0, 26})(generator);
+        int value;
+        do
+        {
+            value = (std::uniform_int_distribution<int>{0, 26})(generator);
+        }while((value == 13)||(value == i % 26));
         values[i] = value;
     }
 }
@@ -25,7 +29,11 @@ bool organisation::genetic::collisions::mutate(data &source, inputs::input &epoc
     do
     {
         offset = (std::uniform_int_distribution<int>{0, (int)(values.size() - 1)})(generator);
-        value = (std::uniform_int_distribution<int>{0, 26})(generator);
+        //value = (std::uniform_int_distribution<int>{0, 26})(generator);
+        do
+        {
+            value = (std::uniform_int_distribution<int>{0, 26})(generator);
+        }while((value == 13)||(value == offset % 26));
 
         old = values[offset];
         values[offset] = value;
