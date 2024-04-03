@@ -14,16 +14,19 @@ namespace organisation
         {
             static const int MAX_WORDS = 5;
             static const int MAX_COLLISIONS = 10;
+            static const bool OPTIMISE_FOR_COLLISIONS = false;
 
         public:
             int max_words;
             int max_collisions;
+            bool optimise_for_collisions;
 
         public:
-            settings(int _max_words = MAX_WORDS, int _max_collisions = MAX_COLLISIONS)
+            settings(int _max_words = MAX_WORDS, int _max_collisions = MAX_COLLISIONS, bool _optimise_for_collisions = OPTIMISE_FOR_COLLISIONS)
             {
                 max_words = _max_words;
                 max_collisions = _max_collisions;
+                optimise_for_collisions = _optimise_for_collisions;
             }
         };
 

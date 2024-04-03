@@ -45,9 +45,11 @@ organisation::parameters get_parameters()
 
     // ***    
     parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 2;//7;
+    parameters.max_movement_patterns = 2;//4;//2;//7;
     parameters.max_insert_delay = 5; //7
+
     parameters.scores.max_collisions = 2;//0;//2;//0;//2;
+    parameters.scores.optimise_for_collisions = true;
 
     parameters.max_cache_dimension = 3;
     
@@ -90,7 +92,7 @@ organisation::parameters get_parameters()
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
     parameters.input.push_back(epoch3);
-    //parameters.input.push_back(epoch4);
+    parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
     words.push_back(parameters.input);
@@ -177,8 +179,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    //single();
+    //return 0;
     
     organisation::parameters parameters = get_parameters();
 
