@@ -30,7 +30,7 @@ organisation::parameters get_parameters()
     organisation::parameters parameters(width, height, depth);
 
     parameters.dim_clients = organisation::point(10,10,10);
-    parameters.iterations = 30;
+    parameters.iterations = 20;//30;
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
@@ -92,7 +92,7 @@ organisation::parameters get_parameters()
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
     parameters.input.push_back(epoch3);
-    parameters.input.push_back(epoch4);
+    //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
     words.push_back(parameters.input);
