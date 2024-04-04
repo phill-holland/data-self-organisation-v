@@ -179,8 +179,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    //single();
-    //return 0;
+    single();
+    return 0;
     
     organisation::parameters parameters = get_parameters();
 

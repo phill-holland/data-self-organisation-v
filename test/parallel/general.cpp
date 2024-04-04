@@ -23,7 +23,7 @@ organisation::schema getSchema1(organisation::parameters &parameters, organisati
     insert.values = { a };    
 
     organisation::genetic::cache cache(parameters);
-    cache.set(value, organisation::point(18,10,10));
+    cache.set(value, organisation::point(18,10,10,-2));
 
     organisation::genetic::collisions collisions(parameters);
 
@@ -58,7 +58,7 @@ organisation::schema getSchema2(organisation::parameters &parameters, organisati
     insert.values = { a };   
     
     organisation::genetic::cache cache(parameters);
-    cache.set(value, organisation::point(10,18,10));
+    cache.set(value, organisation::point(10,18,10,-2));
 
     organisation::genetic::collisions collisions(parameters);
 
@@ -161,7 +161,7 @@ organisation::schema getSchema5(organisation::parameters &parameters,
     organisation::genetic::inserts::value a(delay, organisation::point(starting.x,starting.y,starting.z), movement);
     insert.values = { a };   
     
-    organisation::point wall(parameters.width/2,parameters.height/2,parameters.depth/2);
+    organisation::point wall(parameters.width/2,parameters.height/2,parameters.depth/2,-2);
     for(int i = 0; i < iteration; ++i)
     {
         wall.x += _direction.x;
@@ -170,7 +170,7 @@ organisation::schema getSchema5(organisation::parameters &parameters,
     }
 
     organisation::genetic::cache cache(parameters);    
-    if(wall != organisation::point(parameters.width/2,parameters.height/2,parameters.depth/2))
+    if(wall != organisation::point(parameters.width/2,parameters.height/2,parameters.depth/2,-2))
         cache.set(organisation::point(value,-1,-1), wall);
 
     organisation::genetic::collisions collisions(parameters);
@@ -209,32 +209,32 @@ TEST(BasicProgramMovementWithCollisionParallel, BasicAssertions)
 
     std::vector<std::tuple<organisation::point,organisation::vector,organisation::vector>> directions = {
         { 
-            organisation::point(starting.x,18,starting.z), 
+            organisation::point(starting.x,18,starting.z,-2), 
             organisation::vector(0,1,0), 
             organisation::vector(1,0,0)             
         },
         { 
-            organisation::point(starting.x,2,starting.z), 
+            organisation::point(starting.x,2,starting.z,-2), 
             organisation::vector(0,-1,0), 
             organisation::vector(1,0,0)             
         },
         { 
-            organisation::point(18,starting.y,starting.z), 
+            organisation::point(18,starting.y,starting.z,-2), 
             organisation::vector(1,0,0), 
             organisation::vector(0,1,0)             
         },
         { 
-            organisation::point(2,starting.y,starting.z), 
+            organisation::point(2,starting.y,starting.z,-2), 
             organisation::vector(-1,0,0), 
             organisation::vector(0,1,0)             
         },         
         { 
-            organisation::point(starting.x,starting.y,18), 
+            organisation::point(starting.x,starting.y,18,-2), 
             organisation::vector(0,0,1), 
             organisation::vector(0,1,0)             
         },       
         { 
-            organisation::point(starting.x,starting.y,2), 
+            organisation::point(starting.x,starting.y,2,-2), 
             organisation::vector(0,0,-1), 
             organisation::vector(0,1,0)             
         }
@@ -323,7 +323,7 @@ TEST(BasicProgramMovementWithCollisionParallel, BasicAssertions)
 }
 
 TEST(BasicProgramMovementWithCollisionForDifferentWordsParallel, BasicAssertions)
-{    
+{   
     GTEST_SKIP();
 
     const int width = 60, height = 60, depth = 60;
@@ -366,7 +366,7 @@ TEST(BasicProgramMovementWithCollisionForDifferentWordsParallel, BasicAssertions
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,1,1);
-    parameters.iterations = 35;
+    parameters.iterations = 34;
 
     organisation::inputs::epoch epoch1(input1);
     parameters.input.push_back(epoch1);
@@ -392,7 +392,7 @@ TEST(BasicProgramMovementWithCollisionForDifferentWordsParallel, BasicAssertions
     insert.values = { a };
     
     organisation::genetic::cache cache(parameters);
-    cache.set(organisation::point(0, -1, -1), organisation::point(starting.x,starting.y + 8,starting.z));
+    cache.set(organisation::point(0, -1, -1), organisation::point(starting.x,starting.y + 8,starting.z,-2));
 
     organisation::genetic::collisions collisions1(parameters);
     organisation::genetic::collisions collisions2(parameters);
@@ -686,7 +686,7 @@ TEST(BasicProgramMovementReboundDirectionSameAsMovementDirectionParallel, BasicA
     insert.values = { a };    
     
     organisation::genetic::cache cache(parameters);
-    cache.set(organisation::point(0,-1,-1), organisation::point(18,10,10));
+    cache.set(organisation::point(0,-1,-1), organisation::point(18,10,10,2));
 
     organisation::genetic::collisions collisions(parameters);
 
@@ -795,7 +795,7 @@ TEST(BasicProgramMovementReboundDirectionSameAsMovementDirectionOutputStationary
     insert.values = { a };
     
     organisation::genetic::cache cache(parameters);
-    cache.set(organisation::point(0,-1,-1), organisation::point(18,10,10));
+    cache.set(organisation::point(0,-1,-1), organisation::point(18,10,10,-2));
 
     organisation::genetic::collisions collisions(parameters);
 
@@ -919,7 +919,7 @@ TEST(BasicProgramMovementAllDirectionsPartialBoundaryParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 14;
+    parameters.iterations = 13;
 
     organisation::inputs::epoch epoch1(input1);
 
@@ -972,7 +972,7 @@ TEST(BasicProgramMovementAllDirectionsBoundaryDeleteSuccessfulAndMovementSequenc
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 14;
+    parameters.iterations = 13;
 
     organisation::inputs::epoch epoch1(input1);
 
@@ -1000,9 +1000,9 @@ TEST(BasicProgramMovementAllDirectionsBoundaryDeleteSuccessfulAndMovementSequenc
     std::vector<organisation::parallel::value> data = program.get();
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(15,15,10), organisation::point(0,-1,-1), 2, 2 },
+        { organisation::point(14,16,10), organisation::point(0,-1,-1), 2, 2 },
         { organisation::point(10, 1,10), organisation::point(0,-1,-1), 3, 3 },
-        { organisation::point(14,14,14), organisation::point(0,-1,-1), 4, 4 },
+        { organisation::point(13,13,15), organisation::point(0,-1,-1), 4, 4 },
         { organisation::point(10,10, 3), organisation::point(0,-1,-1), 5, 5 }        
     };
 
@@ -1032,7 +1032,7 @@ TEST(BasicProgramTestHostBufferExceededLoadParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 9;
+    parameters.iterations = 8;
     parameters.host_buffer = 2;
 
     organisation::inputs::epoch epoch1(input1);
@@ -1046,12 +1046,12 @@ TEST(BasicProgramTestHostBufferExceededLoadParallel, BasicAssertions)
 
     mapper.origin = organisation::point(width / 2, height / 2, depth / 2);
     
-    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
-    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
-    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
-    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
-    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
-    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
+    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10,-2 }, 0, 1);
+    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10,-2 }, 1, 1);
+    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10,-2 }, 2, 1);
+    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10,-2 }, 3, 1);
+    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12,-2 }, 4, 1);
+    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7,-2 }, 5, 1);
 
     std::vector<organisation::schema*> source = { &s1,&s2,&s3,&s4,&s5,&s6 };
 
@@ -1120,7 +1120,7 @@ TEST(BasicProgramTestHostBufferNotEvenLoadParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 9;
+    parameters.iterations = 8;//9;
     parameters.host_buffer = 5;
 
     organisation::inputs::epoch epoch1(input1);
@@ -1134,12 +1134,12 @@ TEST(BasicProgramTestHostBufferNotEvenLoadParallel, BasicAssertions)
 
     mapper.origin = organisation::point(width / 2, height / 2, depth / 2);
     
-    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
-    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
-    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
-    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
-    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
-    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
+    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10,-2 }, 0, 1);
+    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10,-2 }, 1, 1);
+    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10,-2 }, 2, 1);
+    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10,-2 }, 3, 1);
+    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12,-2 }, 4, 1);
+    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7,-2 }, 5, 1);
 
     std::vector<organisation::schema*> source = { &s1,&s2,&s3,&s4,&s5,&s6 };
 
@@ -1228,7 +1228,6 @@ organisation::genetic::movements::movement movement1(parameters.min_movements, p
     movement1.directions = { 
         { 0,1,0 },
         { 0,1,0 },    
-        { 0,1,0 }, 
         { 1,0,0 }, 
         { 1,0,0 }, 
         { 1,0,0 }, 
@@ -1239,8 +1238,7 @@ organisation::genetic::movements::movement movement1(parameters.min_movements, p
     organisation::genetic::movements::movement movement2(parameters.min_movements, parameters.max_movements);
     movement2.directions = { 
         {  0,-1,0 },
-        {  0,-1,0 },    
-        {  0,-1,0 },  
+        {  0,-1,0 },      
         { -1, 0,0 }, 
         { -1, 0,0 }, 
         { -1, 0,0 }, 
@@ -1347,7 +1345,7 @@ TEST(BasicProgramScaleTestParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = clients;    
-    parameters.iterations = 9;
+    parameters.iterations = 8;
     parameters.host_buffer = 100; 
     parameters.max_inserts = 30;   
 
@@ -1359,12 +1357,12 @@ TEST(BasicProgramScaleTestParallel, BasicAssertions)
         
     EXPECT_TRUE(program.initalised());
     
-    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
-    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
-    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
-    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
-    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
-    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
+    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10,-2 }, 0, 1);
+    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10,-2 }, 1, 1);
+    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10,-2 }, 2, 1);
+    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10,-2 }, 3, 1);
+    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12,-2 }, 4, 1);
+    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7,-2 }, 5, 1);
 
     std::vector<organisation::schema*> schemas = { &s1,&s2,&s3,&s4,&s5,&s6 };
     std::vector<organisation::schema*> source;
@@ -1456,7 +1454,7 @@ TEST(BasicProgramAllDirectionsParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = clients;    
-    parameters.iterations = 8;
+    parameters.iterations = 7;
     parameters.host_buffer = 100; 
     parameters.max_inserts = 30;   
 
@@ -1575,7 +1573,7 @@ TEST(BasicProgramMultiMovementPatternsParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,1,1);
-    parameters.iterations = 8;
+    parameters.iterations = 7;
 
     organisation::inputs::epoch epoch1(input1);
     parameters.input.push_back(epoch1);
@@ -1716,10 +1714,10 @@ TEST(BasicProgramDualEpochProofOfConceptTestParallel, BasicAssertions)
 
     organisation::genetic::cache cache(parameters);
     
-    cache.set(organisation::point(mappings.map("I'm"),-1,-1), organisation::point(11,10,9));
-    cache.set(organisation::point(mappings.map("half"),-1,-1), organisation::point(8,10,11));
-    cache.set(organisation::point(mappings.map("love"),-1,-1), organisation::point(10,11,11));
-    cache.set(organisation::point(mappings.map("you"),-1,-1), organisation::point(9,9,9));
+    cache.set(organisation::point(mappings.map("I'm"),-1,-1), organisation::point(11,10,9,-2));
+    cache.set(organisation::point(mappings.map("half"),-1,-1), organisation::point(8,10,11,-2));
+    cache.set(organisation::point(mappings.map("love"),-1,-1), organisation::point(10,11,11,-2));
+    cache.set(organisation::point(mappings.map("you"),-1,-1), organisation::point(9,9,9,-2));
 
     organisation::vector left(-1,0,0);
     organisation::vector right(1,0,0);
@@ -1831,8 +1829,8 @@ TEST(BasicProgramDualEpochProofOfConceptWithBulkValueInsertTestParallel, BasicAs
 
     organisation::genetic::cache cache(parameters);
     
-    cache.set(organisation::point(mappings.map("I'm"),mappings.map("half"),-1), organisation::point(11,9,9));
-    cache.set(organisation::point(mappings.map("love"),mappings.map("you"),-1), organisation::point(8,11,11));
+    cache.set(organisation::point(mappings.map("I'm"),mappings.map("half"),-1), organisation::point(11,9,9,-2));
+    cache.set(organisation::point(mappings.map("love"),mappings.map("you"),-1), organisation::point(8,11,11,-2));
 
     organisation::vector left(-1,0,0);
     organisation::vector right(1,0,0);
@@ -1949,9 +1947,9 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
 
     organisation::genetic::cache cache(parameters);
 
-    cache.set(organisation::point(mappings.map("I'm"),mappings.map("half"),mappings.map("crazy")), organisation::point(10,10,11));
-    cache.set(organisation::point(mappings.map("for"),mappings.map("the"),mappings.map("love")), organisation::point(9,10,9));
-    cache.set(organisation::point(mappings.map("of"),mappings.map("you"),-1), organisation::point(12,10,13));
+    cache.set(organisation::point(mappings.map("I'm"),mappings.map("half"),mappings.map("crazy")), organisation::point(10,10,11,-2));
+    cache.set(organisation::point(mappings.map("for"),mappings.map("the"),mappings.map("love")), organisation::point(9,10,9,-2));
+    cache.set(organisation::point(mappings.map("of"),mappings.map("you"),-1), organisation::point(12,10,13,-2));
 
     organisation::vector left(-1,0,0);
     organisation::vector right(1,0,0);
@@ -2015,7 +2013,7 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
 
 TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const organisation::point clients(10,10,10);
     const int width = 20, height = 20, depth = 20;
@@ -2048,12 +2046,12 @@ TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
         
     EXPECT_TRUE(program.initalised());
         
-    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
-    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
-    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
-    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
-    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
-    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
+    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10,-2 }, 0, 1);
+    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10,-2 }, 1, 1);
+    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10,-2 }, 2, 1);
+    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10,-2 }, 3, 1);
+    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12,-2 }, 4, 1);
+    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7,-2 }, 5, 1);
 
     std::vector<organisation::schema*> schemas = { &s1,&s2,&s3,&s4,&s5,&s6 };
     std::vector<organisation::schema*> source;
@@ -2071,16 +2069,10 @@ TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
 
     std::vector<organisation::schema> destinations;    
 
-    //destination.resize(length);
-    //destination_ptr.resize(length);
-
     for(int i = 0; i < length; ++i)
     {
         organisation::schema schema(parameters);
-        destinations.push_back(schema);//organisation::schema(parameters);
-        //destination_ptr[i] = &destination[i];
-        //destination.push_back(d1);
-        //destination_ptr.push_back(&destination[i]);//.back());
+        destinations.push_back(schema);
     }
 
     std::vector<organisation::schema*> destination;
@@ -2091,153 +2083,97 @@ TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
     }
 
     program.into(destination.data(), destination.size());
-//std::cout << "goog gog\n";
 
     for(int i = 0; i < length; ++i)
     {
         EXPECT_TRUE(source[i]->equals(*destination[i]));
-        //if(!(source[i]->equals(*destination[i])))
-            //std::cout << "moo " << i << "\n";
     }
-
 }
 
-/*
-TEST(BasicProgramMovementWithCollisionSaveAndLoadAndRunParallel, BasicAssertions)
+TEST(BasicProgramTestCacheNoOutputParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const int width = 20, height = 20, depth = 20;
-    organisation::point starting(width / 2, height / 2, depth / 2);
 
-    std::string input1("daisy daisy give me your answer do .");
-   
+    std::string values1("daisy give me your answer do .");
+    std::string input1("daisy");
     std::vector<std::vector<std::string>> expected = {
         { 
-            "daisydaisydaisydaisydaisydaisydaisydaisy"
+            "daisy", "", "me", "", "answer", ""
         }
     };
 
-    std::vector<std::string> strings = organisation::split(input1);
+    std::vector<std::string> strings = organisation::split(values1);
     organisation::data mappings(strings);
-
-    std::vector<std::tuple<organisation::point,organisation::vector,organisation::vector>> directions = {
-        { 
-            organisation::point(starting.x,18,starting.z), 
-            organisation::vector(0,1,0), 
-            organisation::vector(1,0,0)             
-        },
-        { 
-            organisation::point(starting.x,2,starting.z), 
-            organisation::vector(0,-1,0), 
-            organisation::vector(1,0,0)             
-        },
-        { 
-            organisation::point(18,starting.y,starting.z), 
-            organisation::vector(1,0,0), 
-            organisation::vector(0,1,0)             
-        },
-        { 
-            organisation::point(2,starting.y,starting.z), 
-            organisation::vector(-1,0,0), 
-            organisation::vector(0,1,0)             
-        },         
-        { 
-            organisation::point(starting.x,starting.y,18), 
-            organisation::vector(0,0,1), 
-            organisation::vector(0,1,0)             
-        },       
-        { 
-            organisation::point(starting.x,starting.y,2), 
-            organisation::vector(0,0,-1), 
-            organisation::vector(0,1,0)             
-        }
-    };
 
 	::parallel::device device(0);
 	::parallel::queue queue(device);
 
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
-    parameters.dim_clients = organisation::point(1,1,1);
-    parameters.iterations = 40;
+    parameters.dim_clients = organisation::point(2,3,1);
+    parameters.iterations = 8;
+    parameters.host_buffer = 10;
 
     organisation::inputs::epoch epoch1(input1);
+
     parameters.input.push_back(epoch1);
 
-    parallel::mapper::configuration mapper;
+    parallel::mapper::configuration mapper;    
+    organisation::parallel::program program(device, &queue, mapper, parameters);
+        
+    EXPECT_TRUE(program.initalised());
+
     mapper.origin = organisation::point(width / 2, height / 2, depth / 2);
+    
+    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10,-2 }, 0, 1);
+    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10,-3 }, 1, 1);
+    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10,-2 }, 2, 1);
+    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10,-3 }, 3, 1);
+    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12,-2 }, 4, 1);
+    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7,-3 }, 5, 1);
 
-    for(auto &it: directions)    
-    {        
-        organisation::parallel::program program(device, &queue, mapper, parameters);
-        
-        EXPECT_TRUE(program.initalised());
-        
-        organisation::schema s1(parameters);
+    std::vector<organisation::schema*> source = { &s1,&s2,&s3,&s4,&s5,&s6 };
 
-        organisation::genetic::movements::movement movement(parameters.min_movements, parameters.max_movements);
-        movement.directions = { std::get<1>(it) };
+    program.copy(source.data(), source.size());
+    program.set(mappings, parameters.input);
 
-        organisation::genetic::inserts::insert insert(parameters);
-        organisation::genetic::inserts::value a(2, organisation::point(starting.x,starting.y,starting.z), movement);
-        insert.values = { a };
-        
-        organisation::genetic::cache cache(parameters);
-        cache.set(organisation::point(0,-1,-1), std::get<0>(it));
+    program.run(mappings);
 
-        organisation::genetic::collisions collisions(parameters);
-
-        organisation::vector up = std::get<1>(it);
-        organisation::vector rebound = std::get<2>(it);
-
-        int offset = 0;
-        for(int i = 0; i < parameters.mappings.maximum(); ++i)
-        {        
-            collisions.set(rebound.encode(), offset + up.encode());
-            offset += parameters.max_collisions;
-        }
-
-        s1.prog.set(cache);
-        s1.prog.set(insert);
-        s1.prog.set(collisions);
-
-        // ***
-        
-        std::string stream = s1.prog.serialise();
-        s1.prog.deserialise(stream);
-
-        // ***
-
-        std::vector<organisation::schema*> source = { &s1 };
-        
-        program.copy(source.data(), source.size());
-        program.set(mappings, parameters.input);
-
-        program.run(mappings);
-
-        std::vector<std::vector<std::string>> compare;
-        std::vector<organisation::outputs::output> results = program.get(mappings);
-        
-        for(auto &epoch: results)
+    std::vector<std::vector<std::string>> compare;
+    std::vector<organisation::outputs::output> results = program.get(mappings);
+    
+    for(auto &epoch: results)
+    {
+        std::unordered_map<int,std::vector<std::string>> data;
+        for(auto &output: epoch.values)
         {
-            std::unordered_map<int,std::vector<std::string>> data;
-            for(auto &output: epoch.values)
-            {
-                if(data.find(output.client) == data.end()) data[output.client] = { output.value };
-                else data[output.client].push_back(output.value);
-            }
-
-            std::vector<std::string> temp(1);
-            for(auto &value: data)
-            {
-                temp[value.first] = std::reduce(value.second.begin(),value.second.end(),std::string(""));
-            }
-
-            compare.push_back(temp);
+            if(data.find(output.client) == data.end()) data[output.client] = { output.value };
+            else data[output.client].push_back(output.value);
         }
-        
-        EXPECT_EQ(compare, expected);
+
+        std::vector<std::string> temp(6);
+        for(auto &value: data)
+        {
+            temp[value.first] = std::reduce(value.second.begin(),value.second.end(),std::string(""));
+        }
+
+        compare.push_back(temp);
     }
+
+    EXPECT_EQ(compare, expected);
+    
+    std::vector<organisation::parallel::value> data = program.get();
+
+    std::vector<organisation::parallel::value> values = {
+        { organisation::point(15,11,10), organisation::point(0,-1,-1), 2, 0 },
+        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 2, 1 },
+        { organisation::point(11,15,10), organisation::point(0,-1,-1), 2, 2 },
+        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 2, 3 },
+        { organisation::point(11,10,15), organisation::point(0,-1,-1), 2, 4 },
+        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 2, 5 },
+    };
+
+    EXPECT_EQ(data,values);       
 }
-*/

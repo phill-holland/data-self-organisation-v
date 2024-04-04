@@ -2,6 +2,11 @@
 #include "parallel/parameters.hpp"
 #include <algorithm>
 
+bool IsStationaryPosition(const sycl::float4 a)
+{
+    return a.w() == -2 || a.w() == -3;
+}
+
 int GetCollidedKey(const sycl::float4 a, const sycl::float4 b)
 {
     sycl::float4 direction;
@@ -380,30 +385,30 @@ void organisation::parallel::program::run(organisation::data &mappings)
             //stops(iterations);
 
 
-/*std::cout << "positions(" << epoch << "): ";
-outputarb(devicePositions,totalValues);
-std::cout << "nextPos: ";
-outputarb(deviceNextPositions,totalValues);
-std::cout << "nextDir: ";
-outputarb(deviceNextDirections,totalValues);
-std::cout << "client: ";
-outputarb(deviceClient,totalValues);
-std::cout << "values: ";
-outputarb(deviceValues,totalValues);
-std::cout << "col: ";
-outputarb(deviceNextCollisionKeys,totalValues);
-std::cout << "outputs: ";
-outputarb(deviceOutputValues,totalOutputValues);
-std::cout << "patternIdx: ";
-outputarb(deviceMovementPatternIdx, totalValues);
-std::cout << "movementIdx: ";
-outputarb(deviceMovementIdx,totalValues);
-std::cout << "counts: ";
-outputarb(inserter->deviceMovementsCounts, settings.max_movement_patterns * settings.clients());
-std::cout << "modifier: ";
-outputarb(deviceMovementModifier, totalValues);
-std::cout << "\r\n";
-*/
+//std::cout << "positions(" << epoch << "): ";
+//outputarb(devicePositions,totalValues);
+//std::cout << "nextPos: ";
+//outputarb(deviceNextPositions,totalValues);
+//std::cout << "nextDir: ";
+//outputarb(deviceNextDirections,totalValues);
+//std::cout << "client: ";
+//outputarb(deviceClient,totalValues);
+//std::cout << "values: ";
+//outputarb(deviceValues,totalValues);
+//std::cout << "col: ";
+//outputarb(deviceNextCollisionKeys,totalValues);
+//std::cout << "outputs: ";
+//outputarb(deviceOutputValues,totalOutputValues);
+//std::cout << "patternIdx: ";
+//outputarb(deviceMovementPatternIdx, totalValues);
+//std::cout << "movementIdx: ";
+//outputarb(deviceMovementIdx,totalValues);
+//std::cout << "counts: ";
+//outputarb(inserter->deviceMovementsCounts, settings.max_movement_patterns * settings.clients());
+//std::cout << "modifier: ";
+//outputarb(deviceMovementModifier, totalValues);
+//std::cout << "\r\n";
+
         };
 
         move(mappings, epoch);            
@@ -589,8 +594,8 @@ void organisation::parallel::program::next()
                 sycl::int2 collision = _collisionKeys[i];
                 if(collision.x() > 0)
                 {
-                    //if (_collisionKeys[collision.y()].x() > 0 && _collisionKeys[collision.y()].y() == i)
-                    if (_collisionKeys[collision.y()].x() > 0 && _positions[collision.y()].w() != -2)//_collisionKeys[collision.y()].y() == i)
+                    //if (_collisionKeys[collision.y()].x() > 0 && _positions[collision.y()].w() != -2)
+                    if (_collisionKeys[collision.y()].x() > 0 && _positions[collision.y()].w() == 0)
                     {
                         int key1 = GetCollidedKey(_positions[i], _nextPositions[i]);
                         int offset1 = (client * _max_collisions * _max_words) + (_max_collisions * _values[i].x()) + key1;
@@ -745,7 +750,7 @@ void organisation::parallel::program::next()
                     int temp = _movementIdx[i];          
                     
 //out << "GCOL: " << ((int)i) << " " << temp << " " << _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx] << "\n";
-                    if((temp > _max_movements)||(temp > _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
+                    if((temp >= _max_movements)||(temp >= _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
                         _movementIdx[i] = 0;            
                 }
             }
@@ -1065,6 +1070,8 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
         auto _outputStationaryOnly = settings.output_stationary_only;
 
+//sycl::stream out(8192, 1024, h);
+
         h.parallel_for(num_items, [=](auto i) 
         {  
             if(_positions[i].w() == 0)
@@ -1083,15 +1090,22 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                 {
                     sycl::int2 currentCollision = _currentCollisionKeys[i];
                     if(currentCollision.x() > 0) 
-                    {                 
-                        if((_positions[currentCollision.y()].w() == -2)||(!_outputStationaryOnly))
-                        {   
-                            value = _values[currentCollision.y()];
-                            pos = _positions[currentCollision.y()];
-                            output = true;
+                    {           
+
+            //out << "W1 " << _positions[currentCollision.y()].w() << "\n";
+                        if(_positions[currentCollision.y()].w() != -3)
+                        {
+                            if((_positions[currentCollision.y()].w() == -2)||(!_outputStationaryOnly))
+                            {   
+                            //out << "W1 OUT " << _positions[currentCollision.y()].w() << "\n";
+                                value = _values[currentCollision.y()];
+                                pos = _positions[currentCollision.y()];
+                                output = true;
+                            }
                         }
 
-                        if(_positions[currentCollision.y()].w() != -2)         
+                        //if(_positions[currentCollision.y()].w() != -2)         
+                        if(_positions[currentCollision.y()].w() == 0)  
                             collision = true;
                     }
                 }
@@ -1099,14 +1113,20 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                 sycl::int2 nextCollision = _nextCollisionKeys[i];
                 if(nextCollision.x() > 0) 
                 {
-                    if((_positions[nextCollision.y()].w() == -2)||(!_outputStationaryOnly))
-                    {   
-                        value = _values[nextCollision.y()];
-                        pos = _positions[nextCollision.y()];
-                        output = true;
+        //out << "W2 " << _positions[nextCollision.y()].w() << "\n";
+                    if(_positions[nextCollision.y()].w() != -3)
+                    {
+                        if((_positions[nextCollision.y()].w() == -2)||(!_outputStationaryOnly))
+                        {   
+                        //out << "W2 OUT " << _positions[nextCollision.y()].w() << "\n";
+                            value = _values[nextCollision.y()];
+                            pos = _positions[nextCollision.y()];
+                            output = true;
+                        }
                     }
 
-                    if(_positions[nextCollision.y()].w() != -2)
+                    //if(_positions[nextCollision.y()].w() != -2)
+                    if(_positions[nextCollision.y()].w() == 0)
                         collision = true;
                 }
 
@@ -1123,6 +1143,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
                     if(idx < _outputLength)
                     {                    
+//out << "out " << value.x() << "\n";                        
                         _outputValues[idx] = value;
                         _outputIndex[idx] = _iteration;
                         _outputClient[idx] = _client[i];   
@@ -1164,7 +1185,7 @@ void organisation::parallel::program::history(int epoch, int iteration)
                 temp.sequence = iteration;
                 temp.client = hostClient[i].w();
                 temp.epoch = epoch;
-                temp.stationary = hostPositions[i].w() == -2;
+                temp.stationary = hostPositions[i].w() != 0;//IsStationaryPosition(hostPositions[i]);//hostPositions[i].w() == -2;
 
                 settings.history->push_back(temp);
             }
@@ -1189,7 +1210,9 @@ std::vector<organisation::parallel::value> organisation::parallel::program::get(
             int len = values.size();
             for(int i = 0; i < len; ++i)
             {
-                if(positions[i].w() != -2)
+                //if(positions[i].w() != -2)
+                //if(!IsStationaryPosition(positions[i]))
+                if(positions[i].w() == 0)
                 {
                     value temp;
 
@@ -1264,8 +1287,18 @@ void organisation::parallel::program::copy(::organisation::schema **source, int 
             point value = std::get<0>(it);
             point position = std::get<1>(it);
 
-            hostCachePositions[d_count + (index * settings.max_values)] = { (float)position.x, (float)position.y, (float)position.z, -2.0f };
-            hostCacheValues[d_count + (index * settings.max_values)] = { value.x, value.y, value.z, -1 };
+            hostCachePositions[d_count + (index * settings.max_values)] = { 
+                (float)position.x, 
+                (float)position.y, 
+                (float)position.z, 
+                (float)position.w
+            };
+            hostCacheValues[d_count + (index * settings.max_values)] = { 
+                value.x, 
+                value.y, 
+                value.z, 
+                -1 
+            };
 
             auto m = map(client_index, settings.dim_clients);
             hostCacheClients[d_count + (index * settings.max_values)] = m;
@@ -1339,7 +1372,11 @@ void organisation::parallel::program::into(::organisation::schema **destination,
                 sycl::int4 value = hostCacheValues[j + (i * settings.max_values)];
 
                 if(value.x() != -1)
-                    prog->caches.set(point(value.x(),value.y(),value.z()),point((int)position.x(),(int)position.y(),(int)position.z()));
+                {
+                    point data(value.x(),value.y(),value.z());
+                    point pos((int)position.x(),(int)position.y(),(int)position.z(),(int)position.w());
+                    prog->caches.set(data, pos);
+                }
             }
 
             ++dest_client_index;

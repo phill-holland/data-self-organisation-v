@@ -119,7 +119,6 @@ void organisation::genetic::cache::generate(data &source, inputs::input &epochs)
 {
     clear();
                 
-    //std::vector<int> raw = source.all();
     std::vector<int> raw = source.outputs(epochs);
 
     int count = (std::uniform_int_distribution<int>{0, _max_cache})(generator);
@@ -127,7 +126,7 @@ void organisation::genetic::cache::generate(data &source, inputs::input &epochs)
     for(int i = 0; i < count; ++i)    
     {
         point position;
-        position.generate(_width, _height, _depth);
+        position.generate2(_width, _height, _depth, -2, 0, 0, 0, -3);
         int index = ((_width * _height) * position.z) + ((position.y * _width) + position.x);
         if(points.find(index) == points.end())
         {
@@ -146,7 +145,6 @@ bool organisation::genetic::cache::mutate(data &source, inputs::input &epochs)
     const int COUNTER = 15;
 
     if(values.empty()) return false;
-    //std::vector<int> all = source.all();
     std::vector<int> all = source.outputs(epochs);
 
     int offset = (std::uniform_int_distribution<int>{0, (int)(values.size() - 1)})(generator);
@@ -177,7 +175,8 @@ bool organisation::genetic::cache::mutate(data &source, inputs::input &epochs)
         int new_index = 0;
         do
         {
-            position.generate(_width, _height, _depth);
+            //position.generate(_width, _height, _depth);
+            position.generate2(_width, _height, _depth, -2, 0, 0, 0, -3);
             new_index = ((_width * _height) * position.z) + ((position.y * _width) + position.x);    
         }while((points.find(new_index) != points.end())&&(counter++ < COUNTER));
 
