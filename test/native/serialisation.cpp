@@ -30,8 +30,8 @@ TEST(BasicSerialisationDeserialisation, BasicAssertions)
 
     organisation::genetic::cache cache(parameters);
     cache.set(organisation::point(0,-1,-1), starting);
-    cache.set(organisation::point(0,1,-1), organisation::point(starting.x + 1, starting.y, starting.z));
-    cache.set(organisation::point(0,2,3), organisation::point(starting.x + 2, starting.y, starting.z));
+    cache.set(organisation::point(0,1,-1), organisation::point(starting.x + 1, starting.y, starting.z, -2));
+    cache.set(organisation::point(0,2,3), organisation::point(starting.x + 2, starting.y, starting.z, -3));
     
     organisation::genetic::inserts::insert insert(parameters);
 

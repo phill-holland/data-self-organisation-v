@@ -122,11 +122,9 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
     
     result.copy(p.go(actual, generations));
 
-    if(actual <= generations) 
-    {
-        std::string filename("data/run.txt");
-        result.prog.save(filename);
-    }
+    std::string filename("data/run.txt");
+    if(actual > generations) filename = std::string("data/failed.txt");    
+    result.prog.save(filename);
     
     return true;
 }
@@ -179,8 +177,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    //single();
+    //return 0;
     
     organisation::parameters parameters = get_parameters();
 

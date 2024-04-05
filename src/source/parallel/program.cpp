@@ -750,6 +750,7 @@ void organisation::parallel::program::next()
                     int temp = _movementIdx[i];          
                     
 //out << "GCOL: " << ((int)i) << " " << temp << " " << _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx] << "\n";
+                    //if((temp > _max_movements)||(temp > _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
                     if((temp >= _max_movements)||(temp >= _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
                         _movementIdx[i] = 0;            
                 }

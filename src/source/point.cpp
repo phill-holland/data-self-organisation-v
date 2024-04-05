@@ -16,7 +16,12 @@ void organisation::point::generate2(int max_x, int max_y, int max_z, int max_w, 
     x = (std::uniform_int_distribution<int>{min_x, max_x - 1})(generator);
     y = (std::uniform_int_distribution<int>{min_y, max_y - 1})(generator);
     z = (std::uniform_int_distribution<int>{min_z, max_z - 1})(generator);
-    w = (std::uniform_int_distribution<int>{min_w, max_w})(generator);\
+
+    w = -2;
+    //int temp = (std::uniform_int_distribution<int>{0, 100})(generator);
+    //if(temp > 80) w = -3;
+    //else w = -2;
+    //w = (std::uniform_int_distribution<int>{min_w, max_w})(generator);
 }
 
 void organisation::point::generate(std::vector<int> &data, int dimensions)
