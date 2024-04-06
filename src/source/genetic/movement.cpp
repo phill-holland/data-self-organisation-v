@@ -59,12 +59,17 @@ void organisation::genetic::movements::movement::generate(data &source, inputs::
 
     for(int i = 0; i < n; ++i)
     {
-        int value = (std::uniform_int_distribution<int>{0, 26})(generator);
-        vector v1;
-        if(v1.decode(value))
-        {            
-            directions.push_back(v1);
+        int t1 = (std::uniform_int_distribution<int>{0, 100})(generator);
+        if(t1 < 50)
+        {
+            int value = (std::uniform_int_distribution<int>{0, 26})(generator);
+            vector v1;
+            if(v1.decode(value))
+            {            
+                directions.push_back(v1);
+            }
         }
+        else directions.push_back(vector(0,0,0));
     }
 }
 
