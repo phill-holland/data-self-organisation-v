@@ -296,7 +296,7 @@ void organisation::parallel::program::restart()
 
         auto _valuesLength = settings.max_values * settings.clients();
         auto _newTotalValues = deviceTotalValues;
-        
+//sycl::stream out(8192, 1024, h);        
         h.parallel_for(num_items, [=](auto i) 
         {  
             sycl::int4 cacheValue = _cacheValues[i];
@@ -307,7 +307,7 @@ void organisation::parallel::program::restart()
                             sycl::access::address_space::ext_intel_global_device_space> ar(_newTotalValues[0]);
 
                 int idx = ar.fetch_add(1);
-
+//out << "restart " << idx << "\n";
                 if(idx < _valuesLength)
                 {
                     _positions[idx] = _cachePositions[i];
@@ -324,6 +324,10 @@ void organisation::parallel::program::restart()
   
     if(totalValues > settings.max_values * settings.clients())
             totalValues = settings.max_values * settings.clients();
+
+//std::cout << "restart arb pos: ";
+//outputarb(devicePositions, settings.max_values * settings.clients());
+//std::cout << "\r\n";
 }
 
 void organisation::parallel::program::run(organisation::data &mappings)
@@ -380,17 +384,17 @@ void organisation::parallel::program::run(organisation::data &mappings)
             //stops(iterations);
 
 
-/*std::cout << "positions(" << epoch << "): ";
-outputarb(devicePositions,totalValues);
-std::cout << "nextPos: ";
-outputarb(deviceNextPositions,totalValues);
-std::cout << "nextDir: ";
-outputarb(deviceNextDirections,totalValues);
-std::cout << "client: ";
-outputarb(deviceClient,totalValues);
-std::cout << "values: ";
-outputarb(deviceValues,totalValues);
-std::cout << "col: ";
+//std::cout << "positions(" << epoch << "): ";
+//outputarb(devicePositions,totalValues);
+//std::cout << "nextPos: ";
+//outputarb(deviceNextPositions,totalValues);
+//std::cout << "nextDir: ";
+//outputarb(deviceNextDirections,totalValues);
+//std::cout << "client: ";
+//outputarb(deviceClient,totalValues);
+//std::cout << "values: ";
+//outputarb(deviceValues,totalValues);
+/*std::cout << "col: ";
 outputarb(deviceNextCollisionKeys,totalValues);
 std::cout << "outputs: ";
 outputarb(deviceOutputValues,totalOutputValues);
@@ -402,8 +406,9 @@ std::cout << "counts: ";
 outputarb(inserter->deviceMovementsCounts, settings.max_movement_patterns * settings.clients());
 std::cout << "modifier: ";
 outputarb(deviceMovementModifier, totalValues);
-std::cout << "\r\n";
 */
+//std::cout << "\r\n";
+
         };
 
         move(mappings, epoch);            
@@ -745,7 +750,7 @@ void organisation::parallel::program::next()
                     int temp = _movementIdx[i];          
                     
 //out << "GCOL: " << ((int)i) << " " << temp << " " << _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx] << "\n";
-                    if((temp > _max_movements)||(temp > _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
+                    if((temp >= _max_movements)||(temp >= _movementsCounts[(client * _max_movement_patterns) + movement_pattern_idx]))
                         _movementIdx[i] = 0;            
                 }
             }
@@ -810,6 +815,7 @@ void organisation::parallel::program::insert(int epoch, int iteration)
             auto _max_movements = settings.max_movements;
             auto _max_movement_patterns = settings.max_movement_patterns;
 
+//sycl::stream out(8192, 1024, h);
             h.parallel_for(num_items, [=](auto i) 
             {  
                 if((_insertKeys[i].x() == 0)&&(_startingKeys[i].x() == 0))
@@ -819,6 +825,8 @@ void organisation::parallel::program::insert(int epoch, int iteration)
                                 sycl::access::address_space::ext_intel_global_device_space> ar(_totalValues[0]);
 
                     int idx = ar.fetch_add(1);               
+
+                //out << "idx " << idx << "\n";
                     if(idx < _valuesLength)
                     {
                         int movement_pattern_idx = _srcMovementPatternIdx[i];
@@ -863,6 +871,10 @@ void organisation::parallel::program::insert(int epoch, int iteration)
         if(totalValues > settings.max_values * settings.clients())
             totalValues = settings.max_values * settings.clients();
     }
+
+    //std::cout << "INSERT dev pos: ";
+    //outputarb(devicePositions, settings.max_values * settings.clients());
+    //std::cout << "\r\n";
 }
 
 void organisation::parallel::program::stops(int iteration)
@@ -905,6 +917,10 @@ void organisation::parallel::program::boundaries()
 {
     if(totalValues == 0) return;
 
+//std::cout << "boundaries before dev pos: ";
+  //  outputarb(devicePositions, totalValues);
+//    std::cout << "\r\n";
+
     sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
     sycl::range num_items{(size_t)totalValues};
 
@@ -933,9 +949,9 @@ void organisation::parallel::program::boundaries()
         h.parallel_for(num_items, [=](auto i) 
         {  
             sycl::float4 temp = _positions[i];
-            if((temp.x() > 0)&&(temp.x() < _width)&&
-                (temp.y() > 0)&&(temp.y() < _height)&&
-                (temp.z() > 0)&&(temp.z() < _depth))
+            if((temp.x() >= 0)&&(temp.x() < _width)&&
+                (temp.y() >= 0)&&(temp.y() < _height)&&
+                (temp.z() >= 0)&&(temp.z() < _depth))
             {
                 cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
                             sycl::memory_scope::device, 
@@ -972,6 +988,11 @@ void organisation::parallel::program::boundaries()
 
         totalValues = temp;
     }
+
+  //  std::cout << "boundaries after dev pos: ";
+//    outputarb(devicePositions, totalValues);
+    //std::cout << "\r\n";
+
 }
 
 void organisation::parallel::program::corrections(bool debug)

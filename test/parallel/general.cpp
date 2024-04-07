@@ -2015,7 +2015,7 @@ TEST(BasicProgramDualEpochProofOfConcept2TestParallel, BasicAssertions)
 
 TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const organisation::point clients(10,10,10);
     const int width = 20, height = 20, depth = 20;

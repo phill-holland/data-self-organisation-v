@@ -45,7 +45,7 @@ organisation::parameters get_parameters()
 
     // ***    
     parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 2;//4;//2;//7;
+    parameters.max_movement_patterns = 4;//2;//4;//2;//7;
     parameters.max_insert_delay = 5; //7
 
     parameters.scores.max_collisions = 2;//0;//2;//0;//2;
@@ -122,11 +122,9 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
     
     result.copy(p.go(actual, generations));
 
-    if(actual <= generations) 
-    {
-        std::string filename("data/run.txt");
-        result.prog.save(filename);
-    }
+    std::string filename("data/run.txt");
+    if(actual > generations) filename = std::string("data/failed.txt");    
+    result.prog.save(filename);
     
     return true;
 }
@@ -179,13 +177,13 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    //single();
-    //return 0;
+    single();
+    return 0;
     
     organisation::parameters parameters = get_parameters();
 
-    //organisation::history::stream stream;
-    //parameters.history = &stream;
+    organisation::history::stream stream;
+    parameters.history = &stream;
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);
