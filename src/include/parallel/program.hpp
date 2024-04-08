@@ -39,6 +39,9 @@ namespace organisation
             sycl::int4 *hostValues;
             sycl::int4 *hostClient;
             sycl::float4 *hostNextDirections;
+            sycl::int2 *hostCollisions;
+            int *hostMovementIdx;
+            int *hostMovementPatternIdx;
             // ***
 
             int *deviceMovementIdx;
@@ -89,6 +92,7 @@ namespace organisation
             sycl::int4 *deviceNewClient;
             sycl::float4 *deviceNewNextDirections;
             int *deviceNewMovementIdx;
+            int *deviceNewMovementPatternIdx;
             // ***
 
             sycl::float4 *deviceOldPositions;

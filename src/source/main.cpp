@@ -150,7 +150,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run.txt")) return false;
+    if(!s1.prog.load("data/run3.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     

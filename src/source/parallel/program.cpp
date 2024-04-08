@@ -169,6 +169,9 @@ void organisation::parallel::program::reset(::parallel::device &dev,
     deviceNewMovementIdx = sycl::malloc_device<int>(settings.max_values * settings.clients(), qt);
     if(deviceNewMovementIdx == NULL) return;
 
+    deviceNewMovementPatternIdx = sycl::malloc_device<int>(settings.max_values * settings.clients(), qt);
+    if(deviceNewMovementPatternIdx == NULL) return;
+
     // ***
 
     deviceOldPositions = sycl::malloc_device<sycl::float4>(settings.max_values * settings.clients(), qt);
@@ -195,6 +198,15 @@ void organisation::parallel::program::reset(::parallel::device &dev,
 
         hostNextDirections = sycl::malloc_host<sycl::float4>(settings.max_values * settings.clients(), qt);
         if(hostNextDirections == NULL) return;
+
+        hostCollisions = sycl::malloc_host<sycl::int2>(settings.max_values * settings.clients(), qt);
+        if(hostCollisions == NULL) return;
+
+        hostMovementIdx = sycl::malloc_host<int>(settings.max_values * settings.clients(), qt);
+        if(hostMovementIdx == NULL) return;
+
+        hostMovementPatternIdx = sycl::malloc_host<int>(settings.max_values * settings.clients(), qt);
+        if(hostMovementPatternIdx == NULL) return;
     }
 
     // ***
@@ -379,8 +391,9 @@ void organisation::parallel::program::run(organisation::data &mappings)
             next();
             corrections();
             outputting(epoch, iterations);
-            boundaries();
             history(epoch, iterations);
+            boundaries();
+            
             //stops(iterations);
 
 
@@ -583,7 +596,7 @@ void organisation::parallel::program::next()
         auto _max_movement_patterns = settings.max_movement_patterns;
         auto _max_words = settings.mappings.maximum();
 
-        //sycl::stream out(8192, 1024, h);
+       // sycl::stream out(8192, 1024, h);
 
         h.parallel_for(num_items, [=](auto i) 
         {  
@@ -725,7 +738,7 @@ void organisation::parallel::program::next()
                     int a = _movementIdx[i];
                     int offset = _max_movements * _max_movement_patterns * client;
                     int movement_pattern_idx = _movementPatternIdx[i];
-
+//out << "::next movePattern " << _movementPatternIdx[i] << " " << (int)i << "\n";
                     sycl::float4 direction = _movements[a + offset + (movement_pattern_idx * _max_movements)];
 
 //out << "hello:" <<_values[i].x() << " a:" << a << "pat:" << movement_pattern_idx << " " << direction.x() << "," << direction.y() << "," << direction.z() << " mod:" << _movementModifier[i].w() << "\n";
@@ -760,7 +773,7 @@ void organisation::parallel::program::next()
 
 void organisation::parallel::program::insert(int epoch, int iteration)
 {
-    int count = inserter->insert(epoch);
+    int count = inserter->insert(epoch, iteration);
 
     if(count + totalValues >= settings.max_values * settings.clients())
         count = (count + totalValues) - (settings.max_values * settings.clients());
@@ -933,12 +946,14 @@ void organisation::parallel::program::boundaries()
         auto _client = deviceClient;
         auto _nextDirection = deviceNextDirections;
         auto _movementIdx = deviceMovementIdx;
+        auto _movementPatternIdx = deviceMovementPatternIdx;
 
         auto _newPositions = deviceNewPositions;
         auto _newValues = deviceNewValues;
         auto _newClient = deviceNewClient;
         auto _newNextDirection = deviceNewNextDirections;
-        auto _newMovementIdx = deviceNewMovementIdx;
+        auto _newMovementIdx = deviceNewMovementIdx;    
+        auto _newMovementPatternIdx = deviceNewMovementPatternIdx;
         
         auto _newTotalValues = deviceTotalValues;
 
@@ -964,6 +979,7 @@ void organisation::parallel::program::boundaries()
                 _newClient[idx] = _client[i];
                 _newNextDirection[idx] = _nextDirection[i];
                 _newMovementIdx[idx] = _movementIdx[i];
+                _newMovementPatternIdx[idx] = _movementPatternIdx[i];
             }
         });
     }).wait();
@@ -982,6 +998,7 @@ void organisation::parallel::program::boundaries()
             events.push_back(qt.memcpy(deviceClient, deviceNewClient, sizeof(sycl::int4) * temp));
             events.push_back(qt.memcpy(deviceNextDirections, deviceNewNextDirections, sizeof(sycl::float4) * temp));
             events.push_back(qt.memcpy(deviceMovementIdx, deviceNewMovementIdx, sizeof(int) * temp));
+            events.push_back(qt.memcpy(deviceMovementPatternIdx, deviceNewMovementPatternIdx, sizeof(int) * temp));
 
             sycl::event::wait(events);
         }
@@ -1172,6 +1189,10 @@ void organisation::parallel::program::history(int epoch, int iteration)
             events.push_back(qt.memcpy(hostValues, deviceValues, sizeof(sycl::int4) * totalValues));
             events.push_back(qt.memcpy(hostClient, deviceClient, sizeof(sycl::int4) * totalValues));
             events.push_back(qt.memcpy(hostNextDirections, deviceNextDirections, sizeof(sycl::float4) * totalValues));
+            events.push_back(qt.memcpy(hostCollisions, deviceNextCollisionKeys, sizeof(sycl::int2) * totalValues));
+
+            events.push_back(qt.memcpy(hostMovementIdx, deviceMovementIdx, sizeof(int) * totalValues));
+            events.push_back(qt.memcpy(hostMovementPatternIdx, deviceMovementPatternIdx, sizeof(int) * totalValues));
 
             sycl::event::wait(events);
 
@@ -1186,6 +1207,15 @@ void organisation::parallel::program::history(int epoch, int iteration)
                 temp.client = hostClient[i].w();
                 temp.epoch = epoch;
                 temp.stationary = hostPositions[i].w() == -2;
+                temp.movementIdx = hostMovementIdx[i];
+                temp.movementPatternIdx = hostMovementPatternIdx[i];
+
+                if(hostCollisions[i].x() == 1)
+                {
+                    sycl::float4 collision = hostPositions[hostCollisions[i].y()];
+                    temp.collision = point((int)collision.x(),(int)collision.y(),(int)collision.z());
+                    temp.colType = (int)collision.w();
+                }
 
                 settings.history->push_back(temp);
             }
@@ -1575,7 +1605,7 @@ void organisation::parallel::program::makeNull()
     hostOutputValues = NULL;
     hostOutputIndex = NULL;
     hostOutputClient = NULL;
-    hostOutputPosition = NULL;
+    hostOutputPosition = NULL;    
     hostOutputTotalValues = NULL;
 
     deviceTotalValues = NULL;
@@ -1586,6 +1616,7 @@ void organisation::parallel::program::makeNull()
     deviceNewClient = NULL;
     deviceNewNextDirections = NULL;
     deviceNewMovementIdx = NULL;
+    deviceNewMovementPatternIdx = NULL;
 
     deviceOldPositions = NULL;
     deviceOldUpdateCounter = NULL;
@@ -1595,6 +1626,9 @@ void organisation::parallel::program::makeNull()
     hostValues = NULL;
     hostClient = NULL;
     hostNextDirections = NULL;
+    hostCollisions = NULL;
+    hostMovementIdx = NULL;
+    hostMovementPatternIdx = NULL;
 
     impacter = NULL;
     collision = NULL;
@@ -1612,6 +1646,9 @@ void organisation::parallel::program::cleanup()
         if(impacter != NULL) delete impacter;
 
         // ***
+        if(hostMovementPatternIdx != NULL) sycl::free(hostMovementPatternIdx, q);
+        if(hostMovementIdx != NULL) sycl::free(hostMovementIdx, q);
+        if(hostCollisions != NULL) sycl::free(hostCollisions, q);
         if(hostNextDirections != NULL) sycl::free(hostNextDirections, q);
         if(hostClient != NULL) sycl::free(hostClient, q);
         if(hostValues != NULL) sycl::free(hostValues, q);
@@ -1622,6 +1659,7 @@ void organisation::parallel::program::cleanup()
         if(deviceOldUpdateCounter != NULL) sycl::free(deviceOldUpdateCounter, q);
         if(deviceOldPositions != NULL) sycl::free(deviceOldPositions, q);
 
+        if(deviceNewMovementPatternIdx != NULL) sycl::free(deviceNewMovementPatternIdx, q);
         if(deviceNewMovementIdx != NULL) sycl::free(deviceNewMovementIdx, q);
         if(deviceNewNextDirections != NULL) sycl::free(deviceNewNextDirections, q);
         if(deviceNewClient != NULL) sycl::free(deviceNewClient, q);
