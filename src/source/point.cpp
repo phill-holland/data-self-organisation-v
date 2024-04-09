@@ -122,6 +122,40 @@ void organisation::point::mutate(std::vector<int> &data, int dimensions)
 */
 }
 
+void organisation::point::mutate2(std::vector<int> &data, int dimensions)
+{
+    int _dimensions = dimensions;
+    if(_dimensions < 1) _dimensions = 1;
+    if(_dimensions > 3) _dimensions = 3;
+    
+    int *coordinates[] = { &x, &y, &z };
+
+    int count = 0;
+
+    do
+    {
+        count = (std::uniform_int_distribution<int>{0, _dimensions - 1})(generator);          
+    }while(!((count == 0)||(count > 0 && *coordinates[count - 1] != -1)));
+
+    int idx = (std::uniform_int_distribution<int>{0, (int)(data.size())})(generator);
+    if(idx == data.size()) *coordinates[count] = -1;
+    else *coordinates[count] = data[idx];      
+
+    int x1 = -1, y1 = -1, z1 = -1;
+    int *output[] = { &x1, &y1, &z1 };
+
+    int j = 0;
+    for(int i = 0; i < _dimensions; ++i)
+    {
+        if(*coordinates[i] != -1) *output[j++] = *coordinates[i];
+    }
+
+    for(int i = 0; i < _dimensions; ++i)
+    {
+        *coordinates[i] = *output[i];
+    }
+}
+
 std::string organisation::point::serialise()
 {
     std::string result("(");

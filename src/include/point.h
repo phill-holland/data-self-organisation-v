@@ -35,6 +35,7 @@ namespace organisation
         void generate2(std::vector<int> &data, int dimensions = 3);
 
         void mutate(std::vector<int> &data, int dimensions = 3);
+        void mutate2(std::vector<int> &data, int dimensions = 3);
 
         point min(const point &src)
         {

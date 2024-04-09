@@ -45,7 +45,7 @@ organisation::parameters get_parameters()
 
     // ***    
     parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 4;//2;//4;//2;//7;
+    parameters.max_movement_patterns = 4;//4;//2;//4;//2;//7;
     parameters.max_insert_delay = 5; //7
 
     parameters.scores.max_collisions = 2;//0;//2;//0;//2;
@@ -71,27 +71,36 @@ organisation::parameters get_parameters()
 */
 
 
+    std::string input1("daisy daisy give me your answer do");
+    std::string expected1("I'm half crazy for the love of you");
+    
+    std::string input2("it won't be a stylish marriage");
+    std::string expected2("I cannot afford a carriage");
+
+    std::string input3("but you'll look sweet upon the seat");
+    std::string expected3("of a bicycle built for two");
+
+/*
     std::string input1("daisy give");
     std::string expected1("I'm half");
-
-    //std::string input2("daisy answer");
+    
     std::string input2("banana answer");
     std::string expected2("love you");
 
     std::string input3("bicycle two");
     std::string expected3("made for");
-
-    std::string input4("bucket face");
-    std::string expected4("fancy marriage");
+*/
+    //std::string input4("bucket face");
+    //std::string expected4("fancy marriage");
 
     organisation::inputs::epoch epoch1(input1, expected1);
     organisation::inputs::epoch epoch2(input2, expected2);
     organisation::inputs::epoch epoch3(input3, expected3);
-    organisation::inputs::epoch epoch4(input4, expected4);
+    //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
-    parameters.input.push_back(epoch2);
-    parameters.input.push_back(epoch3);
+    //parameters.input.push_back(epoch2);
+    //parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
@@ -150,7 +159,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run3.txt")) return false;
+    if(!s1.prog.load("data/run5.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -182,8 +191,8 @@ int main(int argc, char *argv[])
     
     organisation::parameters parameters = get_parameters();
 
-    organisation::history::stream stream;
-    parameters.history = &stream;
+    //organisation::history::stream stream;
+    //parameters.history = &stream;
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);
