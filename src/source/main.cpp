@@ -34,7 +34,7 @@ organisation::parameters get_parameters()
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
-    parameters.population = parameters.clients() * 4;//4;//4;//8;//4;
+    parameters.population = parameters.clients() * 8;//4;//4;//4;//8;//4;
 
     parameters.output_stationary_only = true;
     
@@ -45,7 +45,7 @@ organisation::parameters get_parameters()
 
     // ***    
     parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 4;//4;//2;//4;//2;//7;
+    parameters.max_movement_patterns = 6;//4;//2;//4;//2;//7;
     parameters.max_insert_delay = 5; //7
 
     parameters.scores.max_collisions = 2;//0;//2;//0;//2;
@@ -99,7 +99,7 @@ organisation::parameters get_parameters()
     //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
-    //parameters.input.push_back(epoch2);
+    parameters.input.push_back(epoch2);
     //parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
@@ -159,7 +159,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run5.txt")) return false;
+    if(!s1.prog.load("data/failed.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -186,8 +186,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    //single();
+    //return 0;
     
     organisation::parameters parameters = get_parameters();
 
