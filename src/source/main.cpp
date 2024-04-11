@@ -23,7 +23,7 @@ using namespace std;
 
 const int width = 6, height = 6, depth = 6; //6,6,6
 const int device_idx = 0;
-const int generations = 500;
+const int generations = 2000;
 
 organisation::parameters get_parameters()
 {
@@ -159,7 +159,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/failed.txt")) return false;
+    if(!s1.prog.load("data/run6.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -186,8 +186,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    //single();
-    //return 0;
+    single();
+    return 0;
     
     organisation::parameters parameters = get_parameters();
 
