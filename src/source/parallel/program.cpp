@@ -1,6 +1,7 @@
 #include "parallel/program.hpp"
 #include "parallel/parameters.hpp"
 #include <algorithm>
+#include <fstream>
 
 int GetCollidedKey(const sycl::float4 a, const sycl::float4 b)
 {

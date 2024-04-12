@@ -43,6 +43,7 @@ namespace organisation
         }
 
         bool generate(organisation::data &source, inputs::input &epochs);
+        bool load(std::string directory, int start, int len);
 
     protected:
         void makeNull();

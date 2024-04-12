@@ -42,6 +42,23 @@ bool organisation::schemas::generate(organisation::data &source, inputs::input &
     return true;
 }
 
+bool organisation::schemas::load(std::string directory, int start, int len)
+{
+    for(int i = 0; i < len; ++i)
+    {
+        int offset = i + start;
+        if(offset < length)
+        {
+            std::string filename = directory + "/run" + std::to_string(i) + ".txt";
+            data[i]->clear();
+            if(!data[i]->prog.load(filename)) 
+                return false;
+        }
+    }
+
+    return true;
+}
+
 void organisation::schemas::makeNull() 
 { 
 }

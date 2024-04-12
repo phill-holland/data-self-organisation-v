@@ -22,7 +22,7 @@
 using namespace std;
 
 const int width = 6, height = 6, depth = 6; //6,6,6
-const int device_idx = 0;
+const int device_idx = 2;//0;
 const int generations = 2000;
 
 organisation::parameters get_parameters()
@@ -34,7 +34,7 @@ organisation::parameters get_parameters()
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
-    parameters.population = parameters.clients() * 8;//4;//4;//4;//8;//4;
+    parameters.population = parameters.clients() * 4;//8;//16;//8;//4;//4;//4;//8;//4;
 
     parameters.output_stationary_only = true;
     
@@ -45,7 +45,7 @@ organisation::parameters get_parameters()
 
     // ***    
     parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 6;//4;//2;//4;//2;//7;
+    parameters.max_movement_patterns = 4;//6;//6;//4;//2;//4;//2;//7;
     parameters.max_insert_delay = 5; //7
 
     parameters.scores.max_collisions = 2;//0;//2;//0;//2;
@@ -99,7 +99,7 @@ organisation::parameters get_parameters()
     //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
-    parameters.input.push_back(epoch2);
+    //parameters.input.push_back(epoch2);
     //parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
@@ -120,20 +120,23 @@ organisation::parameters get_parameters()
 }
 
 bool run(organisation::templates::programs *program, organisation::parameters &parameters, organisation::schema &result)
-{         	
-    organisation::populations::population p(program, parameters);
-    if(!p.initalised()) return false;
-    
-    int actual = 0;
+{   
+    for(int i = 128; i < 1333; ++i)
+    {      
+        organisation::populations::population p(program, parameters);
+        if(!p.initalised()) return false;
+        
+        int actual = 0;
 
-    p.clear();
-    p.generate();
-    
-    result.copy(p.go(actual, generations));
+        p.clear();
+        p.generate();
+        
+        result.copy(p.go(actual, generations));
 
-    std::string filename("data/run.txt");
-    if(actual > generations) filename = std::string("data/failed.txt");    
-    result.prog.save(filename);
+        std::string filename("epoch0/run" + std::to_string(i) + ".txt");
+        if(actual > generations) filename = std::string("epoch0/failed" + std::to_string(i) + ".txt");    
+        result.prog.save(filename);
+    }
     
     return true;
 }
@@ -186,8 +189,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    //single();
+    //return 0;
     
     organisation::parameters parameters = get_parameters();
 

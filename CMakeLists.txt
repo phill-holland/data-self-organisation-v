@@ -12,7 +12,12 @@ set(LLVM_PARALLEL_LINK_JOBS, 8)
 
 enable_testing()
 
-find_package(IntelDPCPP REQUIRED)
+
+set(SYCL_INCLUDE_DIR "include")
+set(SYCL_LIBRARY_DIR "lib")
+
+#find_package(IntelDPCPP REQUIRED)
+find_package(IntelSYCL REQUIRED)
 find_package(Threads REQUIRED)
 
 include_directories("/usr/include")

@@ -316,6 +316,11 @@ void organisation::populations::population::load(organisation::schema **buffer)
     }
 }
 
+bool organisation::populations::population::load(std::string directory, int start, int len)
+{
+    return schemas->load(directory, start, len);
+}
+
 bool organisation::populations::population::get(schema &destination, region r)
 {
     const float mutate_rate_in_percent = 20.0f;

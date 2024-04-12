@@ -83,6 +83,8 @@ namespace organisation
             
             void save(organisation::schema **buffer);
             void load(organisation::schema **buffer);
+
+            bool load(std::string directory, int start, int len);
             
         protected:
             void makeNull();
