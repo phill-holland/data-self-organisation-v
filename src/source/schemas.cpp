@@ -42,7 +42,7 @@ bool organisation::schemas::generate(organisation::data &source, inputs::input &
     return true;
 }
 
-bool organisation::schemas::load(std::string directory, int start, int len)
+bool organisation::schemas::load(std::string directory, int start, int len, organisation::data &original, organisation::data &remapped)
 {
     for(int i = 0; i < len; ++i)
     {
@@ -53,6 +53,7 @@ bool organisation::schemas::load(std::string directory, int start, int len)
             data[i]->clear();
             if(!data[i]->prog.load(filename)) 
                 return false;
+            else data[i]->prog.remap(original, remapped);
         }
     }
 

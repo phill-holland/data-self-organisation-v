@@ -43,7 +43,7 @@ namespace organisation
         }
 
         bool generate(organisation::data &source, inputs::input &epochs);
-        bool load(std::string directory, int start, int len);
+        bool load(std::string directory, int start, int len, organisation::data &original, organisation::data &remapped);
 
     protected:
         void makeNull();

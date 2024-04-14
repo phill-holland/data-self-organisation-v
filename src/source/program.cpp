@@ -90,6 +90,12 @@ bool organisation::program::mutate(data &source, inputs::input &epochs)
     return genes[idx]->mutate(source, epochs);    
 }
 
+void organisation::program::remap(data &original, data &remapped)
+{
+    caches.remap(original, remapped);
+    collisions.remap(original, remapped);
+}
+
 std::string organisation::program::run(std::string input, data &source, int max)
 {
     return std::string("");

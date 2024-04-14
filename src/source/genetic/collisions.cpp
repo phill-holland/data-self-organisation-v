@@ -55,6 +55,29 @@ void organisation::genetic::collisions::append(genetic *source, int src_start, i
     }
 }
 
+void organisation::genetic::collisions::remap(data &original, data &remapped)
+{
+    std::vector<int> raw = original.all();
+
+    std::vector<int> output(length);
+    for(auto &it:output) it = 0;
+
+    for(auto &it: raw)
+    {
+        std::string value = original.map(it);
+
+        int src_offset = _max_collisions * it;
+        int dest_offset = _max_collisions * remapped.map(value);
+
+        for(int i = 0; i < _max_collisions; ++i)
+        {
+            output[i + dest_offset] = values[i + src_offset];
+        }
+    }
+
+    values = output;
+}
+
 std::string organisation::genetic::collisions::serialise()
 {
     std::string result;

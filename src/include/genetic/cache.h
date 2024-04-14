@@ -58,6 +58,8 @@ namespace organisation
             std::string serialise();
             void deserialise(std::string source);
 
+            void remap(data &original, data &remapped);
+            
             bool validate(data &source);
 
         public:

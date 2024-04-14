@@ -316,9 +316,9 @@ void organisation::populations::population::load(organisation::schema **buffer)
     }
 }
 
-bool organisation::populations::population::load(std::string directory, int start, int len)
+bool organisation::populations::population::load(std::string directory, int start, int len, data &original, data &remapped)
 {
-    return schemas->load(directory, start, len);
+    return schemas->load(directory, start, len, original, remapped);
 }
 
 bool organisation::populations::population::get(schema &destination, region r)

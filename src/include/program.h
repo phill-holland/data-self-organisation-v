@@ -69,6 +69,9 @@ namespace organisation
         void generate(data &source, inputs::input &epochs);  
         bool mutate(data &source, inputs::input &epochs);
 
+        void remap(data &original, data &remapped);
+
+
         std::string run(std::string input, data &source, int max = MAX);
 
         bool validate(data &source);

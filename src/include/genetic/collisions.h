@@ -53,6 +53,8 @@ namespace organisation
             bool mutate(data &source, inputs::input &epochs);
             void append(genetic *source, int src_start, int src_end);
             
+            void remap(data &original, data &remapped);
+            
             std::string serialise();
             void deserialise(std::string source);
 

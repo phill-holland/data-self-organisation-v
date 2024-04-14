@@ -45,7 +45,7 @@ organisation::parameters get_parameters()
 
     // ***    
     parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 4;//6;//6;//4;//2;//4;//2;//7;
+    parameters.max_movement_patterns = 9;//4;//6;//6;//4;//2;//4;//2;//7;
     parameters.max_insert_delay = 5; //7
 
     parameters.scores.max_collisions = 2;//0;//2;//0;//2;
@@ -99,8 +99,8 @@ organisation::parameters get_parameters()
     //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
-    //parameters.input.push_back(epoch2);
-    //parameters.input.push_back(epoch3);
+    parameters.input.push_back(epoch2);
+    parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
@@ -119,10 +119,46 @@ organisation::parameters get_parameters()
     return parameters;
 }
 
+organisation::data a(int t)
+{
+    std::string input1;//("daisy daisy give me your answer do");
+    std::string expected1;//("I'm half crazy for the love of you");
+
+    if(t == 0)
+    {
+        input1 = "daisy daisy give me your answer do";
+        expected1 = "I'm half crazy for the love of you";
+    }
+    else if(t == 1)
+    {
+        input1 = "it won't be a stylish marriage";
+        expected1 = "I cannot afford a carriage";
+    }
+    else if(t == 2)
+    {
+        input1 = "but you'll look sweet upon the seat";
+        expected1 = "of a bicycle built for two";
+    }
+
+    organisation::inputs::epoch epoch1(input1, expected1);
+
+    organisation::inputs::input in;
+    in.push_back(epoch1);
+
+    organisation::dictionary words;
+    words.push_back(in);
+    auto strings = words.get();
+    organisation::data mappings(strings);
+
+    return mappings;
+}
+
 bool run(organisation::templates::programs *program, organisation::parameters &parameters, organisation::schema &result)
 {   
-    for(int i = 128; i < 1333; ++i)
-    {      
+    //for(int i = 128; i < 1333; ++i)
+    //{              
+        int i = 0;
+
         organisation::populations::population p(program, parameters);
         if(!p.initalised()) return false;
         
@@ -130,13 +166,21 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
 
         p.clear();
         p.generate();
+
+        organisation::data e0 = a(0);
+        organisation::data e1 = a(1);
+        organisation::data e2 = a(2);
+
+        p.load("data/epoch0",0,1333, e0, parameters.mappings);//1333);
+        p.load("data/epoch1",1334,1333, e1, parameters.mappings);//1333);
+        p.load("data/epoch2",2668,1333, e2, parameters.mappings);//1333);
         
         result.copy(p.go(actual, generations));
 
-        std::string filename("epoch0/run" + std::to_string(i) + ".txt");
-        if(actual > generations) filename = std::string("epoch0/failed" + std::to_string(i) + ".txt");    
+        std::string filename("run" + std::to_string(i) + ".txt");
+        if(actual > generations) filename = std::string("failed" + std::to_string(i) + ".txt");    
         result.prog.save(filename);
-    }
+    //}
     
     return true;
 }

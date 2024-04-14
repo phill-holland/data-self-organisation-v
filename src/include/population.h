@@ -84,7 +84,8 @@ namespace organisation
             void save(organisation::schema **buffer);
             void load(organisation::schema **buffer);
 
-            bool load(std::string directory, int start, int len);
+        public:
+            bool load(std::string directory, int start, int len, data &original, data &remapped);
             
         protected:
             void makeNull();

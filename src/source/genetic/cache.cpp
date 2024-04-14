@@ -71,6 +71,29 @@ void organisation::genetic::cache::deserialise(std::string source)
     };
 }
 
+void organisation::genetic::cache::remap(data &original, data &remapped)
+{
+    for(auto &it: values)
+    {
+        point source = std::get<0>(it);
+        point destination(-1,-1,-1);
+
+        int *src[] = { &source.x, &source.y, &source.z };
+        int *dest[] = { &destination.x, &destination.y, &destination.z };
+
+        for(int i = 0; i < 3; ++i)
+        {
+            if(*src[i] != -1)
+            {
+                std::string str = original.map(*src[i]);
+                *dest[i] = remapped.map(str);
+            }            
+        }
+
+        std::get<0>(it) = destination;
+    }
+}
+
 bool organisation::genetic::cache::validate(data &source)
 {
     if(values.size() != points.size()) { std::cout << "cache::validate(false): values.size(" << values.size() << ") != points.size(" << points.size() << ")\r\n"; return false; }
