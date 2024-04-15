@@ -1,0 +1,48 @@
+H 0 Pos=(4,5,2) Data=(0,-1,-1) Nxt=(0,0,1) Seq=1 Cli=0 E=0
+
+H 0 Pos=(4,5,3) Data=(0,-1,-1) Nxt=(-1,-1,0) Seq=2 Cli=0 E=0
+H 0 Pos=(4,5,2) Data=(1,-1,-1) Nxt=(0,0,1) Seq=2 Cli=0 E=0
+
+H 0 Pos=(4,5,3) Data=(0,-1,-1) Nxt=(0,0,0) Seq=3 Cli=0 E=0
+H 0 Pos=(4,5,2) Data=(1,-1,-1) Nxt=(0,0,0) Seq=3 Cli=0 E=0
+
+H 0 Pos=(4,5,3) Data=(0,-1,-1) Nxt=(0,-1,1) Seq=4 Cli=0 E=0
+H 0 Pos=(4,5,2) Data=(1,-1,-1) Nxt=(-1,-1,0) Seq=4 Cli=0 E=0
+
+H 0 Pos=(4,4,4) Data=(0,-1,-1) Nxt=(0,0,1) Seq=5 Cli=0 E=0
+H 0 Pos=(3,4,2) Data=(1,-1,-1) Nxt=(0,-1,1) Seq=5 Cli=0 E=0
+
+H 0 Pos=(4,4,5) Data=(0,-1,-1) Nxt=(-1,-1,0) Seq=6 Cli=0 E=0
+H 0 Pos=(3,3,3) Data=(1,-1,-1) Nxt=(0,0,1) Seq=6 Cli=0 E=0
+
+H 0 Pos=(3,3,5) Data=(0,-1,-1) Nxt=(0,-1,1) Seq=7 Cli=0 E=0
+H 0 Pos=(3,3,4) Data=(1,-1,-1) Nxt=(-1,-1,0) Seq=7 Cli=0 E=0
+H 0 Pos=(2,2,4) Data=(1,-1,-1) Nxt=(0,-1,1) Seq=8 Cli=0 E=0
+H 0 Pos=(2,1,5) Data=(1,-1,-1) Nxt=(0,0,1) Seq=9 Cli=0 E=0
+H 0 Pos=(4,5,2) Data=(4,-1,-1) Nxt=(0,0,1) Seq=1 Cli=0 E=1
+H 0 Pos=(4,5,3) Data=(4,-1,-1) Nxt=(-1,-1,0) Seq=2 Cli=0 E=1
+H 0 Pos=(4,5,2) Data=(5,-1,-1) Nxt=(0,0,1) Seq=2 Cli=0 E=1
+H 0 Pos=(4,5,3) Data=(4,-1,-1) Nxt=(0,1,1) Seq=3 Cli=0 E=1
+H 0 Pos=(4,5,2) Data=(5,-1,-1) Nxt=(0,-1,-1) Seq=3 Cli=0 E=1
+H 0 Pos=(4,4,1) Data=(5,-1,-1) Nxt=(-1,-1,0) Seq=4 Cli=0 E=1
+H 0 Pos=(3,3,1) Data=(5,-1,-1) Nxt=(0,-1,1) Seq=5 Cli=0 E=1
+H 0 Pos=(3,2,2) Data=(5,-1,-1) Nxt=(0,0,1) Seq=6 Cli=0 E=1
+H 0 Pos=(3,2,2) Data=(5,-1,-1) Nxt=(1,1,-1) Seq=7 Cli=0 E=1
+H 0 Pos=(4,3,1) Data=(5,-1,-1) Nxt=(-1,-1,0) Seq=8 Cli=0 E=1
+H 0 Pos=(3,2,1) Data=(5,-1,-1) Nxt=(0,-1,1) Seq=9 Cli=0 E=1
+H 0 Pos=(3,1,2) Data=(5,-1,-1) Nxt=(0,0,1) Seq=10 Cli=0 E=1
+H 0 Pos=(3,1,3) Data=(5,-1,-1) Nxt=(-1,-1,0) Seq=11 Cli=0 E=1
+H 0 Pos=(2,0,3) Data=(5,-1,-1) Nxt=(0,-1,1) Seq=12 Cli=0 E=1
+H 0 Pos=(4,5,2) Data=(8,-1,-1) Nxt=(0,0,1) Seq=1 Cli=0 E=2
+H 0 Pos=(4,5,3) Data=(8,-1,-1) Nxt=(-1,-1,0) Seq=2 Cli=0 E=2
+H 0 Pos=(4,5,2) Data=(9,-1,-1) Nxt=(0,0,1) Seq=2 Cli=0 E=2
+H 0 Pos=(4,5,3) Data=(8,-1,-1) Nxt=(-1,1,1) Seq=3 Cli=0 E=2
+H 0 Pos=(4,5,2) Data=(9,-1,-1) Nxt=(1,-1,-1) Seq=3 Cli=0 E=2
+H 0 Pos=(4,5,2) Data=(9,-1,-1) Nxt=(1,0,0) Seq=4 Cli=0 E=2
+H 0 Pos=(5,5,2) Data=(9,-1,-1) Nxt=(-1,-1,0) Seq=5 Cli=0 E=2
+H 0 Pos=(4,4,2) Data=(9,-1,-1) Nxt=(0,-1,1) Seq=6 Cli=0 E=2
+H 0 Pos=(4,3,3) Data=(9,-1,-1) Nxt=(0,0,1) Seq=7 Cli=0 E=2
+H 0 Pos=(4,3,4) Data=(9,-1,-1) Nxt=(-1,-1,0) Seq=8 Cli=0 E=2
+H 0 Pos=(3,2,4) Data=(9,-1,-1) Nxt=(0,-1,1) Seq=9 Cli=0 E=2
+H 0 Pos=(3,2,4) Data=(9,-1,-1) Nxt=(-1,0,1) Seq=10 Cli=0 E=2
+H 0 Pos=(2,2,5) Data=(9,-1,-1) Nxt=(0,0,1) Seq=11 Cli=0 E=2

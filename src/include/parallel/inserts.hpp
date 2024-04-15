@@ -28,7 +28,6 @@ namespace organisation
 
             int *deviceInputData;
             int *deviceInsertsDelay;
-            int *deviceInsertsDelayClone;
             int *deviceInsertsLoops;
             sycl::float4 *deviceInsertsStartingPosition;
             int *deviceInsertsMovementPatternIdx;
@@ -77,7 +76,7 @@ namespace organisation
             void restart();
             void clear();
             
-            int insert(int epoch);
+            int insert(int epoch, int iteration);
 
             void set(organisation::data &mappings, inputs::input &source);
             std::vector<value> get();
