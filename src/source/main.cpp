@@ -23,7 +23,7 @@ using namespace std;
 
 const int width = 6, height = 6, depth = 6; //6,6,6
 const int device_idx = 2;//0;
-const int generations = 2000;
+const int generations = 4000;//2000;
 
 organisation::parameters get_parameters()
 {
@@ -34,7 +34,7 @@ organisation::parameters get_parameters()
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
-    parameters.population = parameters.clients() * 4;//8;//16;//8;//4;//4;//4;//8;//4;
+    parameters.population = parameters.clients() * 8;//4;//8;//16;//8;//4;//4;//4;//8;//4;
 
     parameters.output_stationary_only = true;
     
