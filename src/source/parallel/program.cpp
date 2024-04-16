@@ -228,6 +228,10 @@ void organisation::parallel::program::reset(::parallel::device &dev,
     if(inserter == NULL) return;
     if(!inserter->initalised()) return;
 
+    linker = new links(dev, q, settings);
+    if(linker == NULL) return;
+    if(!linker->initalised()) return;
+
     // ***
 
     clear();
@@ -264,6 +268,7 @@ void organisation::parallel::program::clear()
 
     collision->clear();
     inserter->clear();
+    linker->clear();
 
     totalOutputValues = 0;
     totalValues = 0;
@@ -1360,6 +1365,7 @@ void organisation::parallel::program::copy(::organisation::schema **source, int 
 
     collision->copy(source, source_size);
     inserter->copy(source, source_size);
+    linker->copy(source, source_size);
 }
 
 void organisation::parallel::program::into(::organisation::schema **destination, int destination_size)
@@ -1633,6 +1639,7 @@ void organisation::parallel::program::makeNull()
     impacter = NULL;
     collision = NULL;
     inserter = NULL;
+    linker = NULL;
 }
 
 void organisation::parallel::program::cleanup()
@@ -1641,6 +1648,7 @@ void organisation::parallel::program::cleanup()
     {   
         sycl::queue q = ::parallel::queue(*dev).get();
 
+        if(linker != NULL) delete linker;
         if(inserter != NULL) delete inserter;
         if(collision != NULL) delete collision;
         if(impacter != NULL) delete impacter;
