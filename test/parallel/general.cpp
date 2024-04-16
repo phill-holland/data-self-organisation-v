@@ -323,7 +323,7 @@ TEST(BasicProgramMovementWithCollisionParallel, BasicAssertions)
 }
 
 TEST(BasicProgramMovementWithCollisionForDifferentWordsParallel, BasicAssertions)
-{    
+{   
     GTEST_SKIP();
 
     const int width = 60, height = 60, depth = 60;
@@ -366,7 +366,7 @@ TEST(BasicProgramMovementWithCollisionForDifferentWordsParallel, BasicAssertions
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,1,1);
-    parameters.iterations = 35;
+    parameters.iterations = 33;
 
     organisation::inputs::epoch epoch1(input1);
     parameters.input.push_back(epoch1);
@@ -449,23 +449,23 @@ TEST(BasicProgramMovementWithCollisionForDifferentWordsParallel, BasicAssertions
     EXPECT_EQ(compare, expected);
 
     std::vector<organisation::parallel::value> values1 = {
-        { organisation::point(31,57,30), organisation::point(0,-1,-1),  3, 0 },
-        { organisation::point(29,54,30), organisation::point(1,-1,-1),  6, 0 },
-        { organisation::point(30,51,31), organisation::point(2,-1,-1),  9, 0 },
-        { organisation::point(30,48,29), organisation::point(3,-1,-1), 12, 0 },        
-        { organisation::point(31,45,31), organisation::point(4,-1,-1), 15, 0 },        
-        { organisation::point(29,42,29), organisation::point(5,-1,-1), 18, 0 },        
-        { organisation::point(31,39,30), organisation::point(6,-1,-1), 21, 0 },        
+        { organisation::point(31,57,30), organisation::point(0,-1,-1),  2, 0 },
+        { organisation::point(29,54,30), organisation::point(1,-1,-1),  5, 0 },
+        { organisation::point(30,51,31), organisation::point(2,-1,-1),  8, 0 },
+        { organisation::point(30,48,29), organisation::point(3,-1,-1), 11, 0 },        
+        { organisation::point(31,45,31), organisation::point(4,-1,-1), 14, 0 },        
+        { organisation::point(29,42,29), organisation::point(5,-1,-1), 17, 0 },        
+        { organisation::point(31,39,30), organisation::point(6,-1,-1), 20, 0 },        
     };
     
     std::vector<organisation::parallel::value> values2 = {
-        { organisation::point(30,57,31), organisation::point(0,-1,-1),  3, 1 },
-        { organisation::point(30,54,29), organisation::point(1,-1,-1),  6, 1 },
-        { organisation::point(31,51,30), organisation::point(2,-1,-1),  9, 1 },
-        { organisation::point(29,48,30), organisation::point(3,-1,-1), 12, 1 },        
-        { organisation::point(31,45,31), organisation::point(4,-1,-1), 15, 1 },        
-        { organisation::point(29,42,29), organisation::point(5,-1,-1), 18, 1 },        
-        { organisation::point(31,39,30), organisation::point(6,-1,-1), 21, 1 },        
+        { organisation::point(30,57,31), organisation::point(0,-1,-1),  2, 1 },
+        { organisation::point(30,54,29), organisation::point(1,-1,-1),  5, 1 },
+        { organisation::point(31,51,30), organisation::point(2,-1,-1),  8, 1 },
+        { organisation::point(29,48,30), organisation::point(3,-1,-1), 11, 1 },        
+        { organisation::point(31,45,31), organisation::point(4,-1,-1), 14, 1 },        
+        { organisation::point(29,42,29), organisation::point(5,-1,-1), 17, 1 },        
+        { organisation::point(31,39,30), organisation::point(6,-1,-1), 20, 1 },        
     };
 
     std::vector<organisation::parallel::value> data = program.get();
@@ -570,10 +570,10 @@ TEST(BasicProgramMovementMultiCellOutputParallel, BasicAssertions)
     std::string input2("monkey monkey eat my face .");    
     std::vector<std::vector<std::string>> expected = {
         { 
-            "daisygivedaisygivedaisygivedaisygivedaisygivedaisygivedaisygivedaisygive",
-            "youranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdo"
+            "daisygivedaisygivedaisygivedaisygivedaisygivedaisygive",
+            "youranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdo"
         },
-        { 
+        {             
             "daisygivedaisygivedaisygivedaisygivedaisygivedaisygive",
             "youranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdoyouranswerdo"
         }
@@ -650,7 +650,7 @@ TEST(BasicProgramMovementReboundDirectionSameAsMovementDirectionParallel, BasicA
     
     std::vector<std::vector<std::string>> expected = {
         { 
-            "daisydaisydaisygivedaisygivedaisygivemedaisygivemedaisygivemeyourdaisygivemeyour" 
+            "daisydaisydaisygivedaisygivedaisygivemedaisygive" 
         }
     };
 
@@ -735,10 +735,10 @@ TEST(BasicProgramMovementReboundDirectionSameAsMovementDirectionParallel, BasicA
     EXPECT_EQ(compare, expected);
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(17,10,10), organisation::point(1,-1,-1), 3, 0 },
-        { organisation::point(16,10,10), organisation::point(2,-1,-1), 6, 0 },
-        { organisation::point(15,10,10), organisation::point(3,-1,-1), 9, 0 },
-        { organisation::point(14,10,10), organisation::point(7,-1,-1),12, 0 },        
+        { organisation::point(17,10,10), organisation::point(1,-1,-1), 2, 0 },
+        { organisation::point(16,10,10), organisation::point(2,-1,-1), 5, 0 },
+        { organisation::point(15,10,10), organisation::point(3,-1,-1), 8, 0 },
+        { organisation::point(14,10,10), organisation::point(7,-1,-1),11, 0 },        
     };
     
     std::vector<organisation::parallel::value> data = program.get();
@@ -758,7 +758,7 @@ TEST(BasicProgramMovementReboundDirectionSameAsMovementDirectionOutputStationary
     
     std::vector<std::vector<std::string>> expected = {
         { 
-            "daisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisydaisy"
+            "daisydaisydaisydaisydaisydaisydaisydaisydaisydaisy"
         }
     };
 
@@ -844,10 +844,10 @@ TEST(BasicProgramMovementReboundDirectionSameAsMovementDirectionOutputStationary
     EXPECT_EQ(compare, expected);
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(17,10,10), organisation::point(1,-1,-1), 3, 0 },
-        { organisation::point(16,10,10), organisation::point(2,-1,-1), 6, 0 },
-        { organisation::point(15,10,10), organisation::point(3,-1,-1), 9, 0 },
-        { organisation::point(14,10,10), organisation::point(7,-1,-1),12, 0 },        
+        { organisation::point(17,10,10), organisation::point(1,-1,-1), 2, 0 },
+        { organisation::point(16,10,10), organisation::point(2,-1,-1), 5, 0 },
+        { organisation::point(15,10,10), organisation::point(3,-1,-1), 8, 0 },
+        { organisation::point(14,10,10), organisation::point(7,-1,-1),11, 0 },        
     };
     
     std::vector<organisation::parallel::value> data = program.get();
@@ -919,7 +919,7 @@ TEST(BasicProgramMovementAllDirectionsPartialBoundaryParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 14;
+    parameters.iterations = 12;
 
     organisation::inputs::epoch epoch1(input1);
 
@@ -947,9 +947,9 @@ TEST(BasicProgramMovementAllDirectionsPartialBoundaryParallel, BasicAssertions)
     std::vector<organisation::parallel::value> data = program.get();
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(10, 1,10), organisation::point(0,-1,-1), 2, 3 },
-        { organisation::point(10,10,18), organisation::point(0,-1,-1), 3, 4 },
-        { organisation::point(10,10, 3), organisation::point(0,-1,-1), 4, 5 }        
+        { organisation::point(10, 1,10), organisation::point(0,-1,-1), 1, 3 },
+        { organisation::point(10,10,18), organisation::point(0,-1,-1), 2, 4 },
+        { organisation::point(10,10, 3), organisation::point(0,-1,-1), 3, 5 }        
     };
 
     EXPECT_EQ(data,values);
@@ -972,7 +972,7 @@ TEST(BasicProgramMovementAllDirectionsBoundaryDeleteSuccessfulAndMovementSequenc
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 14;
+    parameters.iterations = 13;
 
     organisation::inputs::epoch epoch1(input1);
 
@@ -1000,10 +1000,10 @@ TEST(BasicProgramMovementAllDirectionsBoundaryDeleteSuccessfulAndMovementSequenc
     std::vector<organisation::parallel::value> data = program.get();
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(15,15,10), organisation::point(0,-1,-1), 2, 2 },
-        { organisation::point(10, 1,10), organisation::point(0,-1,-1), 3, 3 },
-        { organisation::point(14,14,14), organisation::point(0,-1,-1), 4, 4 },
-        { organisation::point(10,10, 3), organisation::point(0,-1,-1), 5, 5 }        
+        { organisation::point(15,16,10), organisation::point(0,-1,-1), 1, 2 },
+        { organisation::point(10, 0,10), organisation::point(0,-1,-1), 2, 3 },
+        { organisation::point(14,14,15), organisation::point(0,-1,-1), 3, 4 },
+        { organisation::point(10,10, 2), organisation::point(0,-1,-1), 4, 5 }        
     };
 
     EXPECT_EQ(data,values);
@@ -1032,7 +1032,7 @@ TEST(BasicProgramTestHostBufferExceededLoadParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 9;
+    parameters.iterations = 7;
     parameters.host_buffer = 2;
 
     organisation::inputs::epoch epoch1(input1);
@@ -1086,12 +1086,12 @@ TEST(BasicProgramTestHostBufferExceededLoadParallel, BasicAssertions)
     std::vector<organisation::parallel::value> data = program.get();
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(15,11,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 2, 1 },
-        { organisation::point(11,15,10), organisation::point(0,-1,-1), 2, 2 },
-        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 2, 3 },
-        { organisation::point(11,10,15), organisation::point(0,-1,-1), 2, 4 },
-        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 2, 5 },
+        { organisation::point(15,11,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 1, 1 },
+        { organisation::point(11,15,10), organisation::point(0,-1,-1), 1, 2 },
+        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 1, 3 },
+        { organisation::point(11,10,15), organisation::point(0,-1,-1), 1, 4 },
+        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 1, 5 },
     };
 
     EXPECT_EQ(data,values);       
@@ -1120,7 +1120,7 @@ TEST(BasicProgramTestHostBufferNotEvenLoadParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,3,1);
-    parameters.iterations = 9;
+    parameters.iterations = 7;
     parameters.host_buffer = 5;
 
     organisation::inputs::epoch epoch1(input1);
@@ -1174,12 +1174,12 @@ TEST(BasicProgramTestHostBufferNotEvenLoadParallel, BasicAssertions)
     std::vector<organisation::parallel::value> data = program.get();
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(15,11,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 2, 1 },
-        { organisation::point(11,15,10), organisation::point(0,-1,-1), 2, 2 },
-        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 2, 3 },
-        { organisation::point(11,10,15), organisation::point(0,-1,-1), 2, 4 },
-        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 2, 5 },
+        { organisation::point(15,11,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 1, 1 },
+        { organisation::point(11,15,10), organisation::point(0,-1,-1), 1, 2 },
+        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 1, 3 },
+        { organisation::point(11,10,15), organisation::point(0,-1,-1), 1, 4 },
+        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 1, 5 },
     };
 
     EXPECT_EQ(data,values);       
@@ -1209,7 +1209,7 @@ TEST(BasicProgramDataSwapWithDualMovementPatternParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(1,1,1);
-    parameters.iterations = 8;
+    parameters.iterations = 7;
 
     organisation::inputs::epoch epoch1(input1);
     parameters.input.push_back(epoch1);
@@ -1226,7 +1226,6 @@ TEST(BasicProgramDataSwapWithDualMovementPatternParallel, BasicAssertions)
 
 organisation::genetic::movements::movement movement1(parameters.min_movements, parameters.max_movements);
     movement1.directions = { 
-        { 0,1,0 },
         { 0,1,0 },    
         { 0,1,0 }, 
         { 1,0,0 }, 
@@ -1238,7 +1237,6 @@ organisation::genetic::movements::movement movement1(parameters.min_movements, p
 
     organisation::genetic::movements::movement movement2(parameters.min_movements, parameters.max_movements);
     movement2.directions = { 
-        {  0,-1,0 },
         {  0,-1,0 },    
         {  0,-1,0 },  
         { -1, 0,0 }, 
@@ -1304,8 +1302,8 @@ organisation::genetic::movements::movement movement1(parameters.min_movements, p
     EXPECT_EQ(compare, expected);
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point( 9,10,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point(11,10,10), organisation::point(1,-1,-1), 2, 0 }
+        { organisation::point( 9,10,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point(11,10,10), organisation::point(1,-1,-1), 1, 0 }
     };
     
     std::vector<organisation::parallel::value> data = program.get();
@@ -1347,7 +1345,7 @@ TEST(BasicProgramScaleTestParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = clients;    
-    parameters.iterations = 9;
+    parameters.iterations = 7;
     parameters.host_buffer = 100; 
     parameters.max_inserts = 30;   
 
@@ -1418,12 +1416,12 @@ TEST(BasicProgramScaleTestParallel, BasicAssertions)
     EXPECT_EQ(source.size(), data.size());
 
     std::vector<organisation::parallel::value> values = {
-        { organisation::point(15,11,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point(11,15,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point(11,10,15), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 2, 0 },
+        { organisation::point(15,11,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point( 5, 9,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point(11,15,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point( 9, 5,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point(11,10,15), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point( 9,10, 5), organisation::point(0,-1,-1), 1, 0 },
     };
 
     std::unordered_map<int,organisation::parallel::value> lookup;
@@ -1456,7 +1454,7 @@ TEST(BasicProgramAllDirectionsParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = clients;    
-    parameters.iterations = 8;
+    parameters.iterations = 6;
     parameters.host_buffer = 100; 
     parameters.max_inserts = 30;   
 
@@ -1505,7 +1503,7 @@ TEST(BasicProgramAllDirectionsParallel, BasicAssertions)
             prediction.z += _rebound.z;
         }
 
-        organisation::parallel::value value = { prediction, organisation::point(0,-1,-1), 2, i };
+        organisation::parallel::value value = { prediction, organisation::point(0,-1,-1), 1, i };
         predictions.push_back(value);
     }
     
@@ -1575,7 +1573,7 @@ TEST(BasicProgramMultiMovementPatternsParallel, BasicAssertions)
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
     parameters.dim_clients = organisation::point(2,1,1);
-    parameters.iterations = 8;
+    parameters.iterations = 6;//8;
 
     organisation::inputs::epoch epoch1(input1);
     parameters.input.push_back(epoch1);
@@ -1641,13 +1639,13 @@ TEST(BasicProgramMultiMovementPatternsParallel, BasicAssertions)
     program.run(mappings);
 
     std::vector<organisation::parallel::value> values0 = {
-        { organisation::point( 9,16,10), organisation::point(0,-1,-1), 2, 0 },
-        { organisation::point(11, 4,10), organisation::point(1,-1,-1), 2, 0 }
+        { organisation::point( 9,16,10), organisation::point(0,-1,-1), 1, 0 },
+        { organisation::point(11, 4,10), organisation::point(1,-1,-1), 1, 0 }
     };
 
     std::vector<organisation::parallel::value> values1 = {
-        { organisation::point(16, 9,10), organisation::point(0,-1,-1), 2, 1 },
-        { organisation::point( 4,11,10), organisation::point(1,-1,-1), 2, 1 }
+        { organisation::point(16, 9,10), organisation::point(0,-1,-1), 1, 1 },
+        { organisation::point( 4,11,10), organisation::point(1,-1,-1), 1, 1 }
     };
     
     std::vector<organisation::parallel::value> data = program.get();
@@ -2071,16 +2069,10 @@ TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
 
     std::vector<organisation::schema> destinations;    
 
-    //destination.resize(length);
-    //destination_ptr.resize(length);
-
     for(int i = 0; i < length; ++i)
     {
         organisation::schema schema(parameters);
-        destinations.push_back(schema);//organisation::schema(parameters);
-        //destination_ptr[i] = &destination[i];
-        //destination.push_back(d1);
-        //destination_ptr.push_back(&destination[i]);//.back());
+        destinations.push_back(schema);
     }
 
     std::vector<organisation::schema*> destination;
@@ -2091,15 +2083,11 @@ TEST(BasicProgramScaleNativeTransferTestParallel, BasicAssertions)
     }
 
     program.into(destination.data(), destination.size());
-//std::cout << "goog gog\n";
 
     for(int i = 0; i < length; ++i)
     {
         EXPECT_TRUE(source[i]->equals(*destination[i]));
-        //if(!(source[i]->equals(*destination[i])))
-            //std::cout << "moo " << i << "\n";
     }
-
 }
 
 /*

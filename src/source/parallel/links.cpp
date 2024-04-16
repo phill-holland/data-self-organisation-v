@@ -37,7 +37,7 @@ void organisation::parallel::links::clear()
 
 void organisation::parallel::links::copy(::organisation::schema **source, int source_size)
 {
-    memset(hostLinks, 0, sizeof(sycl::int4) * settings.mappings.maximum() * settings.host_buffer);
+    memset(hostLinks, -1, sizeof(sycl::int4) * settings.mappings.maximum() * settings.host_buffer);
     
     sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
     sycl::range num_items{(size_t)settings.clients()};
@@ -53,11 +53,14 @@ void organisation::parallel::links::copy(::organisation::schema **source, int so
 
         int c_count = 0;        
         for(int i = 0; i < prog->links.size(); ++i)
-        {
-            point temp = prog->links.values[i];
-            hostLinks[c_count + (index * client_offset)] = { temp.x, temp.y, temp.z, 0 };
-            ++c_count;
-            if(c_count > client_offset) break;            
+        {            
+            point temp;
+            if(prog->links.get(temp,i))
+            {
+                hostLinks[c_count + (index * client_offset)] = { temp.x, temp.y, temp.z, 0 };
+                ++c_count;
+                if(c_count > client_offset) break;            
+            }
         }
 
         ++index;
@@ -71,7 +74,7 @@ void organisation::parallel::links::copy(::organisation::schema **source, int so
 
             sycl::event::wait(events);
             
-            memset(hostLinks, 0, sizeof(sycl::int4) * client_offset * settings.host_buffer);
+            memset(hostLinks, -1, sizeof(sycl::int4) * client_offset * settings.host_buffer);
                         
             dest_index += settings.host_buffer;
             index = 0;            
@@ -110,7 +113,7 @@ void organisation::parallel::links::into(::organisation::schema **destination, i
             {
                 sycl::int4 link = hostLinks[(i * client_offset) + j];
                 point temp(link.x(),link.y(),link.z());
-                prog->links.values.push_back(temp);
+                prog->links.set(temp, j);
             }
 
             ++dest_client_index;

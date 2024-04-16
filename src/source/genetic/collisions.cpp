@@ -107,7 +107,8 @@ bool organisation::genetic::collisions::validate(data &source)
         if((it < 0)||(it >= 27)) 
         { 
             std::cout << "collisions::validate(false): it < 0 || it > 27\r\n"; 
-            return false; }
+            return false; 
+        }
     }
 
     return true;

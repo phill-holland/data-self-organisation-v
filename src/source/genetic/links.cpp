@@ -9,9 +9,11 @@ std::string organisation::genetic::links::serialise()
 {
     std::string result;
 
+    int index = 0;
     for(auto &it: values)
     {     
-        result += "L " + it.serialise() + "\n";
+        result += "L " + std::to_string(index) + " " + it.serialise() + "\n";
+        ++index;
     }
 
     return result;                    
@@ -24,17 +26,22 @@ void organisation::genetic::links::deserialise(std::string source)
 
     point value(-1,-1,-1);
     int index = 0;
+    int offset = 0;
 
     while(std::getline(ss,str,' '))
     {
         if(index == 0)
         {
-            if(str.compare("L")!=0) return;
+            if(str.compare("L")!=0) return;        
         }
         else if(index == 1)
+        {          
+            offset = std::atoi(str.c_str());  
+        }
+        else if(index == 2)
         {            
             value.deserialise(str);
-            values.push_back(value);
+            values[offset] = value;
         }
 
         ++index;
@@ -42,8 +49,12 @@ void organisation::genetic::links::deserialise(std::string source)
 }
 
 bool organisation::genetic::links::validate(data &source)
-{
-    if(values.size() != source.maximum()) { std::cout << "links::validate(false): values.size(" << values.size() << ") != data.size(" << source.maximum() << ")\r\n"; return false; }
+{    
+    if(values.size() != source.maximum())
+    { 
+        std::cout << "links::validate(false): values.size(" << values.size() << ") != data.size(" << source.maximum() << ")\r\n"; 
+        return false; 
+    }
 
     for(auto &it: values)
     {
@@ -54,8 +65,11 @@ bool organisation::genetic::links::validate(data &source)
         {
             if(coordinates[i] != -1)
             {
-                if(source.map(coordinates[i]).empty()) { std::cout << "links::validate(false): map empty [" << coordinates[i] << "]\r\n"; 
-                    return false; }
+                if(source.map(coordinates[i]).empty()) 
+                { 
+                    std::cout << "links::validate(false): map empty [" << coordinates[i] << "]\r\n"; 
+                    return false; 
+                }
             }
         }     
     }
@@ -67,13 +81,13 @@ void organisation::genetic::links::generate(data &source, inputs::input &epochs)
 {
     clear();
                 
-    std::vector<int> raw = source.outputs(epochs);
+    std::vector<int> raw = source.all();
 
     for(auto &it: raw)
     {
         point value;
         value.generate2(raw,_max_cache_dimension);
-        values.push_back(value);
+        values[it] = value;
     };
 }
 
@@ -114,9 +128,28 @@ void organisation::genetic::links::append(genetic *source, int src_start, int sr
     }    
 }
 
+bool organisation::genetic::links::get(organisation::point &result, int idx)
+{    
+    if((idx < 0)||(idx >= size())) return false;
+    result = values[idx];
+    return true;
+}
+
+bool organisation::genetic::links::set(organisation::point source, int idx)
+{
+    if((idx < 0)||(idx >= size())) return false;
+    values[idx] = source;
+    return true;
+}
+
 void organisation::genetic::links::copy(const links &source)
 {
-    values.assign(source.values.begin(), source.values.end());
+    clear();
+
+    for(int i = 0; i < size(); ++i)
+    {
+        values[i] = source.values[i];
+    }
 }
 
 bool organisation::genetic::links::equals(const links &source)

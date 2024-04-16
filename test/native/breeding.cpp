@@ -27,6 +27,9 @@ TEST(BasicProgramGenerate, BasicAssertions)
     organisation::parameters parameters(width, height, depth);    
     parameters.mappings = mappings;
 
+    organisation::inputs::epoch epoch1(input, input);
+    parameters.input.push_back(epoch1);
+
     organisation::program p1(parameters);
      
     for(int i = 0; i < 100000; ++i)
@@ -52,6 +55,9 @@ TEST(BasicProgramMutate, BasicAssertions)
 
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
+
+    organisation::inputs::epoch epoch1(input, input);
+    parameters.input.push_back(epoch1);
 
     organisation::program p1(parameters);
          
@@ -87,6 +93,9 @@ TEST(BasicProgramCross, BasicAssertions)
 
     organisation::parameters parameters(width, height, depth);
     parameters.mappings = mappings;
+
+    organisation::inputs::epoch epoch1(input, input);
+    parameters.input.push_back(epoch1);
 
     for(int i = 0; i < 100000; ++i)
     {      

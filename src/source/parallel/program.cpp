@@ -1094,6 +1094,8 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
         auto _nextCollisionKeys = deviceNextCollisionKeys;
         auto _currentCollisionKeys = deviceCurrentCollisionKeys;
 
+        auto _dataLinks = linker->deviceLinks;
+
         auto _outputValues = deviceOutputValues;
         auto _outputIndex = deviceOutputIndex;
         auto _outputClient = deviceOutputClient;
@@ -1158,19 +1160,42 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
                 if(output)
                 {
-                    cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
-                    sycl::memory_scope::device, 
-                    sycl::access::address_space::ext_intel_global_device_space> ar(_outputTotalValues[0]);
+                    const int DEPTH = 5;
+                    const int STACK = 10;
+                    int stack_ptr = 1, stack_counter = 0;
+                    sycl::int4 stack[STACK];
+                    stack[0] = value;
 
-                    int idx = ar.fetch_add(1);
+                    do
+                    {
+                        --stack_ptr;
+                        sycl::int4 v1 = stack[stack_ptr];
 
-                    if(idx < _outputLength)
-                    {                    
-                        _outputValues[idx] = value;
-                        _outputIndex[idx] = _iteration;
-                        _outputClient[idx] = _client[i];   
-                        _outputPosition[idx] = pos;                     
-                    }
+                        cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
+                        sycl::memory_scope::device, 
+                        sycl::access::address_space::ext_intel_global_device_space> ar(_outputTotalValues[0]);
+
+                        int idx = ar.fetch_add(1);
+
+                        if(idx < _outputLength)
+                        {                    
+                            _outputValues[idx] = v1;
+                            _outputIndex[idx] = _iteration;
+                            _outputClient[idx] = _client[i];   
+                            _outputPosition[idx] = pos;                     
+                        }
+
+                        int coordinates[] = { v1.x(), v1.y(), v1.z() };
+                        for(int x = 0; x < 3; ++x)
+                        {
+                            if(coordinates[x] != -1)
+                            {
+                                if(stack_ptr < STACK)
+                                    stack[stack_ptr++] = _dataLinks[coordinates[x]];
+                            }
+                        }
+
+                    } while((stack_counter++ < DEPTH)&&(stack_ptr > 0));
                 }  
             }
         });

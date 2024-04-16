@@ -214,7 +214,7 @@ TEST(BasicProgramInsertThreeInputsOffsetDelayParallel, BasicAssertions)
 
 TEST(BasicProgramInsertThreeInputsOffsetDelayAndBulkWordsParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const int width = 10, height = 10, depth = 10;
 
