@@ -27,6 +27,7 @@ namespace organisation
             { 
                 _max_cache_dimension = settings.max_cache_dimension;
                 values.resize(settings.mappings.maximum());
+                clear();
             }
 
         public:

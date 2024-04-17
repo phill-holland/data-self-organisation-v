@@ -1110,6 +1110,8 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
         auto _outputStationaryOnly = settings.output_stationary_only;
 
+//sycl::stream out(8192, 1024, h);    
+
         h.parallel_for(num_items, [=](auto i) 
         {  
             if(_positions[i].w() == 0)
@@ -1160,7 +1162,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
                 if(output)
                 {
-                    const int DEPTH = 5;
+                    const int DEPTH = 10;
                     const int STACK = 10;
                     int stack_ptr = 1, stack_counter = 0;
                     sycl::int4 stack[STACK];
@@ -1170,6 +1172,8 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                     {
                         --stack_ptr;
                         sycl::int4 v1 = stack[stack_ptr];
+
+                    //out << "stack: " << stack_ptr << " " << v1.x() << "," << v1.y() << "," << v1.z() << "\n";
 
                         cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
                         sycl::memory_scope::device, 
