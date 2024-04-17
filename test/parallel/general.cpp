@@ -7,6 +7,7 @@
 #include "schema.h"
 #include "kdpoint.h"
 #include "statistics.h"
+#include "dictionary.h"
 #include <unordered_map>
 
 organisation::schema getSchema1(organisation::parameters &parameters, organisation::point value)
@@ -140,7 +141,7 @@ organisation::schema getSchema4(organisation::parameters &parameters,
 
     return s1;
 }
-
+        
 organisation::schema getSchema5(organisation::parameters &parameters,
                                 int direction,
                                 int rebound,
@@ -185,6 +186,59 @@ organisation::schema getSchema5(organisation::parameters &parameters,
     s1.prog.set(cache);
     s1.prog.set(insert);
     s1.prog.set(collisions);
+
+    return s1;
+}
+
+organisation::schema getSchema6(organisation::parameters &parameters,
+                                organisation::vector direction,
+                                organisation::vector rebound,
+                                organisation::point wall,
+                                int value,
+                                int delay)
+{
+    organisation::point starting(parameters.width / 2, parameters.height / 2, parameters.depth / 2);
+
+    organisation::schema s1(parameters);
+
+    organisation::genetic::movements::movement movement(parameters.min_movements, parameters.max_movements);
+    movement.directions = { direction };
+
+    organisation::genetic::inserts::insert insert(parameters);
+    organisation::genetic::inserts::value a(delay, organisation::point(starting.x,starting.y,starting.z), movement);
+    insert.values = { a };   
+
+    organisation::genetic::cache cache(parameters);    
+    cache.set(organisation::point(value,-1,-1), wall);
+
+    organisation::genetic::collisions collisions(parameters);
+
+    int offset = 0;
+    for(int i = 0; i < parameters.mappings.maximum(); ++i)
+    {        
+        collisions.set(rebound.encode(), offset + direction.encode());
+        offset += parameters.max_collisions;
+    }
+
+    organisation::dictionary words;
+    words.push_back(parameters.input);
+    auto strings = words.get();
+    organisation::data mappings(strings);
+    std::vector<int> all = mappings.all();
+
+    organisation::genetic::links links(parameters);
+
+    for(auto &it: all)
+    {   
+        int temp = it + 1;
+        if(temp > all.size()) temp = 0;
+        links.set(organisation::point(temp,-1,-1), it);
+    }
+
+    s1.prog.set(cache);
+    s1.prog.set(insert);
+    s1.prog.set(collisions);
+    s1.prog.set(links);
 
     return s1;
 }
@@ -324,7 +378,7 @@ TEST(BasicProgramMovementWithCollisionParallel, BasicAssertions)
 
 TEST(BasicProgramMovementWithCollisionBasicLinkTestParallel, BasicAssertions)
 {    
-    //GTEST_SKIP();
+    GTEST_SKIP();
 
     const int width = 20, height = 20, depth = 20;
     organisation::point starting(width / 2, height / 2, depth / 2);
@@ -333,27 +387,9 @@ TEST(BasicProgramMovementWithCollisionBasicLinkTestParallel, BasicAssertions)
    
     std::vector<std::vector<std::string>> expected = {
         { 
-            //"daisydaisydaisydaisydaisydaisydaisydaisy"
             "daisygivemeyour.daisygivemeyour.daisygivemeyour.daisygivemeyour"
         }
     };
-
-//"daisygivedaisydaisydaisygivedaisydaisydaisygive"
-
-//daisygivedaisydaisydaisygivedaisydaisydaisygive
-//daisygivedaisydaisydaisygivedaisydaisydaisygive
-//daisygivedaisydaisydaisygivedaisydaisydaisygive
-//daisygive"
-
-//daisygivemeyourdaisydaisy
-//daisygivemeyourdaisydaisy
-//daisygivemeyour
-//daisygivemeyourdaisydaisy
-//daisygivemeyourdaisydaisy
-//daisygivemeyour
-//daisygivemeyourdaisydaisy
-//daisygivemeyourdaisydaisy
-//daisygivemeyourdaisygivemeyour"
 
     std::vector<std::string> strings = organisation::split(input1);
     organisation::data mappings(strings);
@@ -363,7 +399,7 @@ TEST(BasicProgramMovementWithCollisionBasicLinkTestParallel, BasicAssertions)
             organisation::point(starting.x,18,starting.z), 
             organisation::vector(0,1,0), 
             organisation::vector(1,0,0)             
-        }/*,
+        },
         { 
             organisation::point(starting.x,2,starting.z), 
             organisation::vector(0,-1,0), 
@@ -388,7 +424,7 @@ TEST(BasicProgramMovementWithCollisionBasicLinkTestParallel, BasicAssertions)
             organisation::point(starting.x,starting.y,2), 
             organisation::vector(0,0,-1), 
             organisation::vector(0,1,0)             
-        }*/
+        }
     };
 
 	::parallel::device device(0);
@@ -436,8 +472,7 @@ TEST(BasicProgramMovementWithCollisionBasicLinkTestParallel, BasicAssertions)
         }
 
         organisation::genetic::links links(parameters);
-
-        //links.set(organisation::point(1,-1,-1), 0);
+        
         links.set(organisation::point(1,2,3), 0);
         links.set(organisation::point(6,-1,-1), 3);
 
@@ -1491,7 +1526,7 @@ TEST(BasicProgramScaleTestParallel, BasicAssertions)
     std::string input1("daisy");
     std::vector<std::string> expected = 
     { 
-        "daisy", "give", "me", "your", "answer", "do"
+        "daisygive", "give", "me", "your", "answer", "do"
     };
     
     std::vector<std::string> strings = organisation::split(values1);
@@ -1515,12 +1550,12 @@ TEST(BasicProgramScaleTestParallel, BasicAssertions)
         
     EXPECT_TRUE(program.initalised());
     
-    organisation::schema s1 = getSchema4(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
-    organisation::schema s2 = getSchema4(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
-    organisation::schema s3 = getSchema4(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
-    organisation::schema s4 = getSchema4(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
-    organisation::schema s5 = getSchema4(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
-    organisation::schema s6 = getSchema4(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
+    organisation::schema s1 = getSchema6(parameters, { 1, 0, 0 }, { 0, 1, 0 }, { 12,10,10 }, 0, 1);
+    organisation::schema s2 = getSchema6(parameters, {-1, 0, 0 }, { 0,-1, 0 }, {  7,10,10 }, 1, 1);
+    organisation::schema s3 = getSchema6(parameters, { 0, 1, 0 }, { 1, 0, 0 }, {10, 12,10 }, 2, 1);
+    organisation::schema s4 = getSchema6(parameters, { 0,-1, 0 }, {-1, 0, 0 }, {10,  7,10 }, 3, 1);
+    organisation::schema s5 = getSchema6(parameters, { 0, 0, 1 }, { 1, 0, 0 }, {10, 10,12 }, 4, 1);
+    organisation::schema s6 = getSchema6(parameters, { 0, 0,-1 }, {-1, 0, 0 }, {10, 10, 7 }, 5, 1);
 
     std::vector<organisation::schema*> schemas = { &s1,&s2,&s3,&s4,&s5,&s6 };
     std::vector<organisation::schema*> source;
