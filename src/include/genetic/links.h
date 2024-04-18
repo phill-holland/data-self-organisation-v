@@ -21,12 +21,17 @@ namespace organisation
             std::vector<point> values;            
 
             int _max_cache_dimension;
+            int _max_chain;
+            int _max_hash_value;
 
         public:
             links(parameters &settings) 
             { 
                 _max_cache_dimension = settings.max_cache_dimension;
-                values.resize(settings.mappings.maximum());
+                _max_hash_value = settings.mappings.maximum();
+                _max_chain = settings.max_chain;
+                int length = _max_chain * _max_hash_value;
+                values.resize(length);
                 clear();
             }
 

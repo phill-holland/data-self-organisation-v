@@ -9,14 +9,14 @@ void organisation::parallel::links::reset(::parallel::device &dev,
     this->dev = &dev;
     this->queue = q;
     this->settings = settings;
-    this->length = settings.mappings.maximum() * settings.clients();
+    this->length = settings.mappings.maximum() * settings.max_chain * settings.clients();
 
     sycl::queue &qt = ::parallel::queue(dev).get();
 
     deviceLinks = sycl::malloc_device<sycl::int4>(length, qt);
     if(deviceLinks == NULL) return;
 
-    hostLinks = sycl::malloc_host<sycl::int4>(settings.mappings.maximum() * settings.host_buffer, qt);
+    hostLinks = sycl::malloc_host<sycl::int4>(settings.mappings.maximum() * settings.max_chain * settings.host_buffer, qt);
     if(hostLinks == NULL) return;
 
     clear();
@@ -37,12 +37,12 @@ void organisation::parallel::links::clear()
 
 void organisation::parallel::links::copy(::organisation::schema **source, int source_size)
 {
-    memset(hostLinks, -1, sizeof(sycl::int4) * settings.mappings.maximum() * settings.host_buffer);
+    memset(hostLinks, -1, sizeof(sycl::int4) * settings.mappings.maximum() * settings.max_chain * settings.host_buffer);
     
     sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
     sycl::range num_items{(size_t)settings.clients()};
 
-    int client_offset = settings.mappings.maximum();
+    int client_offset = settings.mappings.maximum() * settings.max_chain;
     int client_index = 0;
     int dest_index = 0;
     int index = 0;
@@ -93,7 +93,7 @@ void organisation::parallel::links::copy(::organisation::schema **source, int so
 
 void organisation::parallel::links::into(::organisation::schema **destination, int destination_size)
 {
-    int client_offset = settings.mappings.maximum();
+    int client_offset = settings.mappings.maximum() * settings.max_chain;
 
     int src_client_index = 0;
     int dest_client_index = 0;

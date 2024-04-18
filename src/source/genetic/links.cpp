@@ -80,7 +80,7 @@ bool organisation::genetic::links::validate(data &source)
 void organisation::genetic::links::generate(data &source, inputs::input &epochs)
 {
     clear();
-                
+
     std::vector<int> raw = source.all();
 
     for(auto &it: raw)

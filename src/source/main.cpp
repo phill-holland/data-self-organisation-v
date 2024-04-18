@@ -34,7 +34,7 @@ organisation::parameters get_parameters()
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
-    parameters.population = parameters.clients() * 8;//4;//4;//4;//8;//4;
+    parameters.population = parameters.clients() * 4;//8//4;//4;//4;//8;//4;
 
     parameters.output_stationary_only = true;
     
@@ -159,7 +159,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run6.txt")) return false;
+    if(!s1.prog.load("data/run7.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -186,8 +186,8 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    //single();
+    //return 0;
     
     organisation::parameters parameters = get_parameters();
 

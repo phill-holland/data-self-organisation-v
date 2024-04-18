@@ -1106,6 +1106,10 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
         auto _iteration = iteration;
         auto _epoch = epoch;
+
+        auto _max_hash = settings.mappings.maximum();
+        auto _max_chain = settings.max_chain;
+
         auto _clients = settings.clients();
 
         auto _outputStationaryOnly = settings.output_stationary_only;
@@ -1162,33 +1166,51 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
 
                 if(output)
                 {
-                    const int DEPTH = 10;
-                    const int STACK = 10;
-                    int stack_ptr = 1, stack_counter = 0;
-                    sycl::int4 stack[STACK];
-                    stack[0] = value;
+                    //const int DEPTH = 10;
+                    //const int STACK = 10;
+                    //int stack_ptr = 1, stack_counter = 0;
+                    //sycl::int4 stack[STACK];
+                    //stack[0] = value;
 
-                    do
-                    {
-                        --stack_ptr;
-                        sycl::int4 v1 = stack[stack_ptr];
+                    //do
+                    //{
+                        //--stack_ptr;
+                        //sycl::int4 v1 = stack[stack_ptr];
 
                     //out << "stack: " << stack_ptr << " " << v1.x() << "," << v1.y() << "," << v1.z() << "\n";
 
-                        cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
-                        sycl::memory_scope::device, 
-                        sycl::access::address_space::ext_intel_global_device_space> ar(_outputTotalValues[0]);
+                        int coordinates1[] = { value.x(), value.y(), value.z() };
+                        for(int x = 0; x < 3; ++x)
+                        {
+                            if(coordinates1[x] != -1)
+                            {
+                                int chain_idx = _max_hash * _max_chain * _client[i].w();
+                                chain_idx += coordinates1[x] * _max_chain;
 
-                        int idx = ar.fetch_add(1);
+                                for(int y = 0; y < _max_chain; ++y)
+                                {
+                                    sycl::int4 v1 = _dataLinks[chain_idx + y];
+                                    if(v1.x() != -1)
+                                    {
+                                        cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
+                                        sycl::memory_scope::device, 
+                                        sycl::access::address_space::ext_intel_global_device_space> ar(_outputTotalValues[0]);
 
-                        if(idx < _outputLength)
-                        {                    
-                            _outputValues[idx] = v1;
-                            _outputIndex[idx] = _iteration;
-                            _outputClient[idx] = _client[i];   
-                            _outputPosition[idx] = pos;                     
+                                        int idx = ar.fetch_add(1);
+
+                                        if(idx < _outputLength)
+                                        {                    
+                                            _outputValues[idx] = v1;
+                                            _outputIndex[idx] = _iteration;
+                                            _outputClient[idx] = _client[i];   
+                                            _outputPosition[idx] = pos;                     
+                                        }
+                                    }
+                                }
+                            }
                         }
 
+/*
                         int coordinates[] = { v1.x(), v1.y(), v1.z() };
                         for(int x = 0; x < 3; ++x)
                         {
@@ -1200,6 +1222,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                         }
 
                     } while((stack_counter++ < DEPTH)&&(stack_ptr > 0));
+                    */
                 }  
             }
         });
