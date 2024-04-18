@@ -220,19 +220,14 @@ organisation::schema getSchema6(organisation::parameters &parameters,
         offset += parameters.max_collisions;
     }
 
-    organisation::dictionary words;
-    words.push_back(parameters.input);
-    auto strings = words.get();
-    organisation::data mappings(strings);
-    std::vector<int> all = mappings.all();
-
     organisation::genetic::links links(parameters);
 
+    std::vector<int> all = parameters.mappings.all();
     for(auto &it: all)
     {   
-        int temp = it + 1;
-        if(temp > all.size()) temp = 0;
-        links.set(organisation::point(temp,-1,-1), it);
+        int temp = it;
+        links.set(organisation::point(it,-1,-1), it * parameters.max_chain);
+        if(temp == 0) links.set(organisation::point(temp + 1,-1,-1), it * parameters.max_chain + 1);
     }
 
     s1.prog.set(cache);
@@ -387,10 +382,10 @@ TEST(BasicProgramMovementWithCollisionBasicLinkTestParallel, BasicAssertions)
    
     std::vector<std::vector<std::string>> expected = {
         { 
-            "daisygivemeyour.daisygivemeyour.daisygivemeyour.daisygivemeyour"
+            "givemeyour.givemeyour.givemeyour.givemeyour.givemeyour.givemeyour.givemeyour.givemeyour."
         }
     };
-
+    
     std::vector<std::string> strings = organisation::split(input1);
     organisation::data mappings(strings);
 
@@ -1517,7 +1512,7 @@ organisation::genetic::movements::movement movement1(parameters.min_movements, p
 
 TEST(BasicProgramScaleTestParallel, BasicAssertions)
 {    
-    GTEST_SKIP();
+    //GTEST_SKIP();
 
     const organisation::point clients(10,10,10);
     const int width = 20, height = 20, depth = 20;
