@@ -72,6 +72,15 @@ void organisation::populations::population::generate()
 
 organisation::schema organisation::populations::population::go(int &count, int iterations)
 {    
+    std::future<std::string> future = std::async(std::launch::async, []() 
+        {
+            std::string input;
+            std::getline(std::cin,input);
+            std::cout << "Termination sent\r\n";
+            return input;
+        }
+    );
+
     float highest = 0.0f;
     bool finished = false;
     count = 0;
@@ -119,6 +128,12 @@ organisation::schema organisation::populations::population::go(int &count, int i
             finished = true;    
         }
         
+        if(future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+        {
+            std::cout << "Terminating\r\n";
+            finished = true;
+        }
+
         std::cout << "Generation (" << count << ") Best=" << result.best;
         std::cout << " Highest=" << highest;
         std::cout << " Avg=" << result.average;

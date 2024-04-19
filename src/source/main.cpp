@@ -52,7 +52,9 @@ organisation::parameters get_parameters()
     parameters.scores.optimise_for_collisions = true;
 
     parameters.max_cache_dimension = 3;
-    
+
+    parameters.max_chain = 3;
+
     parameters.min_insert_words = 1;
     parameters.max_insert_words = 3;
 
@@ -99,7 +101,7 @@ organisation::parameters get_parameters()
     //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
-    parameters.input.push_back(epoch2);
+    //parameters.input.push_back(epoch2);
     //parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
@@ -159,7 +161,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run7.txt")) return false;
+    if(!s1.prog.load("data/run8.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     

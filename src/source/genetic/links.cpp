@@ -1,4 +1,5 @@
 #include "genetic/links.h"
+#include "general.h"
 #include <sstream>
 #include <functional>
 #include <iostream>
@@ -50,7 +51,7 @@ void organisation::genetic::links::deserialise(std::string source)
 
 bool organisation::genetic::links::validate(data &source)
 {    
-    if(values.size() != source.maximum())
+    if(values.size() != source.maximum() * _max_chain)
     { 
         std::cout << "links::validate(false): values.size(" << values.size() << ") != data.size(" << source.maximum() << ")\r\n"; 
         return false; 
@@ -79,6 +80,56 @@ bool organisation::genetic::links::validate(data &source)
 
 void organisation::genetic::links::generate(data &source, inputs::input &epochs)
 {
+//    source.maximum() * _max_chain)
+//max_hash_value
+    clear();
+    
+    for(int i = 0; i < epochs.size(); ++i)
+    {
+        inputs::epoch epoch;
+        if(epochs.get(epoch,i))
+        {
+            //std::vector<std::string> input_words = organisation::split(epoch.input);
+            std::vector<std::string> expected_words = organisation::split(epoch.expected);
+
+            for(auto &it: expected_words)
+            {
+                int idx = source.map(it);
+                if(idx < _max_hash_value)
+                {    
+                    int coordinates[] = { 0,0,0 };                
+                    int offset = 0;
+                    int destination = 0;
+                    for(auto &jt: expected_words)
+                    {
+                        coordinates[offset++] = source.map(jt);
+                        if(offset >= 3)
+                        {
+                            if(destination < _max_chain)
+                            {
+                                values[(idx * _max_chain) + destination] = organisation::point(coordinates[0],coordinates[1],coordinates[2]);
+                                offset = 0;
+                                ++destination;
+                            }
+                        }
+                    }
+                    if(offset == 1) values[(idx * _max_chain) + destination] = organisation::point(coordinates[0],-1,-1);
+                    else if(offset == 2) values[(idx * _max_chain) + destination] = organisation::point(coordinates[0],coordinates[1],-1);
+
+                    /*
+                    int len = expected_words.size();
+                    if(len > _max_chain) len = _max_chain;
+                    for(int j = 0; j < len; ++j)
+                    {
+                        int f = source.map(expected_words[j]);
+                        values[(idx * _max_chain) + j] = organisation::point(f,-1,-1);
+                    }
+                    */
+                }            
+            }
+        }
+    }
+    /*
     clear();
 
     std::vector<int> raw = source.all();
@@ -89,6 +140,7 @@ void organisation::genetic::links::generate(data &source, inputs::input &epochs)
         value.generate2(raw,_max_cache_dimension);
         values[it] = value;
     };
+    */
 }
 
 bool organisation::genetic::links::mutate(data &source, inputs::input &epochs)

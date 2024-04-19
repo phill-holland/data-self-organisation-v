@@ -41,9 +41,13 @@ organisation::schema getSchema1(organisation::parameters &parameters,
         offset += parameters.max_collisions;
     }
 
+    organisation::genetic::links links(parameters);
+    links.set(organisation::point(0,-1,-1), 0);
+
     s1.prog.set(cache);
     s1.prog.set(insert);
     s1.prog.set(collisions);
+    s1.prog.set(links);
 
     return s1;
 }
