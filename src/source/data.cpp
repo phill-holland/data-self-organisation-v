@@ -2,6 +2,8 @@
 #include "general.h"
 #include <iostream>
 #include <functional>
+#include <fstream>
+#include <sstream>
 
 std::mt19937_64 organisation::data::generator(std::random_device{}());
 
@@ -143,6 +145,34 @@ organisation::point organisation::data::generate(int dimensions)
     }
 
     return result;
+}
+
+std::string organisation::data::serialise()
+{
+    std::string result;
+    std::vector<int> raw = all();
+
+    std::sort(raw.begin(),raw.end());
+
+    for(auto &it:raw)
+    {
+        result += std::to_string(it) + " " + map(it) + "\n";
+    }
+
+    return result;
+}
+
+void organisation::data::save(std::string filename)
+{
+    std::fstream output(filename, std::fstream::out | std::fstream::binary);
+
+    if(output.is_open())
+    {
+        std::string data = serialise();
+        output.write(data.c_str(), data.size());
+    }
+
+    output.close();
 }
 
 void organisation::data::copy(const data &source)

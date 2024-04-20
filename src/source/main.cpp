@@ -101,8 +101,8 @@ organisation::parameters get_parameters()
     //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
-    //parameters.input.push_back(epoch2);
-    //parameters.input.push_back(epoch3);
+    parameters.input.push_back(epoch2);
+    parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
@@ -161,7 +161,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run8.txt")) return false;
+    if(!s1.prog.load("data/run11.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -183,13 +183,15 @@ bool single()
         std::cout << "output" << std::to_string(epoch++) << ": " << result << "\r\n";
     }
 
+    parameters.mappings.save("data/mapping.txt");
+    
     return true;    
 }
 
 int main(int argc, char *argv[])
 {  
-    //single();
-    //return 0;
+    single();
+    return 0;
     
     organisation::parameters parameters = get_parameters();
 

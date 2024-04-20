@@ -145,6 +145,9 @@ void organisation::genetic::links::generate(data &source, inputs::input &epochs)
 
 bool organisation::genetic::links::mutate(data &source, inputs::input &epochs)
 {
+    // ***
+    //return true;    
+    // ***
     const int COUNTER = 15;
 
     if(values.empty()) return false;

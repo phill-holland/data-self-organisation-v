@@ -1190,7 +1190,7 @@ void organisation::parallel::program::outputting(int epoch, int iteration)
                                 for(int y = 0; y < _max_chain; ++y)
                                 {
                                     sycl::int4 v1 = _dataLinks[chain_idx + y];
-                                    if((v1.x() != -1)&&(v1.y() != -1)&&(v1.z() != -1))
+                                    if(!((v1.x() == -1)&&(v1.y() == -1)&&(v1.z() == -1)))
                                     {
                                         cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
                                         sycl::memory_scope::device, 
