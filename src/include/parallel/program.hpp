@@ -4,6 +4,7 @@
 #include "templates/programs.h"
 #include "parallel/collisions.hpp"
 #include "parallel/inserts.hpp"
+#include "parallel/links.hpp"
 #include "parallel/map/map.hpp"
 #include "parallel/map/configuration.hpp"
 #include "parallel/value.hpp"
@@ -104,6 +105,7 @@ namespace organisation
             
             collisions *collision;
             inserts *inserter;
+            links *linker;
 
             parameters settings;
 

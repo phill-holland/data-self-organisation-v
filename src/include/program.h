@@ -4,6 +4,7 @@
 #include "genetic/cache.h"
 #include "genetic/collisions.h"
 #include "genetic/insert.h"
+#include "genetic/links.h"
 #include "vector.h"
 #include "parameters.h"
 #include "input.h"
@@ -23,6 +24,7 @@ namespace organisation
         class program;
         class inserts;
         class collisions;
+        class links;
     };
         
     class program
@@ -30,6 +32,7 @@ namespace organisation
         friend class parallel::program;
         friend class parallel::inserts;
         friend class parallel::collisions;
+        friend class parallel::links;
           
         static std::mt19937_64 generator;
 
@@ -40,13 +43,17 @@ namespace organisation
         genetic::cache caches;
         genetic::collisions collisions;
         genetic::inserts::insert insert;
+        genetic::links links;
 
         int length;
 
         bool init;
         
     public:
-        program(parameters &settings) : caches(settings), collisions(settings), insert(settings)
+        program(parameters &settings) : caches(settings), 
+                                        collisions(settings), 
+                                        insert(settings),
+                                        links(settings)
         { 
             makeNull(); 
             reset(settings); 
@@ -60,6 +67,7 @@ namespace organisation
         void set(genetic::cache &source) { caches = source; }
         void set(genetic::collisions &source) { collisions = source; }
         void set(genetic::inserts::insert &source) { insert = source; }
+        void set(genetic::links &source) { links = source; }
         
     public:
         void clear();

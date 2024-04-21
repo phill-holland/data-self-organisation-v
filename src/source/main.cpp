@@ -34,7 +34,7 @@ organisation::parameters get_parameters()
     parameters.max_values = 100;
     parameters.max_cache = parameters.max_values;// / 2;
         
-    parameters.population = parameters.clients() * 8;//4;//4;//4;//8;//4;
+    parameters.population = parameters.clients() * 4;//8//4;//4;//4;//8;//4;
 
     parameters.output_stationary_only = true;
     
@@ -52,7 +52,9 @@ organisation::parameters get_parameters()
     parameters.scores.optimise_for_collisions = true;
 
     parameters.max_cache_dimension = 3;
-    
+
+    parameters.max_chain = 3;
+
     parameters.min_insert_words = 1;
     parameters.max_insert_words = 3;
 
@@ -100,7 +102,7 @@ organisation::parameters get_parameters()
     
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
-    //parameters.input.push_back(epoch3);
+    parameters.input.push_back(epoch3);
     //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
@@ -159,7 +161,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run6.txt")) return false;
+    if(!s1.prog.load("data/run11.txt")) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -181,6 +183,8 @@ bool single()
         std::cout << "output" << std::to_string(epoch++) << ": " << result << "\r\n";
     }
 
+    parameters.mappings.save("data/mapping.txt");
+    
     return true;    
 }
 

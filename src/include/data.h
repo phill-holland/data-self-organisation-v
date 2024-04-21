@@ -48,6 +48,10 @@ namespace organisation
         std::vector<int> outputs(inputs::input &epochs);
 
         point generate(int dimensions);
+
+        std::string serialise();
+
+        void save(std::string filename);
         
     public:
         void copy(const data &source);      
