@@ -107,8 +107,6 @@ void organisation::parallel::collisions::into(::organisation::schema **destinati
     {
         qt.memcpy(hostCollisions, &deviceCollisions[src_client_index * client_offset], sizeof(sycl::float4) * client_offset * settings.host_buffer).wait();
 
-//std::cout << "devCol:";
-//outputarb(deviceCollisions, client_offset * settings.host_buffer);
         for(int i = 0; i < settings.host_buffer; ++i)
         {
             organisation::program *prog = &destination[dest_client_index]->prog;

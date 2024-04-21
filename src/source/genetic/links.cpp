@@ -80,8 +80,6 @@ bool organisation::genetic::links::validate(data &source)
 
 void organisation::genetic::links::generate(data &source, inputs::input &epochs)
 {
-//    source.maximum() * _max_chain)
-//max_hash_value
     clear();
     
     for(int i = 0; i < epochs.size(); ++i)
@@ -89,7 +87,6 @@ void organisation::genetic::links::generate(data &source, inputs::input &epochs)
         inputs::epoch epoch;
         if(epochs.get(epoch,i))
         {
-            //std::vector<std::string> input_words = organisation::split(epoch.input);
             std::vector<std::string> expected_words = organisation::split(epoch.expected);
 
             for(auto &it: expected_words)
@@ -115,39 +112,14 @@ void organisation::genetic::links::generate(data &source, inputs::input &epochs)
                     }
                     if(offset == 1) values[(idx * _max_chain) + destination] = organisation::point(coordinates[0],-1,-1);
                     else if(offset == 2) values[(idx * _max_chain) + destination] = organisation::point(coordinates[0],coordinates[1],-1);
-
-                    /*
-                    int len = expected_words.size();
-                    if(len > _max_chain) len = _max_chain;
-                    for(int j = 0; j < len; ++j)
-                    {
-                        int f = source.map(expected_words[j]);
-                        values[(idx * _max_chain) + j] = organisation::point(f,-1,-1);
-                    }
-                    */
                 }            
             }
         }
     }
-    /*
-    clear();
-
-    std::vector<int> raw = source.all();
-
-    for(auto &it: raw)
-    {
-        point value;
-        value.generate2(raw,_max_cache_dimension);
-        values[it] = value;
-    };
-    */
 }
 
 bool organisation::genetic::links::mutate(data &source, inputs::input &epochs)
 {
-    // ***
-    //return true;    
-    // ***
     const int COUNTER = 15;
 
     if(values.empty()) return false;

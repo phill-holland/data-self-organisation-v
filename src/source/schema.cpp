@@ -119,7 +119,7 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
     {
         scores[i].compute(values[i], settings);
 
-        if(values[i].value.size() <= 0) clear = true;//penalty = true;
+        if(values[i].value.size() <= 0) clear = true;
         else
         {
             for(int j = 0; j < values.size(); ++j)
@@ -142,7 +142,6 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
         for(std::vector<organisation::compute>::iterator it = values.begin(); it != values.end(); ++it)
         {
             scores[i].penalty(0.2f);
-            //scores[i].clear();
             ++i;
         }
     }
@@ -152,7 +151,6 @@ void organisation::schema::compute(std::vector<organisation::compute> values, sc
         int i = 0;
         for(std::vector<organisation::compute>::iterator it = values.begin(); it != values.end(); ++it)
         {
-            //scores[i].penalty(0.2f);
             scores[i].clear();
             ++i;
         }
