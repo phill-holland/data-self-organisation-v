@@ -21,7 +21,7 @@
 
 using namespace std;
 
-const int width = 6, height = 6, depth = 6; //6,6,6
+const int width = 6, height = 6, depth = 6;
 const int device_idx = 0;
 const int generations = 2000;
 
@@ -30,25 +30,23 @@ organisation::parameters get_parameters()
     organisation::parameters parameters(width, height, depth);
 
     parameters.dim_clients = organisation::point(10,10,10);
-    parameters.iterations = 20;//30;
+    parameters.iterations = 20;
     parameters.max_values = 100;
-    parameters.max_cache = parameters.max_values;// / 2;
+    parameters.max_cache = parameters.max_values;
         
-    parameters.population = parameters.clients() * 4;//8//4;//4;//4;//8;//4;
+    parameters.population = parameters.clients() * 4;
 
     parameters.output_stationary_only = true;
     
     parameters.width = width;
     parameters.height = height;
     parameters.depth = depth;
-    //parameters.mappings = mappings;        
 
-    // ***    
-    parameters.min_movement_patterns = 2;//7;
-    parameters.max_movement_patterns = 6;//4;//2;//4;//2;//7;
-    parameters.max_insert_delay = 5; //7
+    parameters.min_movement_patterns = 2;
+    parameters.max_movement_patterns = 6;
+    parameters.max_insert_delay = 5;
 
-    parameters.scores.max_collisions = 2;//0;//2;//0;//2;
+    parameters.scores.max_collisions = 2;
     parameters.scores.optimise_for_collisions = true;
 
     parameters.max_cache_dimension = 3;
@@ -60,18 +58,10 @@ organisation::parameters get_parameters()
 
     parameters.max_movements = 5;
 
+    // ***
     //parameters.save_population = true;
     //parameters.load_population = true;
     // ***
-
-/*
-    std::string input1("daisy daisy give me your answer do");
-    std::string expected1("I'm half crazy for the love of you");
-
-    std::string input2("it won't be a stylish marriage");
-    std::string expected2("I can't afford a carriage");
-*/
-
 
     std::string input1("daisy daisy give me your answer do");
     std::string expected1("I'm half crazy for the love of you");
@@ -82,28 +72,13 @@ organisation::parameters get_parameters()
     std::string input3("but you'll look sweet upon the seat");
     std::string expected3("of a bicycle built for two");
 
-/*
-    std::string input1("daisy give");
-    std::string expected1("I'm half");
-    
-    std::string input2("banana answer");
-    std::string expected2("love you");
-
-    std::string input3("bicycle two");
-    std::string expected3("made for");
-*/
-    //std::string input4("bucket face");
-    //std::string expected4("fancy marriage");
-
     organisation::inputs::epoch epoch1(input1, expected1);
     organisation::inputs::epoch epoch2(input2, expected2);
     organisation::inputs::epoch epoch3(input3, expected3);
-    //organisation::inputs::epoch epoch4(input4, expected4);
     
     parameters.input.push_back(epoch1);
     parameters.input.push_back(epoch2);
     parameters.input.push_back(epoch3);
-    //parameters.input.push_back(epoch4);
     
     organisation::dictionary words;
     words.push_back(parameters.input);
@@ -140,7 +115,7 @@ bool run(organisation::templates::programs *program, organisation::parameters &p
     return true;
 }
 
-bool single()
+bool single(std::string filename)
 {
     organisation::parameters parameters = get_parameters();
     organisation::history::stream stream;
@@ -161,7 +136,7 @@ bool single()
     
     organisation::schema s1(parameters);
 
-    if(!s1.prog.load("data/run11.txt")) return false;
+    if(!s1.prog.load(filename)) return false;
         
     std::vector<organisation::schema*> source = { &s1 };
     
@@ -190,13 +165,30 @@ bool single()
 
 int main(int argc, char *argv[])
 {  
-    single();
-    return 0;
+    bool history = false;
+
+    if(argc > 1)
+    {
+        std::string filename = "data/saved/run.txt";
+
+        std::string argument1 = std::string(argv[1]);
+        if(argc > 2) filename = std::string(argv[2]);
+        
+        if(argument1=="SINGLE")
+        {
+            single(filename);
+            return 0;
+        }
+        else if(argument1 == "HISTORY") history = true;
+    }
     
     organisation::parameters parameters = get_parameters();
 
-    //organisation::history::stream stream;
-    //parameters.history = &stream;
+    if(history)
+    {
+        organisation::history::stream stream;
+        parameters.history = &stream;
+    }
 
 	::parallel::device device(device_idx);
 	::parallel::queue queue(device);

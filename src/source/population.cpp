@@ -128,14 +128,12 @@ organisation::schema organisation::populations::population::go(int &count, int i
             finished = true;    
         }
         
-        std::cout << "wait\r\n";
         if(future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
         {
             std::cout << "Terminating\r\n";
             finished = true;
         }
-        std::cout << "end wait\r\n";
-
+        
         std::cout << "Generation (" << count << ") Best=" << result.best;
         std::cout << " Highest=" << highest;
         std::cout << " Avg=" << result.average;

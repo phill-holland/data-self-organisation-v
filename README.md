@@ -1,30 +1,34 @@
 # Data Self Organisation-v (Experimental)
 
-This application demonstrates celluar automata, genetic algorithms and paralllel programming using Sycl and Intel's OneApi toolkit.
+This application demonstrates cellular automata, genetic algorithms and paralllel programming using Sycl and Intel's OneApi toolkit.
 
 This is a work in progress to investigate how a data storage solution may self organise into efficient data structures, for storage and retrieval of data, with the aim of identifying data patterns for arbitrary sentence structures (i.e. sequential data).
 
 The underlying principal is to test if a fundamentally chaotic system can self-organise into a stable data storage and retrieval system.
 
-This version differs from https://github.com/phill-holland/data-self-organisation-ii (it's predecessor) in several ways;
+This technically is contiuning early efforts to develop an alternative "machine learning" algorithm based on cellular automata alone, giving the potential advantages of;
 
-- Sentence input, separate by words can be inserted parallel into the system, from several different spatial starting positions.
+- Integer based calculations only
 
-- If two moving data cells collide, the decision output is now non-commutative, i.e.;
+- Low power consumption during training (comparitively)
 
-```
-"daisy" colliding with "give"
-```
+- Train once, with data decisions made dynamically during input, assuming there is a fundamental common pattern to how data is stored (this is envisaged to be enabled via a reimagining of the Turing test, given several logic based problems during "training" to resolve, training on the patterns of data, rather than the data itself)
 
-Is different to;
+- Not requiring vast amounts of training data to "understand" input
 
-```
-"give" colliding with "daisy"
-```
+- More transparent operation on how it may reach it's decisions
 
-The results will be different given this circumstance, in previous versions this would not the case given a different input.  this ensures the output shall not be the same given a slightly different input, but the same words used in the same sentence position.
+This version differs from https://github.com/phill-holland/data-self-organisation-iv (it's predecessor) in several ways;
 
-- It is hypothesized word inputs need to directly interact with one another, and collide, before determine final output.
+- Implementation of "linked" outputs, a pre-built word list associated with each data cell, to ease with long chains of output words, mitigating input daata having to collide with each required output word
+
+- Word hash values running in the GPU are now stored in triplets, inside of singles (three words at once)
+
+- Various critical bug fixes! (a single program running in a population would yield different output results when that program was run on it's own, related to the boundaries() function and not tracking data not removed from the system successfully)
+
+- Additional debugging functions to help diagnosis bugs
+
+The existing trained "program" now provided in the directory and filename data/saved/run.txt, will now sing part of the daisy, daisy song with you! (demonstrating it's ability to store and retrieve output sentences according to complex input)
 
 # Method
 
@@ -57,7 +61,7 @@ These input words are tokenised into integers and stored within an internal dict
 
 - Triple buffer for general population, to maximise concurrency and reduce data locking
 
-- Relative sentence scoring
+- Custom method for scoring and comparing sentences against each other, more concise that alternate algorithms, like BOW (Bag Of Words)
 
 # Scoring
 
@@ -82,23 +86,19 @@ This method ensures it encourages partial answers, but with differing word posit
 
 # Todo
 
-- Implement different collision methods, by "age" of data in system
+- <strike>Implement different collision methods, by "age" of data in system</strike> postponed in favour of alternative system
 
-- Limit inputted word age in the system by some mechanism, to enable length of output to be limited in some way (words must die to stop infinite output!)
+- <strike>Limit inputted word age in the system by some mechanism, to enable length of output to be limited in some way (words must die to stop infinite output!)</strike> postponed in favour of alternative system (see below)
 
-- Extend non-commutative collision calculate to include impacts with stationary data objects stored in the cache class (parallel/program.cpp line 524)
+- It's clear in experiments that inputted data into the system must "log" those other bits of data it collides with, in order to preserve the sequence order of the words of an inputted sentence (as in the newly implemented "word" links system), the next iteration of the system will be to allow data dynamically inputted into the system in the same epoch, and then immediately queried.
 
-- Either implement the above method, support by the cross-product of two vectors, or add further choices to the collision class
-genetic algorithm generation system;
+- Data words inputted into the system movement should eventually slow down, and stop, become part of the system, that when collided with, will then output it's associated data.
 
-```
-int length = max_words * max_words * max_collisions;
-int index = (word_token_a * max_words) + word_token_b;
-```
+- <strike>Extend non-commutative collision calculate to include impacts with stationary data objects stored in the cache class (parallel/program.cpp line 524)</strike>, implemented
 
-- Retest long sentence chains as input as well as output
+- <strike>Retest long sentence chains as input as well as output</strike> implemented
 
-- Cache, add stationary data cells, that do not output data when collided with (a pseudowall)
+- <strike>Cache, add stationary data cells, that do not output data when collided with (a pseudowall)</strike> implemented & fix, via the links system
 
 - Collision chain is currently limited to a single "rebound" movement before returning to default movement behaviour, extend
 collision movements to be > 1
@@ -108,14 +108,18 @@ collision movements to be > 1
 - <strike>Experiment with different scoring methods, one that treats the system less like a black box, and uses internal information
 to score output</strike> data-self-organisation-iii, abandoned
 
+- Update cmake files to use latest 2024 version of Intel OneApi
+
 # Problems
 
-- It get's slower and longer to find solutions the more "sentences" and epochs you run and configure it to look for
+- System now needs to be extended to allow dynamic input of data, and then queried on that input, with further input, leaving some interesting programs, how to tell the system the difference between inputted data, and a question posed to the system?
 
-- It get's slower when you're looking for long output sentences (more than 5 words)
+- <strike>It get's slower and longer to find solutions the more "sentences" and epochs you run and configure it to look for</strike> mitigated and improved with additions
 
-- It only needs one input word, to find a longer output sentence (encouraging input words to interact with each other whilst
-in the system, for example by encouraging more word collisions makes the genetic algorithm less performant)
+- <strike>It get's slower when you're looking for long output sentences (more than 5 words)</strike> mitigated and improved with addition of links system
+
+- <strike>It only needs one input word, to find a longer output sentence (encouraging input words to interact with each other whilst
+in the system, for example by encouraging more word collisions makes the genetic algorithm less performant)</strike> next version which promotes collisions will mitigate this
 
 - May need running several times with the same parameters to find the correct answer (a common drawback of genetic algorithms)
 
@@ -171,7 +175,7 @@ run the system from within VSCode, to tweak the input parameters!
 
 - Originally written on a Linux based operating system.
 
-- This project is written in C++ and Sycl and requires that the Intel OneApi SDK is installed.
+- This project is written in C++ and Sycl and requires that the Intel OneApi SDK is installed. (currently supporting version 2023, and 2024 with minor modifications)
 
 - This project will compile using Cmake and requires support for version 3.20 or above.
 

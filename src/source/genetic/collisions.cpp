@@ -29,7 +29,6 @@ bool organisation::genetic::collisions::mutate(data &source, inputs::input &epoc
     do
     {
         offset = (std::uniform_int_distribution<int>{0, (int)(values.size() - 1)})(generator);
-        //value = (std::uniform_int_distribution<int>{0, 26})(generator);
         do
         {
             value = (std::uniform_int_distribution<int>{0, 26})(generator);

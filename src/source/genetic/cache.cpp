@@ -119,7 +119,6 @@ void organisation::genetic::cache::generate(data &source, inputs::input &epochs)
 {
     clear();
                 
-    //std::vector<int> raw = source.all();
     std::vector<int> raw = source.outputs(epochs);
 
     int count = (std::uniform_int_distribution<int>{0, _max_cache})(generator);
@@ -146,7 +145,6 @@ bool organisation::genetic::cache::mutate(data &source, inputs::input &epochs)
     const int COUNTER = 15;
 
     if(values.empty()) return false;
-    //std::vector<int> all = source.all();
     std::vector<int> all = source.outputs(epochs);
 
     int offset = (std::uniform_int_distribution<int>{0, (int)(values.size() - 1)})(generator);

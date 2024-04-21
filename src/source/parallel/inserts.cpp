@@ -170,7 +170,6 @@ int organisation::parallel::inserts::insert(int epoch, int iteration)
         auto _iteration = iteration + 1;
         auto _length = length;
 
-//sycl::stream out(8192, 1024, h); 
         h.parallel_for(num_items, [=](auto client) 
         {
             int offset = (client * _max_inserts);
@@ -179,9 +178,6 @@ int organisation::parallel::inserts::insert(int epoch, int iteration)
             {
                 if(_insertsMovementPatternIdx[i + offset] != -1)
                 {
-
-                //out << "insertsmov " << (int)(i + offset) << " " << _insertsMovementPatternIdx[i + offset] << "\n";
-
                     if(_inputData[_inputIdx[client] + epoch_offset] == -1) return;
                                         
                     int delay = _insertsDelay[i + offset] + 1;
@@ -214,7 +210,6 @@ int organisation::parallel::inserts::insert(int epoch, int iteration)
                             _positions[dest] = _insertsStartingPosition[offset + i];
                             _movementPatternIdx[dest] = _insertsMovementPatternIdx[offset + i];
 
-                          //out << "DEST " << dest << " new value (" << new_value << ") pos(" << _positions[dest] << ") " << _insertsMovementPatternIdx[offset + i] << "\n";  
                             _clients[dest] = MapClientIdx(client, _dim_clients);
                         }
                     }
@@ -227,105 +222,7 @@ int organisation::parallel::inserts::insert(int epoch, int iteration)
 
     return hostTotalNewInserts[0];
 }
-/*
-int organisation::parallel::inserts::insert(int epoch)
-{
-    sycl::queue& qt = ::parallel::queue::get_queue(*dev, queue);
-    sycl::range num_items{(size_t)settings.clients()};
 
-    qt.memset(deviceTotalNewInserts, 0, sizeof(int)).wait();
-
-    auto epoch_offset = (epoch > settings.epochs() ? settings.epochs() : epoch) * settings.max_input_data;
-
-    sycl::float4 starting = { (float)settings.starting.x, (float)settings.starting.y, (float)settings.starting.z, 0.0f };
-    sycl::int4 dim_clients = { settings.dim_clients.x, settings.dim_clients.y, settings.dim_clients.z, 0.0f };
-std::cout << "insert " << epoch << "\r\n";
-    qt.submit([&](auto &h) 
-    {        
-        auto _insertsDelay = deviceInsertsDelay;
-        auto _insertsDelayClone = deviceInsertsDelayClone;
-
-        auto _insertsStartingPosition = deviceInsertsStartingPosition;
-        auto _insertsMovementPatternIdx = deviceInsertsMovementPatternIdx;
-        auto _insertsWords = deviceInsertsWords;
-
-        auto _inputData = deviceInputData;
-        auto _inputIdx = deviceInputIdx;
-
-        auto _totalNewInserts = deviceTotalNewInserts;
-        
-        auto _values = deviceNewValues;
-        auto _positions = deviceNewPositions;
-        auto _movementPatternIdx = deviceNewMovementPatternIdx;
-        auto _clients = deviceNewClient;
-
-        auto _epoch_offset = epoch_offset;
-
-        auto _max_inserts = settings.max_inserts;
-        auto _dim_clients = dim_clients;
-
-        auto _length = length;
-
-sycl::stream out(8192, 1024, h); 
-        h.parallel_for(num_items, [=](auto client) 
-        {
-            int offset = (client * _max_inserts);
-
-            for(int i = 0; i < _max_inserts; ++i)
-            {
-                if(_insertsMovementPatternIdx[i + offset] != -1)
-                {
-
-                out << "insertsmov " << (int)(i + offset) << " " << _insertsMovementPatternIdx[i + offset] << "\n";
-
-                    if(_inputData[_inputIdx[client] + epoch_offset] == -1) return;
-                                        
-                    _insertsDelay[i + offset]--;
-
-                    if(_insertsDelay[i + offset] < 0)
-                    {     
-                        sycl::int4 new_value = { -1, -1, -1, -1 };
-                        int *coordinates[] = { &new_value.x(), &new_value.y(), &new_value.z() } ;
-
-                        int words = _insertsWords[i + offset];                        
-                        if(words > 3) words = 3;
-                        if(words < 1) words = 1;
-                        int word_index = 0;
-                        while((word_index < words)&&(_inputData[_inputIdx[client] + epoch_offset] != -1))
-                        {
-                            int b = _inputIdx[client];
-                    
-                            *coordinates[word_index++] = _inputData[b + epoch_offset];
-                            _inputIdx[client]++;
-                        };
-                        
-                        _insertsDelay[i + offset] = _insertsDelayClone[i + offset];
-
-                        cl::sycl::atomic_ref<int, cl::sycl::memory_order::relaxed, 
-                                                    sycl::memory_scope::device, 
-                                                    sycl::access::address_space::ext_intel_global_device_space> ar(_totalNewInserts[0]);
-
-                        int dest = ar.fetch_add(1);
-                        if(dest < _length)                
-                        {                    
-                            _values[dest] = new_value;
-                            _positions[dest] = _insertsStartingPosition[offset + i];
-                            _movementPatternIdx[dest] = _insertsMovementPatternIdx[offset + i];
-
-                          out << "DEST " << dest << " new value (" << new_value << ") pos(" << _positions[dest] << ") " << _insertsMovementPatternIdx[offset + i] << "\n";  
-                            _clients[dest] = MapClientIdx(client, _dim_clients);
-                        }
-                    }
-                }
-            }
-        });
-    }).wait();
-
-    qt.memcpy(hostTotalNewInserts, deviceTotalNewInserts, sizeof(int)).wait();
-
-    return hostTotalNewInserts[0];
-}
-*/
 void organisation::parallel::inserts::set(organisation::data &mappings, inputs::input &source)
 {
     memset(hostInputData, -1, sizeof(int) * settings.max_input_data * settings.epochs());
@@ -501,17 +398,13 @@ void organisation::parallel::inserts::into(::organisation::schema **destination,
 
             for(int j = 0; j < settings.max_inserts; ++j)
             {
-                
-
-//hostInsertsDelay[pattern + (index * settings.max_inserts)] = it.delay;
                 int offset = j + (i * settings.max_inserts);
                 int movementPatternIdx = hostInsertsMovementPatternIdx[offset];
                 int count = hostMovementsCounts[j + (i * settings.max_movement_patterns)];
                 if(count > settings.max_movements) count = settings.max_movements;
 
                 if((movementPatternIdx == -1)||(count == 0)) break;
-                //if((movementPatternIdx > -1)&&(count > 0))
-                //{
+             
                 organisation::genetic::inserts::value value;
 
                 value.delay = hostInsertsDelay[offset];
@@ -519,15 +412,9 @@ void organisation::parallel::inserts::into(::organisation::schema **destination,
                 sycl::float4 starting = hostInsertsStartingPosition[offset];
                 value.starting = organisation::point((int)starting.x(), (int)starting.y(), (int)starting.z());
                 value.words = hostInsertsWords[offset];
-
-//hostMovementsCounts[(index * settings.max_movement_patterns) + pattern] += 1;
-                //int count = hostMovementsCounts[j + (i * settings.max_movement_patterns)];
                 
                 for(int d = 0; d < count; ++d)
                 {
-
-//                  int offset = (pattern * settings.max_movements) + m_count;
-//                    hostMovements[(index * settings.max_movements * settings.max_movement_patterns) + offset] = { (float)direction.x, (float)direction.y, (float)direction.z, 0.0f };
                     int offset = (j * settings.max_movements) + d;
                     sycl::float4 movement = hostMovements[(i * settings.max_movements * settings.max_movement_patterns) + offset];
                     vector direction = vector((int)movement.x(), (int)movement.y(), (int)movement.z());
@@ -537,7 +424,6 @@ void organisation::parallel::inserts::into(::organisation::schema **destination,
                 
                 
                 prog->insert.values.push_back(value);
-                //}
             }
 
             ++dest_client_index;
